@@ -1,5 +1,10 @@
-import Dashboard from "@/components/kokonutui/dashboard"
+import Content from "@/components/kokonutui/content"
+import Layout from "@/components/kokonutui/layout"
 
 export default function DashboardPage() {
-  return <Dashboard />
+  return (
+    <Layout>
+      <Content />
+    </Layout>
+  )
 }
