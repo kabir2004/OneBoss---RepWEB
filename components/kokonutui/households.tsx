@@ -106,47 +106,6 @@ export default function Households() {
 
   return (
     <div className="space-y-6">
-      {/* Client Navigation Header */}
-      <Card className="border border-gray-200 shadow-sm">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 flex-wrap">
-              <Button variant="ghost" size="sm" onClick={() => router.push('/clients')} className="transition-all duration-200 hover:scale-105">
-                <Users className="h-4 w-4 mr-2" />
-                Client Management
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => router.push('/clients/advanced-search')} className="transition-all duration-200 hover:scale-105">
-                <Search className="h-4 w-4 mr-2" />
-                Advanced Search
-              </Button>
-              <Button variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700 transition-all duration-200 hover:scale-105">
-                <Users className="h-4 w-4 mr-2" />
-                Households
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => router.push('/clients/income-plans')} className="transition-all duration-200 hover:scale-105">
-                <TrendingUp className="h-4 w-4 mr-2" />
-                Income Plans
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => router.push('/clients/approval')} className="transition-all duration-200 hover:scale-105">
-                <CheckSquare className="h-4 w-4 mr-2" />
-                Approvals
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => router.push('/clients/reports')} className="transition-all duration-200 hover:scale-105">
-                <FileText className="h-4 w-4 mr-2" />
-                Reports
-              </Button>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Client
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
-
       {/* Page Header */}
       <div className="flex items-center gap-4">
         <div className="p-2 bg-purple-100 rounded-lg">
@@ -160,46 +119,37 @@ export default function Households() {
 
       {/* Statistics Overview - Compact Vercel-like Style */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-gradient-to-br from-blue-50 via-white to-blue-50/30 p-4 transition-all duration-300 hover:shadow-lg hover:shadow-blue-100/50 hover:border-blue-200 hover:-translate-y-0.5">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <div className="relative">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Users className="h-4 w-4 text-blue-600" />
-              </div>
-              <span className="text-sm font-medium text-gray-600">Total</span>
+        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-blue-50 via-white to-blue-50/30 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+              <Users className="h-4 w-4 text-blue-600" />
             </div>
-            <div className="text-2xl font-bold text-gray-900 group-hover:text-blue-700 transition-colors duration-300">{totalHouseholds}</div>
-            <div className="text-xs text-gray-500 mt-1">Households</div>
+            <span className="text-sm font-medium text-gray-600">Total</span>
           </div>
+          <div className="text-2xl font-bold text-gray-900">{totalHouseholds}</div>
+          <div className="text-xs text-gray-500 mt-1">Households</div>
         </div>
 
-        <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/30 p-4 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-100/50 hover:border-emerald-200 hover:-translate-y-0.5">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <div className="relative">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-              </div>
-              <span className="text-sm font-medium text-gray-600">Active</span>
+        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/30 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
             </div>
-            <div className="text-2xl font-bold text-gray-900 group-hover:text-emerald-700 transition-colors duration-300">{activeHouseholds}</div>
-            <div className="text-xs text-gray-500 mt-1">Households</div>
+            <span className="text-sm font-medium text-gray-600">Active</span>
           </div>
+          <div className="text-2xl font-bold text-gray-900">{activeHouseholds}</div>
+          <div className="text-xs text-gray-500 mt-1">Households</div>
         </div>
 
-        <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-gradient-to-br from-purple-50 via-white to-purple-50/30 p-4 transition-all duration-300 hover:shadow-lg hover:shadow-purple-100/50 hover:border-purple-200 hover:-translate-y-0.5">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <div className="relative">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
-                <DollarSign className="h-4 w-4 text-purple-600" />
-              </div>
-              <span className="text-sm font-medium text-gray-600">Assets</span>
+        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-purple-50 via-white to-purple-50/30 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
+              <DollarSign className="h-4 w-4 text-purple-600" />
             </div>
-            <div className="text-2xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors duration-300">{formatCurrency(totalAssets)}</div>
-            <div className="text-xs text-gray-500 mt-1">Total Value</div>
+            <span className="text-sm font-medium text-gray-600">Assets</span>
           </div>
+          <div className="text-2xl font-bold text-gray-900">{formatCurrency(totalAssets)}</div>
+          <div className="text-xs text-gray-500 mt-1">Total Value</div>
         </div>
       </div>
 

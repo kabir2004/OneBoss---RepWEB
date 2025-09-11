@@ -176,47 +176,6 @@ export default function IncomePlans() {
 
   return (
     <div className="space-y-6">
-      {/* Client Navigation Header */}
-      <Card className="border border-gray-200 shadow-sm">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 flex-wrap">
-              <Button variant="ghost" size="sm" onClick={() => router.push('/clients')} className="transition-all duration-200 hover:scale-105">
-                <Users className="h-4 w-4 mr-2" />
-                Client Management
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => router.push('/clients/advanced-search')} className="transition-all duration-200 hover:scale-105">
-                <Search className="h-4 w-4 mr-2" />
-                Advanced Search
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => router.push('/clients/households')} className="transition-all duration-200 hover:scale-105">
-                <Users className="h-4 w-4 mr-2" />
-                Households
-              </Button>
-              <Button variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700 transition-all duration-200 hover:scale-105">
-                <TrendingUp className="h-4 w-4 mr-2" />
-                Income Plans
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => router.push('/clients/approval')} className="transition-all duration-200 hover:scale-105">
-                <CheckSquare className="h-4 w-4 mr-2" />
-                Approvals
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => router.push('/clients/reports')} className="transition-all duration-200 hover:scale-105">
-                <FileText className="h-4 w-4 mr-2" />
-                Reports
-              </Button>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Client
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
-
       {/* Page Header */}
       <div className="flex items-center gap-4">
         <div className="p-2 bg-orange-100 rounded-lg">
@@ -230,60 +189,48 @@ export default function IncomePlans() {
 
       {/* Statistics Overview - Compact Vercel-like Style */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-gradient-to-br from-orange-50 via-white to-orange-50/30 p-4 transition-all duration-300 hover:shadow-lg hover:shadow-orange-100/50 hover:border-orange-200 hover:-translate-y-0.5">
-          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <div className="relative">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center">
-                <TrendingUp className="h-4 w-4 text-orange-600" />
-              </div>
-              <span className="text-sm font-medium text-gray-600">Total</span>
+        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-orange-50 via-white to-orange-50/30 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center">
+              <TrendingUp className="h-4 w-4 text-orange-600" />
             </div>
-            <div className="text-2xl font-bold text-gray-900 group-hover:text-orange-700 transition-colors duration-300">{totalPlans}</div>
-            <div className="text-xs text-gray-500 mt-1">Income Plans</div>
+            <span className="text-sm font-medium text-gray-600">Total</span>
           </div>
+          <div className="text-2xl font-bold text-gray-900">{totalPlans}</div>
+          <div className="text-xs text-gray-500 mt-1">Income Plans</div>
         </div>
 
-        <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-gradient-to-br from-blue-50 via-white to-blue-50/30 p-4 transition-all duration-300 hover:shadow-lg hover:shadow-blue-100/50 hover:border-blue-200 hover:-translate-y-0.5">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <div className="relative">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Users className="h-4 w-4 text-blue-600" />
-              </div>
-              <span className="text-sm font-medium text-gray-600">Clients</span>
+        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-blue-50 via-white to-blue-50/30 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+              <Users className="h-4 w-4 text-blue-600" />
             </div>
-            <div className="text-2xl font-bold text-gray-900 group-hover:text-blue-700 transition-colors duration-300">{uniqueClients}</div>
-            <div className="text-xs text-gray-500 mt-1">With Plans</div>
+            <span className="text-sm font-medium text-gray-600">Clients</span>
           </div>
+          <div className="text-2xl font-bold text-gray-900">{uniqueClients}</div>
+          <div className="text-xs text-gray-500 mt-1">With Plans</div>
         </div>
 
-        <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-gradient-to-br from-green-50 via-white to-green-50/30 p-4 transition-all duration-300 hover:shadow-lg hover:shadow-green-100/50 hover:border-green-200 hover:-translate-y-0.5">
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 via-transparent to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <div className="relative">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
-                <DollarSign className="h-4 w-4 text-green-600" />
-              </div>
-              <span className="text-sm font-medium text-gray-600">YTD Paid</span>
+        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-green-50 via-white to-green-50/30 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
+              <DollarSign className="h-4 w-4 text-green-600" />
             </div>
-            <div className="text-2xl font-bold text-gray-900 group-hover:text-green-700 transition-colors duration-300">{formatCurrency(totalYTDPaid)}</div>
-            <div className="text-xs text-gray-500 mt-1">To Clients</div>
+            <span className="text-sm font-medium text-gray-600">YTD Paid</span>
           </div>
+          <div className="text-2xl font-bold text-gray-900">{formatCurrency(totalYTDPaid)}</div>
+          <div className="text-xs text-gray-500 mt-1">To Clients</div>
         </div>
 
-        <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-gradient-to-br from-red-50 via-white to-red-50/30 p-4 transition-all duration-300 hover:shadow-lg hover:shadow-red-100/50 hover:border-red-200 hover:-translate-y-0.5">
-          <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 via-transparent to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <div className="relative">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
-                <AlertCircle className="h-4 w-4 text-red-600" />
-              </div>
-              <span className="text-sm font-medium text-gray-600">Action</span>
+        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-red-50 via-white to-red-50/30 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
+              <AlertCircle className="h-4 w-4 text-red-600" />
             </div>
-            <div className="text-2xl font-bold text-gray-900 group-hover:text-red-700 transition-colors duration-300">{instructionsRequired}</div>
-            <div className="text-xs text-gray-500 mt-1">Instructions Required</div>
+            <span className="text-sm font-medium text-gray-600">Action</span>
           </div>
+          <div className="text-2xl font-bold text-gray-900">{instructionsRequired}</div>
+          <div className="text-xs text-gray-500 mt-1">Instructions Required</div>
         </div>
       </div>
 
