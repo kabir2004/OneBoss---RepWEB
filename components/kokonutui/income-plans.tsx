@@ -24,6 +24,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import AllocationCharts from "./allocation-charts"
 
 const mockIncomeData = [
   {
@@ -483,6 +484,21 @@ export default function IncomePlans() {
                     </div>
                   )
                 })()}
+              </CardContent>
+            </Card>
+
+            {/* Allocation Charts */}
+            <Card className="border border-gray-200 shadow-sm">
+              <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-50/50 border-b border-purple-100">
+                <CardTitle className="flex items-center gap-2 text-purple-900">
+                  <div className="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <TrendingUp className="h-4 w-4 text-purple-600" />
+                  </div>
+                  Portfolio Allocations
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <AllocationCharts />
               </CardContent>
             </Card>
           </div>

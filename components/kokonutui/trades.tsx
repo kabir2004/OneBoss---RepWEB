@@ -76,7 +76,7 @@ const statusConfig = {
 const typeConfig = {
   'Buy': { color: 'text-green-600', icon: TrendingUp },
   'Sell': { color: 'text-red-600', icon: TrendingDown },
-  'Swap': { color: 'text-blue-600', icon: ArrowUpDown }
+  'Switch': { color: 'text-blue-600', icon: ArrowUpDown }
 }
 
 export function Trades() {
@@ -346,7 +346,7 @@ export function Trades() {
                 <SelectItem value="all">All Types</SelectItem>
                 <SelectItem value="Buy">Buy</SelectItem>
                 <SelectItem value="Sell">Sell</SelectItem>
-                <SelectItem value="Swap">Swap</SelectItem>
+                <SelectItem value="Switch">Switch</SelectItem>
               </SelectContent>
             </Select>
           </div>

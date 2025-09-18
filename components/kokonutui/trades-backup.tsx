@@ -71,7 +71,7 @@ const mockTrades = [
     id: 'TR-003',
     clientId: 'CL003',
     clientName: 'Michael Chen',
-    type: 'Swap',
+    type: 'Switch',
     symbol: 'RBC-001',
     product: 'RBC CANADIAN EQUITY FUND',
     quantity: 750,
@@ -81,7 +81,7 @@ const mockTrades = [
     executedAt: '2024-01-17T11:45:00Z',
     createdAt: '2024-01-17T10:30:00Z',
     representative: 'Emily Davis',
-    notes: 'Swapped from GW fund to RBC for better performance'
+    notes: 'Switchped from GW fund to RBC for better performance'
   },
   {
     id: 'TR-004',
@@ -151,7 +151,7 @@ const mockTrades = [
     id: 'TR-008',
     clientId: 'CL008',
     clientName: 'Amy Armstrong',
-    type: 'Swap',
+    type: 'Switch',
     symbol: 'WVN-445',
     product: 'GW INTERNATIONAL FUND',
     quantity: 600,
@@ -183,7 +183,7 @@ const mockTrades = [
     id: 'TR-010',
     clientId: 'CL010',
     clientName: 'Lisa Wang',
-    type: 'Swap',
+    type: 'Switch',
     symbol: 'WVN-445',
     product: 'GW INTERNATIONAL FUND',
     quantity: 750,
@@ -231,7 +231,7 @@ const mockTrades = [
     id: 'TR-013',
     clientId: 'CL013',
     clientName: 'Thomas Anderson',
-    type: 'Swap',
+    type: 'Switch',
     symbol: 'AGF-401',
     product: 'AGF CANADIAN BOND FUND',
     quantity: 1200,
@@ -295,7 +295,7 @@ const mockTrades = [
     id: 'TR-017',
     clientId: 'CL017',
     clientName: 'Daniel Kim',
-    type: 'Swap',
+    type: 'Switch',
     symbol: 'RBC-005',
     product: 'RBC CANADIAN BOND FUND',
     quantity: 1100,
@@ -366,7 +366,7 @@ const statusConfig = {
 const typeConfig = {
   'Buy': { color: 'text-green-600', icon: TrendingUp },
   'Sell': { color: 'text-red-600', icon: TrendingDown },
-  'Swap': { color: 'text-blue-600', icon: ArrowUpDown }
+  'Switch': { color: 'text-blue-600', icon: ArrowUpDown }
 }
 
 export function Trades() {
@@ -779,7 +779,7 @@ export function Trades() {
                 <SelectItem value="all">All Types</SelectItem>
                 <SelectItem value="Buy">Buy</SelectItem>
                 <SelectItem value="Sell">Sell</SelectItem>
-                <SelectItem value="Swap">Swap</SelectItem>
+                <SelectItem value="Switch">Switch</SelectItem>
               </SelectContent>
             </Select>
             <Button variant="outline" size="sm" className="h-8">
@@ -977,7 +977,7 @@ export function Trades() {
                     </Button>
                     <Button variant="outline" className="flex-1 h-7 text-xs" size="sm">
                       <ArrowUpDown className="h-3 w-3 mr-1" />
-                      Swap
+                      Switch
                     </Button>
                   </>
                 ) : (

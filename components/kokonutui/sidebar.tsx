@@ -40,15 +40,6 @@ export default function Sidebar() {
   const [isClientsExpanded, setIsClientsExpanded] = useState(false)
   const [isTradesExpanded, setIsTradesExpanded] = useState(false)
   const [clientSearchTerm, setClientSearchTerm] = useState("")
-  const [searchForm, setSearchForm] = useState({
-    firstName: "",
-    surname: "",
-    city: "",
-    province: "",
-    sin: "",
-    planId: "",
-    clientId: ""
-  })
   const [selectedClientIds, setSelectedClientIds] = useState<number[]>([])
   const [tradeSearchForm, setTradeSearchForm] = useState({
     orderDateFrom: "",
@@ -76,32 +67,16 @@ export default function Sidebar() {
     setIsMobileMenuOpen(false)
   }
 
-  // Filter clients based on search form
+  // Filter clients based on simple search term
   const filteredClients = mockClients.filter(client => {
-    const matchesFirstName = !searchForm.firstName || 
-      client.firstName?.toLowerCase().includes(searchForm.firstName.toLowerCase())
-    const matchesSurname = !searchForm.surname || 
-      client.surname?.toLowerCase().includes(searchForm.surname.toLowerCase())
-    const matchesCity = !searchForm.city || 
-      client.city?.toLowerCase().includes(searchForm.city.toLowerCase())
-    const matchesProvince = !searchForm.province || 
-      client.province?.toLowerCase().includes(searchForm.province.toLowerCase())
-    const matchesSin = !searchForm.sin || 
-      client.sin?.includes(searchForm.sin)
-    const matchesPlanId = !searchForm.planId || 
-      client.planId?.toLowerCase().includes(searchForm.planId.toLowerCase())
-    const matchesClientId = !searchForm.clientId || 
-      client.clientId?.toLowerCase().includes(searchForm.clientId.toLowerCase())
-    
-    // Also match simple search term
     const matchesSearchTerm = !clientSearchTerm || 
       client.firstName?.toLowerCase().includes(clientSearchTerm.toLowerCase()) ||
       client.surname?.toLowerCase().includes(clientSearchTerm.toLowerCase()) ||
-      client.email?.toLowerCase().includes(clientSearchTerm.toLowerCase())
+      client.email?.toLowerCase().includes(clientSearchTerm.toLowerCase()) ||
+      client.clientId?.toLowerCase().includes(clientSearchTerm.toLowerCase()) ||
+      client.phone?.includes(clientSearchTerm)
     
-    return (matchesFirstName && matchesSurname && matchesCity && 
-            matchesProvince && matchesSin && matchesPlanId && matchesClientId) &&
-           matchesSearchTerm
+    return matchesSearchTerm
   })
 
   const getStatusIcon = (status: string) => {
@@ -117,44 +92,6 @@ export default function Sidebar() {
     }
   }
 
-  // Handle search form updates
-  const handleSearchFormChange = (field: string, value: string) => {
-    setSearchForm(prev => ({
-      ...prev,
-      [field]: value
-    }))
-  }
-
-  // Handle search execution
-  const handleSearch = () => {
-    // Build search parameters for URL
-    const searchParams = new URLSearchParams()
-    
-    Object.entries(searchForm).forEach(([key, value]) => {
-      if (value.trim()) {
-        searchParams.set(key, value.trim())
-      }
-    })
-    
-    // Navigate to clients page with search parameters
-    const queryString = searchParams.toString()
-    router.push(`/clients${queryString ? `?${queryString}` : ''}`)
-  }
-
-  // Handle reset
-  const handleReset = () => {
-    setSearchForm({
-      firstName: "",
-      surname: "",
-      city: "",
-      province: "",
-      sin: "",
-      planId: "",
-      clientId: ""
-    })
-    setSelectedClientIds([])
-    setClientSearchTerm("")
-  }
 
   // Handle trade search form updates
   const handleTradeSearchFormChange = (field: string, value: any) => {
@@ -372,99 +309,14 @@ export default function Sidebar() {
                     <div className={`space-y-3 pt-2 transition-all duration-300 delay-100 ${
                       isClientsExpanded ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
                     }`}>
-                      {/* Search Header */}
-                      <div className="flex items-center gap-2 mb-3">
-                        <Search className="h-4 w-4 text-blue-600" />
-                        <h3 className="text-sm font-semibold text-gray-900">Client Search</h3>
-                      </div>
-                      
                       {/* Quick Search */}
                       <div className="space-y-2">
                         <Input
                           placeholder="Quick search..."
-                          className="h-8 text-xs"
+                          className="h-8 text-sm"
                           value={clientSearchTerm}
                           onChange={(e) => setClientSearchTerm(e.target.value)}
                         />
-                      </div>
-                      
-                      {/* Advanced Search Form */}
-                      <div className="space-y-2">
-                        <div className="grid grid-cols-1 gap-2">
-                          <Input
-                            placeholder="First Name"
-                            className="h-7 text-xs"
-                            value={searchForm.firstName}
-                            onChange={(e) => handleSearchFormChange('firstName', e.target.value)}
-                          />
-                          <Input
-                            placeholder="Surname"
-                            className="h-7 text-xs"
-                            value={searchForm.surname}
-                            onChange={(e) => handleSearchFormChange('surname', e.target.value)}
-                          />
-                          <Input
-                            placeholder="City"
-                            className="h-7 text-xs"
-                            value={searchForm.city}
-                            onChange={(e) => handleSearchFormChange('city', e.target.value)}
-                          />
-                          <Select value={searchForm.province} onValueChange={(value) => handleSearchFormChange('province', value)}>
-                            <SelectTrigger className="h-7 text-xs">
-                              <SelectValue placeholder="Province" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="AB">Alberta</SelectItem>
-                              <SelectItem value="BC">British Columbia</SelectItem>
-                              <SelectItem value="MB">Manitoba</SelectItem>
-                              <SelectItem value="NB">New Brunswick</SelectItem>
-                              <SelectItem value="NL">Newfoundland and Labrador</SelectItem>
-                              <SelectItem value="NS">Nova Scotia</SelectItem>
-                              <SelectItem value="ON">Ontario</SelectItem>
-                              <SelectItem value="PE">Prince Edward Island</SelectItem>
-                              <SelectItem value="QC">Quebec</SelectItem>
-                              <SelectItem value="SK">Saskatchewan</SelectItem>
-                              <SelectItem value="NT">Northwest Territories</SelectItem>
-                              <SelectItem value="NU">Nunavut</SelectItem>
-                              <SelectItem value="YT">Yukon</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <Input
-                            placeholder="SIN"
-                            className="h-7 text-xs"
-                            value={searchForm.sin}
-                            onChange={(e) => handleSearchFormChange('sin', e.target.value)}
-                          />
-                          <Input
-                            placeholder="Plan ID"
-                            className="h-7 text-xs"
-                            value={searchForm.planId}
-                            onChange={(e) => handleSearchFormChange('planId', e.target.value)}
-                          />
-                          <Input
-                            placeholder="Client ID"
-                            className="h-7 text-xs"
-                            value={searchForm.clientId}
-                            onChange={(e) => handleSearchFormChange('clientId', e.target.value)}
-                          />
-                        </div>
-                        
-                        <div className="flex gap-1">
-                          <Button 
-                            onClick={handleSearch}
-                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white h-7 text-xs"
-                          >
-                            <Search className="h-3 w-3 mr-1" />
-                            Search
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            className="h-7 text-xs px-2"
-                            onClick={handleReset}
-                          >
-                            Reset
-                          </Button>
-                        </div>
                       </div>
 
                       {/* Client Results */}
@@ -688,7 +540,7 @@ export default function Sidebar() {
                       <div className="space-y-2">
                         <label className="text-xs font-medium text-gray-700">Fund Transaction Types</label>
                         <div className="space-y-1">
-                          {['Buy', 'Sell', 'Swap'].map((type) => (
+                          {['Buy', 'Sell', 'Switch'].map((type) => (
                             <div key={type} className="flex items-center space-x-2">
                               <Checkbox
                                 id={`trade-type-${type}`}
