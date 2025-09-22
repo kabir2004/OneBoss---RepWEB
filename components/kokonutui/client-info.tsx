@@ -495,6 +495,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <TableHead className="font-semibold text-gray-700 py-4">Risk</TableHead>
                                     <TableHead className="font-semibold text-gray-700 py-4">Objective</TableHead>
                                     <TableHead className="font-semibold text-gray-700 py-4 text-right">Market Value</TableHead>
+                                    <TableHead className="font-semibold text-gray-700 py-4 text-center">Actions</TableHead>
                                   </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -528,6 +529,19 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <TableCell className="py-4 text-right">
                                       <div className="text-lg font-semibold text-green-600">$11,734.85</div>
                                     </TableCell>
+                                    <TableCell className="py-4 text-center">
+                                      <div className="flex items-center justify-center gap-1">
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-700 transition-all duration-200">
+                                          <Plus className="h-3 w-3" />
+                                        </Button>
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200">
+                                          <Minus className="h-3 w-3" />
+                                        </Button>
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-orange-100 hover:text-orange-700 transition-all duration-200">
+                                          <ArrowLeftRight className="h-3 w-3" />
+                                        </Button>
+                                      </div>
+                                    </TableCell>
                                   </TableRow>
                                   <TableRow className="hover:bg-blue-50/30 transition-colors duration-200">
                                     <TableCell className="font-medium py-4">
@@ -558,6 +572,19 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <TableCell className="py-4 text-sm text-gray-600">Balanced</TableCell>
                                     <TableCell className="py-4 text-right">
                                       <div className="text-lg font-semibold text-green-600">$30,265.27</div>
+                                    </TableCell>
+                                    <TableCell className="py-4 text-center">
+                                      <div className="flex items-center justify-center gap-1">
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-700 transition-all duration-200">
+                                          <Plus className="h-3 w-3" />
+                                        </Button>
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200">
+                                          <Minus className="h-3 w-3" />
+                                        </Button>
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-orange-100 hover:text-orange-700 transition-all duration-200">
+                                          <ArrowLeftRight className="h-3 w-3" />
+                                        </Button>
+                                      </div>
                                     </TableCell>
                                   </TableRow>
                                 </TableBody>
@@ -643,6 +670,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <TableHead className="font-semibold text-gray-700 py-4">Risk</TableHead>
                                     <TableHead className="font-semibold text-gray-700 py-4">Objective</TableHead>
                                     <TableHead className="font-semibold text-gray-700 py-4 text-right">Market Value</TableHead>
+                                    <TableHead className="font-semibold text-gray-700 py-4 text-center">Actions</TableHead>
                                   </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -676,6 +704,19 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <TableCell className="py-4 text-right">
                                       <div className="text-lg font-semibold text-green-600">$28,455.06</div>
                                     </TableCell>
+                                    <TableCell className="py-4 text-center">
+                                      <div className="flex items-center justify-center gap-1">
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-700 transition-all duration-200">
+                                          <Plus className="h-3 w-3" />
+                                        </Button>
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200">
+                                          <Minus className="h-3 w-3" />
+                                        </Button>
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-orange-100 hover:text-orange-700 transition-all duration-200">
+                                          <ArrowLeftRight className="h-3 w-3" />
+                                        </Button>
+                                      </div>
+                                    </TableCell>
                                   </TableRow>
                                   <TableRow className="hover:bg-green-50/30 transition-colors duration-200 border-b border-gray-100/60">
                                     <TableCell className="font-medium py-4">
@@ -706,6 +747,19 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <TableCell className="py-4 text-sm text-gray-600">Growth</TableCell>
                                     <TableCell className="py-4 text-right">
                                       <div className="text-lg font-semibold text-green-600">$9,977.41</div>
+                                    </TableCell>
+                                    <TableCell className="py-4 text-center">
+                                      <div className="flex items-center justify-center gap-1">
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-700 transition-all duration-200">
+                                          <Plus className="h-3 w-3" />
+                                        </Button>
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200">
+                                          <Minus className="h-3 w-3" />
+                                        </Button>
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-orange-100 hover:text-orange-700 transition-all duration-200">
+                                          <ArrowLeftRight className="h-3 w-3" />
+                                        </Button>
+                                      </div>
                                     </TableCell>
                                   </TableRow>
                                   <TableRow className="hover:bg-green-50/30 transition-colors duration-200 border-b border-gray-100/60">
@@ -738,6 +792,19 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <TableCell className="py-4 text-right">
                                       <div className="text-lg font-semibold text-green-600">$36,833.79</div>
                                     </TableCell>
+                                    <TableCell className="py-4 text-center">
+                                      <div className="flex items-center justify-center gap-1">
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-700 transition-all duration-200">
+                                          <Plus className="h-3 w-3" />
+                                        </Button>
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200">
+                                          <Minus className="h-3 w-3" />
+                                        </Button>
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-orange-100 hover:text-orange-700 transition-all duration-200">
+                                          <ArrowLeftRight className="h-3 w-3" />
+                                        </Button>
+                                      </div>
+                                    </TableCell>
                                   </TableRow>
                                   <TableRow className="hover:bg-green-50/30 transition-colors duration-200">
                                     <TableCell className="font-medium py-4">
@@ -768,6 +835,19 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <TableCell className="py-4 text-sm text-gray-600">Growth</TableCell>
                                     <TableCell className="py-4 text-right">
                                       <div className="text-lg font-semibold text-green-600">$7,460.02</div>
+                                    </TableCell>
+                                    <TableCell className="py-4 text-center">
+                                      <div className="flex items-center justify-center gap-1">
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-700 transition-all duration-200">
+                                          <Plus className="h-3 w-3" />
+                                        </Button>
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200">
+                                          <Minus className="h-3 w-3" />
+                                        </Button>
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-orange-100 hover:text-orange-700 transition-all duration-200">
+                                          <ArrowLeftRight className="h-3 w-3" />
+                                        </Button>
+                                      </div>
                                     </TableCell>
                                   </TableRow>
                                 </TableBody>

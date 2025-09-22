@@ -2242,10 +2242,10 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                      <select className="w-full px-3 py-2 border border-gray-300 rounded-md">
-                        <option value="active" selected={client.status === 'active'}>Active</option>
-                        <option value="pending" selected={client.status === 'pending'}>Pending</option>
-                        <option value="inactive" selected={client.status === 'inactive'}>Inactive</option>
+                      <select className="w-full px-3 py-2 border border-gray-300 rounded-md" defaultValue={client.status}>
+                        <option value="active">Active</option>
+                        <option value="pending">Pending</option>
+                        <option value="inactive">Inactive</option>
                       </select>
                     </div>
                     <div>

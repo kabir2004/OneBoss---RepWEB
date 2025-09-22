@@ -20,7 +20,8 @@ import {
   CheckCircle,
   Clock,
   PauseCircle,
-  TrendingUp
+  TrendingUp,
+  Plus
 } from "lucide-react"
 
 import Link from "next/link"
@@ -32,6 +33,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { mockClients } from "@/lib/client-data"
+import { useClientSelection } from "../client-selection-context"
 
 export default function Sidebar() {
   const pathname = usePathname()
@@ -40,7 +42,7 @@ export default function Sidebar() {
   const [isClientsExpanded, setIsClientsExpanded] = useState(false)
   const [isTradesExpanded, setIsTradesExpanded] = useState(false)
   const [clientSearchTerm, setClientSearchTerm] = useState("")
-  const [selectedClientIds, setSelectedClientIds] = useState<number[]>([])
+  const { selectedClientIds, handleClientSelection, handleSelectAll, handleSelectNone } = useClientSelection()
   const [tradeSearchForm, setTradeSearchForm] = useState({
     orderDateFrom: "",
     orderDateTo: "",
@@ -156,14 +158,6 @@ export default function Sidebar() {
     }))
   }
 
-  // Handle client selection
-  const handleClientSelection = (clientId: number, checked: boolean) => {
-    if (checked) {
-      setSelectedClientIds(prev => [...prev, clientId])
-    } else {
-      setSelectedClientIds(prev => prev.filter(id => id !== clientId))
-    }
-  }
 
   // Navigate to specific client details
   const handleClientClick = (client: any) => {
@@ -175,12 +169,20 @@ export default function Sidebar() {
   }
 
   // Select all/none functions
-  const handleSelectAll = () => {
-    setSelectedClientIds(filteredClients.map(client => client.id))
+  const handleSelectAllClients = () => {
+    handleSelectAll(filteredClients.map(client => client.id))
   }
 
-  const handleSelectNone = () => {
-    setSelectedClientIds([])
+  // Handle Add Client button click
+  const handleAddClient = () => {
+    router.push('/clients')
+    handleNavigation()
+  }
+
+  // Handle Advance Search button click
+  const handleAdvanceSearch = () => {
+    router.push('/clients/advanced-search')
+    handleNavigation()
   }
 
 
@@ -205,7 +207,7 @@ export default function Sidebar() {
       return (
         <button
           onClick={onToggle}
-          className="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md transition-colors text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+          className="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
         >
           <div className="flex items-center">
             <Icon className="h-4 w-4 mr-3 flex-shrink-0" />
@@ -224,7 +226,7 @@ export default function Sidebar() {
       <Link
         href={href}
         onClick={handleNavigation}
-        className="flex items-center px-3 py-2 text-sm rounded-md transition-colors text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+        className="flex items-center px-3 py-2 text-sm rounded-md transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
       >
         <Icon className="h-4 w-4 mr-3 flex-shrink-0" />
         {children}
@@ -236,25 +238,25 @@ export default function Sidebar() {
     <>
       <button
         type="button"
-        className="lg:hidden fixed top-4 left-4 z-[70] p-2 rounded-lg bg-white shadow-md"
+        className="lg:hidden fixed top-4 left-4 z-[70] p-2 rounded-lg bg-white dark:bg-gray-800 shadow-md"
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
       >
-        <Menu className="h-5 w-5 text-gray-600" />
+        <Menu className="h-5 w-5 text-gray-600 dark:text-gray-300" />
       </button>
       <nav
         className={`
-                fixed inset-y-0 left-0 z-[70] w-64 bg-white transform transition-transform duration-200 ease-in-out
+                fixed inset-y-0 left-0 z-[70] w-64 bg-white dark:bg-gray-900 transform transition-transform duration-200 ease-in-out
                 lg:translate-x-0 lg:static lg:w-64
                 ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
             `}
       >
         <div className="h-full flex flex-col">
-          <div className="h-16 px-6 flex items-center bg-white">
+          <div className="h-16 px-6 flex items-center bg-white dark:bg-gray-900">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-gray-900">
+              <div className="p-2 rounded-lg bg-gray-900 dark:bg-gray-700">
                 <Building2 className="h-5 w-5 text-gray-50" />
               </div>
-              <span className="text-lg font-semibold text-gray-900">
+              <span className="text-lg font-semibold text-gray-900 dark:text-white">
                 OneBoss
               </span>
             </div>
@@ -263,7 +265,7 @@ export default function Sidebar() {
           <div className="flex-1 overflow-y-auto py-4 px-4 scrollbar-hide">
             <div className="space-y-6">
               <div>
-                <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
+                <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-300">
                   Main Navigation
                 </div>
                 <div className="space-y-1">
@@ -317,6 +319,25 @@ export default function Sidebar() {
                           value={clientSearchTerm}
                           onChange={(e) => setClientSearchTerm(e.target.value)}
                         />
+                        
+                        {/* Action Buttons */}
+                        <div className="space-y-1">
+                          <Button 
+                            onClick={handleAddClient}
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white h-7 text-xs"
+                          >
+                            <Plus className="h-3 w-3 mr-1" />
+                            Add Client
+                          </Button>
+                          <Button 
+                            onClick={handleAdvanceSearch}
+                            variant="outline"
+                            className="w-full h-7 text-xs"
+                          >
+                            <Search className="h-3 w-3 mr-1" />
+                            Advance Search
+                          </Button>
+                        </div>
                       </div>
 
                       {/* Client Results */}
@@ -326,7 +347,7 @@ export default function Sidebar() {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <Users2 className="h-4 w-4 text-green-600" />
-                            <h4 className="text-xs font-semibold text-gray-900">
+                            <h4 className="text-xs font-semibold text-gray-900 dark:text-white">
                               {filteredClients.length} Found
                             </h4>
                           </div>
@@ -337,12 +358,12 @@ export default function Sidebar() {
                           )}
                         </div>
                         
-                        <div className="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
+                        <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-800 shadow-sm">
                           <div className="max-h-48 overflow-y-auto space-y-1 p-2">
                             {filteredClients.map((client) => (
                               <div
                                 key={client.id}
-                                className="flex items-center gap-2 p-2 rounded-md hover:bg-blue-50 cursor-pointer border border-transparent hover:border-blue-200 transition-all duration-200 group"
+                                className="flex items-center gap-2 p-2 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer border border-transparent hover:border-blue-200 dark:hover:border-blue-700 transition-all duration-200 group"
                                 onClick={() => handleClientClick(client)}
                               >
                                 <Checkbox 
@@ -353,7 +374,7 @@ export default function Sidebar() {
                                 />
                                 <div className="flex items-center gap-1 flex-1 min-w-0">
                                   {getStatusIcon(client.status)}
-                                  <div className="text-xs font-medium text-gray-900 truncate">
+                                  <div className="text-xs font-medium text-gray-900 dark:text-white truncate">
                                     {client.surname}, {client.firstName}
                                   </div>
                                 </div>
@@ -365,7 +386,7 @@ export default function Sidebar() {
                           </div>
                           
                           {filteredClients.length > 0 && (
-                            <div className="flex gap-1 p-2 border-t border-gray-100 bg-gray-50 rounded-b-lg">
+                            <div className="flex gap-1 p-2 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 rounded-b-lg">
                               <Button 
                                 variant="outline" 
                                 size="sm" 
@@ -378,7 +399,7 @@ export default function Sidebar() {
                                 variant="outline" 
                                 size="sm" 
                                 className="text-xs h-6 flex-1 rounded-md"
-                                onClick={handleSelectAll}
+                                onClick={handleSelectAllClients}
                               >
                                 Select All
                               </Button>
@@ -431,12 +452,12 @@ export default function Sidebar() {
                       {/* Search Header */}
                       <div className="flex items-center gap-2 mb-3">
                         <Search className="h-4 w-4 text-blue-600" />
-                        <h3 className="text-sm font-semibold text-gray-900">Trade Search</h3>
+                        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Trade Search</h3>
                       </div>
                       
                       {/* Date Type */}
                       <div className="space-y-2">
-                        <label className="text-xs font-medium text-gray-700">Date Type</label>
+                        <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Date Type</label>
                         <Select value="Order Date" disabled>
                           <SelectTrigger className="h-7 text-xs">
                             <SelectValue placeholder="Order Date" />
@@ -449,7 +470,7 @@ export default function Sidebar() {
 
                       {/* Date Range */}
                       <div className="space-y-2">
-                        <label className="text-xs font-medium text-gray-700">Date Range</label>
+                        <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Date Range</label>
                         <div className="grid grid-cols-2 gap-2">
                           <Input
                             type="date"
@@ -468,7 +489,7 @@ export default function Sidebar() {
 
                       {/* Statuses */}
                       <div className="space-y-2">
-                        <label className="text-xs font-medium text-gray-700">Statuses</label>
+                        <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Statuses</label>
                         <div className="space-y-1">
                           {['Executed', 'Pending', 'Cancelled'].map((status) => (
                             <div key={status} className="flex items-center space-x-2">
@@ -478,7 +499,7 @@ export default function Sidebar() {
                                 checked={tradeSearchForm.statuses.includes(status)}
                                 onCheckedChange={() => handleTradeStatusToggle(status)}
                               />
-                              <label htmlFor={`trade-status-${status}`} className="text-xs text-gray-700">
+                              <label htmlFor={`trade-status-${status}`} className="text-xs text-gray-700 dark:text-gray-300">
                                 {status}
                               </label>
                             </div>
@@ -538,7 +559,7 @@ export default function Sidebar() {
 
                       {/* Fund Transaction Types */}
                       <div className="space-y-2">
-                        <label className="text-xs font-medium text-gray-700">Fund Transaction Types</label>
+                        <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Fund Transaction Types</label>
                         <div className="space-y-1">
                           {['Buy', 'Sell', 'Switch'].map((type) => (
                             <div key={type} className="flex items-center space-x-2">
@@ -548,7 +569,7 @@ export default function Sidebar() {
                                 checked={tradeSearchForm.fundTransactionTypes.includes(type)}
                                 onCheckedChange={() => handleTradeTransactionTypeToggle(type)}
                               />
-                              <label htmlFor={`trade-type-${type}`} className="text-xs text-gray-700">
+                              <label htmlFor={`trade-type-${type}`} className="text-xs text-gray-700 dark:text-gray-300">
                                 {type}
                               </label>
                             </div>
@@ -601,7 +622,7 @@ export default function Sidebar() {
               </div>
 
               <div>
-                <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
+                <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-300">
                   Management
                 </div>
                 <div className="space-y-1">
@@ -621,7 +642,7 @@ export default function Sidebar() {
               </div>
 
               <div>
-                <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
+                <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-300">
                   System
                 </div>
                 <div className="space-y-1">
