@@ -81,9 +81,9 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
       case "pending":
         return <Clock className="h-3 w-3 text-yellow-600" />
       case "inactive":
-        return <PauseCircle className="h-3 w-3 text-gray-500" />
+        return <PauseCircle className="h-3 w-3 text-muted-foreground" />
       default:
-        return <div className="h-3 w-3 rounded-full bg-gray-400" />
+        return <div className="h-3 w-3 rounded-full bg-muted-foreground" />
     }
   }, [])
 
@@ -128,7 +128,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-500">Loading client information...</p>
+          <p className="text-muted-foreground">Loading client information...</p>
         </div>
       </div>
     )
@@ -138,9 +138,9 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
-          <Users className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+          <Users className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Client Not Found</h3>
-          <p className="text-gray-500 mb-4">The requested client could not be found.</p>
+          <p className="text-muted-foreground mb-4">The requested client could not be found.</p>
           <Button onClick={handleBack} variant="outline">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Clients
@@ -174,7 +174,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                   <h1 className="text-xl font-semibold text-gray-900">
                     {client.firstName} {client.surname}
                   </h1>
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <span>Client ID: {client.clientId}</span>
                     <span>•</span>
                     <span className="flex items-center gap-1">
@@ -512,7 +512,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <TableCell className="py-4">
                                       <div className="max-w-xs">
                                         <div className="text-sm font-medium text-gray-900">FIDELITY NORTHSTAR FUND</div>
-                                        <div className="text-xs text-gray-500">Series B ISC</div>
+                                        <div className="text-xs text-muted-foreground">Series B ISC</div>
                                       </div>
                                     </TableCell>
                                     <TableCell className="py-4">
@@ -556,7 +556,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <TableCell className="py-4">
                                       <div className="max-w-xs">
                                         <div className="text-sm font-medium text-gray-900">FIDELITY MONTHLY INCOME FUND</div>
-                                        <div className="text-xs text-gray-500">Series B ISC</div>
+                                        <div className="text-xs text-muted-foreground">Series B ISC</div>
                                       </div>
                                     </TableCell>
                                     <TableCell className="py-4">
@@ -687,7 +687,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <TableCell className="py-4">
                                       <div className="max-w-xs">
                                         <div className="text-sm font-medium text-gray-900">FIDELITY TRUE NORTH FUND</div>
-                                        <div className="text-xs text-gray-500">Series B ISC</div>
+                                        <div className="text-xs text-muted-foreground">Series B ISC</div>
                                       </div>
                                     </TableCell>
                                     <TableCell className="py-4">
@@ -731,7 +731,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <TableCell className="py-4">
                                       <div className="max-w-xs">
                                         <div className="text-sm font-medium text-gray-900">FIDELITY U.S. FOCUSED STOCK FUND</div>
-                                        <div className="text-xs text-gray-500">Series B ISC</div>
+                                        <div className="text-xs text-muted-foreground">Series B ISC</div>
                                       </div>
                                     </TableCell>
                                     <TableCell className="py-4">
@@ -775,7 +775,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <TableCell className="py-4">
                                       <div className="max-w-xs">
                                         <div className="text-sm font-medium text-gray-900">FIDELITY NORTHSTAR FUND</div>
-                                        <div className="text-xs text-gray-500">Series B ISC</div>
+                                        <div className="text-xs text-muted-foreground">Series B ISC</div>
                                       </div>
                                     </TableCell>
                                     <TableCell className="py-4">
@@ -819,7 +819,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <TableCell className="py-4">
                                       <div className="max-w-xs">
                                         <div className="text-sm font-medium text-gray-900">FIDELITY CANADIAN GROWTH COMPANY FUND</div>
-                                        <div className="text-xs text-gray-500">Series B ISC</div>
+                                        <div className="text-xs text-muted-foreground">Series B ISC</div>
                                       </div>
                                     </TableCell>
                                     <TableCell className="py-4">
@@ -960,8 +960,8 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                           <TableBody>
                             <TableRow>
                               <TableCell colSpan={7} className="text-center py-8">
-                                <div className="text-gray-500">
-                                  <FileText className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                                <div className="text-muted-foreground">
+                                  <FileText className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                                   <p className="text-sm">No Trust Transactions Found</p>
                                 </div>
                               </TableCell>
@@ -982,7 +982,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">Trading Activity</h3>
                       <p className="text-gray-600 mb-4">Recent buy/sell transactions and trade history</p>
                       <div className="bg-gray-50/50 rounded-lg p-4 max-w-md mx-auto">
-                        <div className="text-sm text-gray-500">Recent trading activity will be displayed here</div>
+                        <div className="text-sm text-muted-foreground">Recent trading activity will be displayed here</div>
                       </div>
                     </div>
                   </div>
@@ -1023,7 +1023,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                               <TableCell className="py-4">
                                 <div className="max-w-xs">
                                   <div className="text-sm font-medium text-gray-900">FID-225 FIDELITY TRUE NORTH FUND</div>
-                                  <div className="text-xs text-gray-500">SERIES B ISC</div>
+                                  <div className="text-xs text-muted-foreground">SERIES B ISC</div>
                                 </div>
                               </TableCell>
                               <TableCell className="py-4">
@@ -1044,7 +1044,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                               <TableCell className="py-4">
                                 <div className="max-w-xs">
                                   <div className="text-sm font-medium text-gray-900">FID-234 FIDELITY U.S. FOCUSED STOCK FUND</div>
-                                  <div className="text-xs text-gray-500">SERIES B ISC</div>
+                                  <div className="text-xs text-muted-foreground">SERIES B ISC</div>
                                 </div>
                               </TableCell>
                               <TableCell className="py-4">
@@ -1065,7 +1065,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                               <TableCell className="py-4">
                                 <div className="max-w-xs">
                                   <div className="text-sm font-medium text-gray-900">FID-253 FIDELITY NORTHSTAR FUND</div>
-                                  <div className="text-xs text-gray-500">SERIES B ISC</div>
+                                  <div className="text-xs text-muted-foreground">SERIES B ISC</div>
                                 </div>
                               </TableCell>
                               <TableCell className="py-4">
@@ -1086,7 +1086,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                               <TableCell className="py-4">
                                 <div className="max-w-xs">
                                   <div className="text-sm font-medium text-gray-900">FID-265 FIDELITY CANADIAN GROWTH COMPANY FUND</div>
-                                  <div className="text-xs text-gray-500">SERIES B ISC</div>
+                                  <div className="text-xs text-muted-foreground">SERIES B ISC</div>
                                 </div>
                               </TableCell>
                               <TableCell className="py-4">
@@ -1107,7 +1107,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                               <TableCell className="py-4">
                                 <div className="max-w-xs">
                                   <div className="text-sm font-medium text-gray-900">FID-269 FIDELITY MONTHLY INCOME FUND</div>
-                                  <div className="text-xs text-gray-500">SERIES B ISC</div>
+                                  <div className="text-xs text-muted-foreground">SERIES B ISC</div>
                                 </div>
                               </TableCell>
                               <TableCell className="py-4">
@@ -1596,32 +1596,32 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
 
                   <TabsContent value="details-sub" className="mt-6">
                     <div className="text-center py-8">
-                      <div className="text-gray-500">Details content is shown above</div>
+                      <div className="text-muted-foreground">Details content is shown above</div>
                     </div>
                   </TabsContent>
 
                   <TabsContent value="notes-sub" className="mt-6">
                     <div className="text-center py-8">
-                      <div className="text-gray-500">Notes content will be displayed here</div>
+                      <div className="text-muted-foreground">Notes content will be displayed here</div>
                     </div>
                   </TabsContent>
 
                   <TabsContent value="plan-attachments-sub" className="mt-6">
                     <div className="text-center py-8">
-                      <div className="text-gray-500">Plan Attachments content will be displayed here</div>
+                      <div className="text-muted-foreground">Plan Attachments content will be displayed here</div>
                     </div>
                   </TabsContent>
 
                   <TabsContent value="allocations-sub" className="mt-6">
                     <div className="text-center py-8">
-                      <div className="text-gray-500">Allocations content will be displayed here</div>
+                      <div className="text-muted-foreground">Allocations content will be displayed here</div>
                     </div>
                   </TabsContent>
 
 
                   <TabsContent value="custom-compensation-sub" className="mt-6">
                     <div className="text-center py-8">
-                      <div className="text-gray-500">Custom Compensation content will be displayed here</div>
+                      <div className="text-muted-foreground">Custom Compensation content will be displayed here</div>
                     </div>
                   </TabsContent>
                 </Tabs>
@@ -1632,7 +1632,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
 
           <TabsContent value="beneficiaries" className="max-w-7xl mx-auto px-6 py-8">
             <div className="text-center py-12">
-              <div className="text-gray-500">Beneficiaries content will be displayed here</div>
+              <div className="text-muted-foreground">Beneficiaries content will be displayed here</div>
             </div>
           </TabsContent>
 
@@ -1654,7 +1654,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                     <div className="flex items-center gap-2 mb-4">
                       <h3 className="text-lg font-semibold text-gray-900">View Additional Notes</h3>
                       <div className="w-4 h-4 border border-gray-300 rounded flex items-center justify-center">
-                        <div className="w-2 h-0.5 bg-gray-400"></div>
+                        <div className="w-2 h-0.5 bg-muted-foreground"></div>
                       </div>
                     </div>
 
@@ -1757,7 +1757,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                   </Button>
                 </div>
                 <div className="text-center py-12">
-                  <div className="text-gray-500 text-lg">No notes found.</div>
+                  <div className="text-muted-foreground text-lg">No notes found.</div>
                 </div>
               </div>
             </div>
@@ -1798,7 +1798,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex space-x-4">
                       <button className="text-sm font-medium text-blue-600 border-b-2 border-blue-600 pb-1">Fund Accounts</button>
-                      <button className="text-sm font-medium text-gray-500 hover:text-gray-700">GICs</button>
+                      <button className="text-sm font-medium text-muted-foreground hover:text-gray-700">GICs</button>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2 mb-4">
@@ -1843,7 +1843,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                 <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-gray-200/60 p-6 shadow-sm">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Transactions</h3>
                   <div className="text-center py-8">
-                    <div className="text-sm text-gray-500">Please select a fund account above.</div>
+                    <div className="text-sm text-muted-foreground">Please select a fund account above.</div>
                   </div>
                 </div>
               </div>
@@ -1858,7 +1858,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                       className={`text-sm font-medium pb-2 ${
                         activePlanTab === 'details' 
                           ? 'text-blue-600 border-b-2 border-blue-600' 
-                          : 'text-gray-500 hover:text-gray-700'
+                          : 'text-muted-foreground hover:text-gray-700'
                       }`}
                     >
                       Details
@@ -1868,15 +1868,15 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                       className={`text-sm font-medium pb-2 ${
                         activePlanTab === 'kyc' 
                           ? 'text-blue-600 border-b-2 border-blue-600' 
-                          : 'text-gray-500 hover:text-gray-700'
+                          : 'text-muted-foreground hover:text-gray-700'
                       }`}
                     >
                       KYC
                     </button>
-                    <button className="text-sm font-medium text-gray-500 hover:text-gray-700 pb-2">Beneficiaries</button>
-                    <button className="text-sm font-medium text-gray-500 hover:text-gray-700 pb-2">Actions</button>
-                    <button className="text-sm font-medium text-gray-500 hover:text-gray-700 pb-2">Trust Account</button>
-                    <button className="text-sm font-medium text-gray-500 hover:text-gray-700 pb-2">Reviews</button>
+                    <button className="text-sm font-medium text-muted-foreground hover:text-gray-700 pb-2">Beneficiaries</button>
+                    <button className="text-sm font-medium text-muted-foreground hover:text-gray-700 pb-2">Actions</button>
+                    <button className="text-sm font-medium text-muted-foreground hover:text-gray-700 pb-2">Trust Account</button>
+                    <button className="text-sm font-medium text-muted-foreground hover:text-gray-700 pb-2">Reviews</button>
                   </div>
 
                   {/* Inner Tabs */}
@@ -1886,7 +1886,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                       className={`text-sm font-medium pb-2 ${
                         activePlanTab === 'details' 
                           ? 'text-blue-600 border-b-2 border-blue-600' 
-                          : 'text-gray-500 hover:text-gray-700'
+                          : 'text-muted-foreground hover:text-gray-700'
                       }`}
                     >
                       Details
@@ -1896,7 +1896,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                       className={`text-sm font-medium pb-2 ${
                         activePlanTab === 'notes' 
                           ? 'text-blue-600 border-b-2 border-blue-600' 
-                          : 'text-gray-500 hover:text-gray-700'
+                          : 'text-muted-foreground hover:text-gray-700'
                       }`}
                     >
                       Notes
@@ -1906,7 +1906,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                       className={`text-sm font-medium pb-2 ${
                         activePlanTab === 'attachments' 
                           ? 'text-blue-600 border-b-2 border-blue-600' 
-                          : 'text-gray-500 hover:text-gray-700'
+                          : 'text-muted-foreground hover:text-gray-700'
                       }`}
                     >
                       Plan Attachments
@@ -1916,7 +1916,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                       className={`text-sm font-medium pb-2 ${
                         activePlanTab === 'allocations' 
                           ? 'text-blue-600 border-b-2 border-blue-600' 
-                          : 'text-gray-500 hover:text-gray-700'
+                          : 'text-muted-foreground hover:text-gray-700'
                       }`}
                     >
                       Allocations
@@ -1926,7 +1926,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                       className={`text-sm font-medium pb-2 ${
                         activePlanTab === 'supplier' 
                           ? 'text-blue-600 border-b-2 border-blue-600' 
-                          : 'text-gray-500 hover:text-gray-700'
+                          : 'text-muted-foreground hover:text-gray-700'
                       }`}
                     >
                       Supplier Accounts
@@ -1936,7 +1936,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                       className={`text-sm font-medium pb-2 ${
                         activePlanTab === 'compensation' 
                           ? 'text-blue-600 border-b-2 border-blue-600' 
-                          : 'text-gray-500 hover:text-gray-700'
+                          : 'text-muted-foreground hover:text-gray-700'
                       }`}
                     >
                       Custom Compensation
@@ -2128,7 +2128,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                           <TableBody>
                             <TableRow>
                               <TableCell colSpan={5} className="text-center py-12">
-                                <div className="text-gray-500">No records found.</div>
+                                <div className="text-muted-foreground">No records found.</div>
                               </TableCell>
                             </TableRow>
                           </TableBody>
@@ -2185,7 +2185,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                         <Button variant="outline" className="hover:bg-blue-50 hover:border-blue-200">
                           Migrate to Ensemble
                         </Button>
-                        <div className="text-sm text-gray-500">User does not have access to Ensemble</div>
+                        <div className="text-sm text-muted-foreground">User does not have access to Ensemble</div>
                       </div>
                     </div>
 
@@ -2322,7 +2322,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                         
                         {/* Empty Notes Area */}
                         <div className="bg-blue-50 border-2 border-dashed border-blue-200 rounded-lg p-12 text-center">
-                          <div className="text-gray-500 text-lg">No plan notes available</div>
+                          <div className="text-muted-foreground text-lg">No plan notes available</div>
                         </div>
                       </div>
                     </div>
@@ -2713,7 +2713,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                           className={`text-sm font-medium pb-2 ${
                             activeAllocationTab === 'chart' 
                               ? 'text-blue-600 border-b-2 border-blue-600' 
-                              : 'text-gray-500 hover:text-gray-700'
+                              : 'text-muted-foreground hover:text-gray-700'
                           }`}
                         >
                           Allocations (Chart)
@@ -2723,7 +2723,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                           className={`text-sm font-medium pb-2 ${
                             activeAllocationTab === 'table' 
                               ? 'text-blue-600 border-b-2 border-blue-600' 
-                              : 'text-gray-500 hover:text-gray-700'
+                              : 'text-muted-foreground hover:text-gray-700'
                           }`}
                         >
                           Allocations (Table)
@@ -2760,7 +2760,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <span>All Others: 4.81%</span>
                                   </div>
                                   <div className="flex items-center gap-2 text-sm">
-                                    <div className="w-3 h-3 bg-gray-400 rounded"></div>
+                                    <div className="w-3 h-3 bg-muted-foreground rounded"></div>
                                     <span>Asia/Pacific Rim: 4.15%</span>
                                   </div>
                                   <div className="flex items-center gap-2 text-sm">
@@ -2818,7 +2818,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <span>Other: 1.74%</span>
                                   </div>
                                   <div className="flex items-center gap-2 text-sm">
-                                    <div className="w-3 h-3 bg-gray-400 rounded"></div>
+                                    <div className="w-3 h-3 bg-muted-foreground rounded"></div>
                                     <span>All Others: 0.61%</span>
                                   </div>
                                 </div>
@@ -2844,7 +2844,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <span>All Others: 24.69%</span>
                                   </div>
                                   <div className="flex items-center gap-2 text-sm">
-                                    <div className="w-3 h-3 bg-gray-400 rounded"></div>
+                                    <div className="w-3 h-3 bg-muted-foreground rounded"></div>
                                     <span>Technology: 12.61%</span>
                                   </div>
                                   <div className="flex items-center gap-2 text-sm">
@@ -3042,7 +3042,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                   <span className="text-sm text-gray-700">-</span>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                  <span className="font-semibold text-gray-500">$0.00</span>
+                                  <span className="font-semibold text-muted-foreground">$0.00</span>
                                 </TableCell>
                                 <TableCell>
                                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>
@@ -3173,7 +3173,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Questionnaires</h3>
                 <p className="text-gray-600 mb-4">Risk assessment and client questionnaires</p>
                 <div className="bg-gray-50/50 rounded-lg p-4 max-w-md mx-auto">
-                  <div className="text-sm text-gray-500">Questionnaires will be displayed here</div>
+                  <div className="text-sm text-muted-foreground">Questionnaires will be displayed here</div>
                 </div>
               </div>
             </div>
@@ -3209,7 +3209,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Attachments</h3>
                 <p className="text-gray-600 mb-4">Documents, files, and client attachments</p>
                 <div className="bg-gray-50/50 rounded-lg p-4 max-w-md mx-auto">
-                  <div className="text-sm text-gray-500">Attachments will be displayed here</div>
+                  <div className="text-sm text-muted-foreground">Attachments will be displayed here</div>
                 </div>
               </div>
             </div>
@@ -3405,8 +3405,8 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                   <TableRow>
                     <TableCell colSpan={3} className="text-center py-12">
                       <div className="space-y-2">
-                        <div className="text-gray-500">No records found.</div>
-                        <div className="text-gray-500 italic">No Non Financial Updates Found</div>
+                        <div className="text-muted-foreground">No records found.</div>
+                        <div className="text-muted-foreground italic">No Non Financial Updates Found</div>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -3513,7 +3513,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                   <TableBody>
                     <TableRow>
                       <TableCell colSpan={6} className="text-center py-12">
-                        <div className="text-gray-500">No records found.</div>
+                        <div className="text-muted-foreground">No records found.</div>
                       </TableCell>
                     </TableRow>
                   </TableBody>

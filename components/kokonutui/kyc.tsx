@@ -136,7 +136,7 @@ export default function KYC() {
   return (
     <div className="space-y-6">
       {/* KYC Information Section */}
-      <Card className="border border-gray-200 shadow-sm">
+      <Card className="border border-border shadow-sm">
         <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-50/50 border-b border-blue-100">
           <CardTitle className="flex items-center gap-2 text-blue-900">
             <Shield className="h-5 w-5" />
@@ -148,27 +148,27 @@ export default function KYC() {
             {/* Basic Info */}
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">KYC On File Date:</span>
-                <span className="text-sm text-gray-900">{mockKYCInfo.kycOnFileDate}</span>
+                <span className="text-sm font-medium text-muted-foreground">KYC On File Date:</span>
+                <span className="text-sm text-card-foreground">{mockKYCInfo.kycOnFileDate}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">KYC Age:</span>
-                <span className="text-sm text-gray-900">{mockKYCInfo.kycAge} days old</span>
+                <span className="text-sm font-medium text-muted-foreground">KYC Age:</span>
+                <span className="text-sm text-card-foreground">{mockKYCInfo.kycAge} days old</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">Time Horizon:</span>
-                <span className="text-sm text-gray-900">{mockKYCInfo.timeHorizon}</span>
+                <span className="text-sm font-medium text-muted-foreground">Time Horizon:</span>
+                <span className="text-sm text-card-foreground">{mockKYCInfo.timeHorizon}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">Objective Type Override:</span>
-                <span className="text-sm text-gray-900">{mockKYCInfo.objectiveTypeOverride}</span>
+                <span className="text-sm font-medium text-muted-foreground">Objective Type Override:</span>
+                <span className="text-sm text-card-foreground">{mockKYCInfo.objectiveTypeOverride}</span>
               </div>
             </div>
 
             {/* Risk and Investment Objective */}
             <div className="space-y-4">
               <div>
-                <h4 className="text-sm font-semibold text-gray-900 mb-3">Risk</h4>
+                <h4 className="text-sm font-semibold text-card-foreground mb-3">Risk</h4>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-gray-600">Low:</span>
@@ -194,7 +194,7 @@ export default function KYC() {
               </div>
 
               <div>
-                <h4 className="text-sm font-semibold text-gray-900 mb-3">Investment Objective</h4>
+                <h4 className="text-sm font-semibold text-card-foreground mb-3">Investment Objective</h4>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-gray-600">Safety:</span>
@@ -222,7 +222,7 @@ export default function KYC() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Checkbox id="exempt-products" />
-                <Label htmlFor="exempt-products" className="text-sm text-gray-700">
+                <Label htmlFor="exempt-products" className="text-sm text-muted-foreground">
                   Plan KYC applies to exempt products
                 </Label>
               </div>
@@ -236,15 +236,15 @@ export default function KYC() {
       </Card>
 
       {/* History Section */}
-      <Card className="border border-gray-200 shadow-sm">
+      <Card className="border border-border shadow-sm">
         <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-50/50 border-b border-gray-100">
-          <CardTitle className="flex items-center gap-2 text-gray-900">
+          <CardTitle className="flex items-center gap-2 text-card-foreground">
             <Clock className="h-5 w-5" />
             History
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="rounded-lg border border-gray-200 overflow-hidden">
+          <div className="rounded-lg border border-border overflow-hidden">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -259,13 +259,13 @@ export default function KYC() {
                   {mockKYCHistory.map((record) => (
                     <TableRow key={record.id} className="hover:bg-blue-50/50 transition-all duration-200">
                       <TableCell>
-                        <span className="text-sm text-gray-700">{record.dateCreated}</span>
+                        <span className="text-sm text-muted-foreground">{record.dateCreated}</span>
                       </TableCell>
                       <TableCell>
                         {getStatusBadge(record.status)}
                       </TableCell>
                       <TableCell>
-                        <span className="text-sm text-gray-700">{record.dateSubmitted}</span>
+                        <span className="text-sm text-muted-foreground">{record.dateSubmitted}</span>
                       </TableCell>
                       <TableCell>
                         <Button variant="ghost" size="sm" className="hover:bg-blue-100 transition-colors">
@@ -295,7 +295,7 @@ export default function KYC() {
       </Card>
 
       {/* KYC Graphs Section */}
-      <Card className="border border-gray-200 shadow-sm">
+      <Card className="border border-border shadow-sm">
         <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-50/50 border-b border-purple-100">
           <CardTitle className="flex items-center gap-2 text-purple-900">
             <BarChart3 className="h-5 w-5" />
@@ -307,7 +307,7 @@ export default function KYC() {
             {/* Risk Chart */}
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Risk</h3>
+                <h3 className="text-lg font-semibold text-card-foreground">Risk</h3>
                 <p className="text-sm text-gray-600">Cash Account: $0.00</p>
               </div>
               <div className="h-64">
@@ -328,8 +328,8 @@ export default function KYC() {
             {/* Current Risk Score */}
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Current Risk Score</h3>
-                <p className="text-lg font-bold text-gray-900">Current Risk Score: 153.76</p>
+                <h3 className="text-lg font-semibold text-card-foreground">Current Risk Score</h3>
+                <p className="text-lg font-bold text-card-foreground">Current Risk Score: 153.76</p>
               </div>
               <div className="space-y-3">
                 <div>
@@ -363,7 +363,7 @@ export default function KYC() {
           {/* Investment Objectives Chart */}
           <div className="mt-8 pt-8 border-t border-gray-200">
             <div className="flex items-center gap-2 mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Investment Objectives</h3>
+              <h3 className="text-lg font-semibold text-card-foreground">Investment Objectives</h3>
               <AlertTriangle className="h-4 w-4 text-red-500" />
               <span className="text-sm text-red-600 font-medium">WARNING: Plan's objectives are offside!</span>
             </div>

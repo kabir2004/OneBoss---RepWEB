@@ -5,7 +5,6 @@ import {
   Building2,
   Folder,
   Wallet,
-  Users2,
   Shield,
   MessagesSquare,
   Settings,
@@ -17,9 +16,6 @@ import {
   Search,
   ChevronDown,
   ChevronRight,
-  CheckCircle,
-  Clock,
-  PauseCircle,
   TrendingUp,
   Plus
 } from "lucide-react"
@@ -31,8 +27,6 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Badge } from "@/components/ui/badge"
-import { mockClients } from "@/lib/client-data"
 import { useClientSelection } from "../client-selection-context"
 
 export default function Sidebar() {
@@ -41,7 +35,7 @@ export default function Sidebar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isClientsExpanded, setIsClientsExpanded] = useState(false)
   const [isTradesExpanded, setIsTradesExpanded] = useState(false)
-  const [clientSearchTerm, setClientSearchTerm] = useState("")
+  const [isClient, setIsClient] = useState(false)
   const { selectedClientIds, handleClientSelection, handleSelectAll, handleSelectNone } = useClientSelection()
   const [tradeSearchForm, setTradeSearchForm] = useState({
     orderDateFrom: "",
@@ -55,44 +49,27 @@ export default function Sidebar() {
     securityType: "All"
   })
 
+  // Ensure client-side only rendering for state-dependent UI
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
   // Auto-expand dropdown when on clients or trades page
   useEffect(() => {
-    if (pathname.startsWith('/clients')) {
-      setIsClientsExpanded(true)
+    if (isClient) {
+      if (pathname.startsWith('/clients')) {
+        setIsClientsExpanded(true)
+      }
+      if (pathname.startsWith('/trades')) {
+        setIsTradesExpanded(true)
+      }
     }
-    if (pathname.startsWith('/trades')) {
-      setIsTradesExpanded(true)
-    }
-  }, [pathname])
+  }, [pathname, isClient])
 
   function handleNavigation() {
     setIsMobileMenuOpen(false)
   }
 
-  // Filter clients based on simple search term
-  const filteredClients = mockClients.filter(client => {
-    const matchesSearchTerm = !clientSearchTerm || 
-      client.firstName?.toLowerCase().includes(clientSearchTerm.toLowerCase()) ||
-      client.surname?.toLowerCase().includes(clientSearchTerm.toLowerCase()) ||
-      client.email?.toLowerCase().includes(clientSearchTerm.toLowerCase()) ||
-      client.clientId?.toLowerCase().includes(clientSearchTerm.toLowerCase()) ||
-      client.phone?.includes(clientSearchTerm)
-    
-    return matchesSearchTerm
-  })
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "active":
-        return <CheckCircle className="h-2.5 w-2.5 text-green-600" />
-      case "pending":
-        return <Clock className="h-2.5 w-2.5 text-yellow-600" />
-      case "inactive":
-        return <PauseCircle className="h-2.5 w-2.5 text-gray-500" />
-      default:
-        return <div className="h-2.5 w-2.5 rounded-full bg-gray-400" />
-    }
-  }
 
 
   // Handle trade search form updates
@@ -159,19 +136,6 @@ export default function Sidebar() {
   }
 
 
-  // Navigate to specific client details
-  const handleClientClick = (client: any) => {
-    // Navigate to clients page with search parameters to show this specific client
-    const searchParams = new URLSearchParams()
-    searchParams.set('firstName', client.firstName)
-    searchParams.set('surname', client.surname)
-    router.push(`/clients?${searchParams.toString()}`)
-  }
-
-  // Select all/none functions
-  const handleSelectAllClients = () => {
-    handleSelectAll(filteredClients.map(client => client.id))
-  }
 
   // Handle Add Client button click
   const handleAddClient = () => {
@@ -207,7 +171,7 @@ export default function Sidebar() {
       return (
         <button
           onClick={onToggle}
-          className="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
+          className="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-accent"
         >
           <div className="flex items-center">
             <Icon className="h-4 w-4 mr-3 flex-shrink-0" />
@@ -226,7 +190,7 @@ export default function Sidebar() {
       <Link
         href={href}
         onClick={handleNavigation}
-        className="flex items-center px-3 py-2 text-sm rounded-md transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
+        className="flex items-center px-3 py-2 text-sm rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-accent"
       >
         <Icon className="h-4 w-4 mr-3 flex-shrink-0" />
         {children}
@@ -238,25 +202,25 @@ export default function Sidebar() {
     <>
       <button
         type="button"
-        className="lg:hidden fixed top-4 left-4 z-[70] p-2 rounded-lg bg-white dark:bg-gray-800 shadow-md"
+        className="lg:hidden fixed top-4 left-4 z-[70] p-2 rounded-lg bg-card shadow-md"
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
       >
-        <Menu className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+        <Menu className="h-5 w-5 text-muted-foreground" />
       </button>
       <nav
         className={`
-                fixed inset-y-0 left-0 z-[70] w-64 bg-white dark:bg-gray-900 transform transition-transform duration-200 ease-in-out
+                fixed inset-y-0 left-0 z-[70] w-64 bg-card transform transition-transform duration-200 ease-in-out
                 lg:translate-x-0 lg:static lg:w-64
                 ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
             `}
       >
         <div className="h-full flex flex-col">
-          <div className="h-16 px-6 flex items-center bg-white dark:bg-gray-900">
+          <div className="h-16 px-6 flex items-center bg-card">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-gray-900 dark:bg-gray-700">
-                <Building2 className="h-5 w-5 text-gray-50" />
+              <div className="p-2 rounded-lg bg-primary">
+                <Building2 className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="text-lg font-semibold text-gray-900 dark:text-white">
+              <span className="text-lg font-semibold text-card-foreground">
                 OneBoss
               </span>
             </div>
@@ -265,7 +229,7 @@ export default function Sidebar() {
           <div className="flex-1 overflow-y-auto py-4 px-4 scrollbar-hide">
             <div className="space-y-6">
               <div>
-                <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Main Navigation
                 </div>
                 <div className="space-y-1">
@@ -273,7 +237,7 @@ export default function Sidebar() {
                     Dashboard
                   </NavItem>
                   <div className="space-y-1">
-                    <div className="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md transition-colors text-gray-600 hover:text-gray-900 hover:bg-gray-50">
+                    <div className="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-accent">
                       <Link
                         href="/clients"
                         onClick={() => {
@@ -282,7 +246,7 @@ export default function Sidebar() {
                         }}
                         className="flex items-center flex-1"
                       >
-                        <Users2 className="h-4 w-4 mr-3 flex-shrink-0" />
+                        <User className="h-4 w-4 mr-3 flex-shrink-0" />
                         Clients
                       </Link>
                       <button
@@ -291,7 +255,7 @@ export default function Sidebar() {
                           e.stopPropagation()
                           setIsClientsExpanded(!isClientsExpanded)
                         }}
-                        className="p-1 rounded hover:bg-gray-100 transition-colors"
+                        className="p-1 rounded hover:bg-accent transition-colors"
                       >
                         {isClientsExpanded ? (
                           <ChevronDown className="h-4 w-4" />
@@ -304,114 +268,37 @@ export default function Sidebar() {
                   
                   {/* Client Search Form - Clean and Organized */}
                   <div className={`ml-4 space-y-4 pl-4 pr-2 overflow-hidden transition-all duration-300 ease-in-out ${
-                    isClientsExpanded 
+                    isClient && isClientsExpanded 
                       ? 'max-h-[600px] opacity-100' 
                       : 'max-h-0 opacity-0'
                   }`}>
                     <div className={`space-y-3 pt-2 transition-all duration-300 delay-100 ${
-                      isClientsExpanded ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+                      isClient && isClientsExpanded ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
                     }`}>
-                      {/* Quick Search */}
-                      <div className="space-y-2">
-                        <Input
-                          placeholder="Quick search..."
-                          className="h-8 text-sm"
-                          value={clientSearchTerm}
-                          onChange={(e) => setClientSearchTerm(e.target.value)}
-                        />
-                        
-                        {/* Action Buttons */}
-                        <div className="space-y-1">
-                          <Button 
-                            onClick={handleAddClient}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white h-7 text-xs"
-                          >
-                            <Plus className="h-3 w-3 mr-1" />
-                            Add Client
-                          </Button>
-                          <Button 
-                            onClick={handleAdvanceSearch}
-                            variant="outline"
-                            className="w-full h-7 text-xs"
-                          >
-                            <Search className="h-3 w-3 mr-1" />
-                            Advance Search
-                          </Button>
-                        </div>
+                      {/* Action Buttons */}
+                      <div className="space-y-1">
+                        <Button 
+                          onClick={handleAddClient}
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white h-7 text-xs"
+                        >
+                          <Plus className="h-3 w-3 mr-1" />
+                          Add Client
+                        </Button>
+                        <Button 
+                          onClick={handleAdvanceSearch}
+                          variant="outline"
+                          className="w-full h-7 text-xs"
+                        >
+                          <Search className="h-3 w-3 mr-1" />
+                          Advance Search
+                        </Button>
                       </div>
 
-                      {/* Client Results */}
-                      <div className={`space-y-2 transition-all duration-300 delay-150 ${
-                        isClientsExpanded ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
-                      }`}>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Users2 className="h-4 w-4 text-green-600" />
-                            <h4 className="text-xs font-semibold text-gray-900 dark:text-white">
-                              {filteredClients.length} Found
-                            </h4>
-                          </div>
-                          {filteredClients.length > 0 && (
-                            <Badge variant="secondary" className="text-xs">
-                              {filteredClients.length}
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-800 shadow-sm">
-                          <div className="max-h-48 overflow-y-auto space-y-1 p-2">
-                            {filteredClients.map((client) => (
-                              <div
-                                key={client.id}
-                                className="flex items-center gap-2 p-2 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer border border-transparent hover:border-blue-200 dark:hover:border-blue-700 transition-all duration-200 group"
-                                onClick={() => handleClientClick(client)}
-                              >
-                                <Checkbox 
-                                  className="h-3 w-3"
-                                  checked={selectedClientIds.includes(client.id)}
-                                  onCheckedChange={(checked) => handleClientSelection(client.id, checked as boolean)}
-                                  onClick={(e) => e.stopPropagation()}
-                                />
-                                <div className="flex items-center gap-1 flex-1 min-w-0">
-                                  {getStatusIcon(client.status)}
-                                  <div className="text-xs font-medium text-gray-900 dark:text-white truncate">
-                                    {client.surname}, {client.firstName}
-                                  </div>
-                                </div>
-                                {client.hasAlert && (
-                                  <div className="h-1.5 w-1.5 bg-red-500 rounded-full animate-pulse flex-shrink-0"></div>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                          
-                          {filteredClients.length > 0 && (
-                            <div className="flex gap-1 p-2 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 rounded-b-lg">
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="text-xs h-6 flex-1 rounded-md"
-                                onClick={handleSelectNone}
-                              >
-                                Clear
-                              </Button>
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="text-xs h-6 flex-1 rounded-md"
-                                onClick={handleSelectAllClients}
-                              >
-                                Select All
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
                     </div>
                   </div>
                   
                   <div className="space-y-1">
-                    <div className="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md transition-colors text-gray-600 hover:text-gray-900 hover:bg-gray-50">
+                    <div className="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-accent">
                       <Link
                         href="/trades"
                         onClick={() => {
@@ -429,7 +316,7 @@ export default function Sidebar() {
                           e.stopPropagation()
                           setIsTradesExpanded(!isTradesExpanded)
                         }}
-                        className="p-1 rounded hover:bg-gray-100 transition-colors"
+                        className="p-1 rounded hover:bg-accent transition-colors"
                       >
                         {isTradesExpanded ? (
                           <ChevronDown className="h-4 w-4" />
@@ -442,22 +329,22 @@ export default function Sidebar() {
                   
                   {/* Trade Search Form */}
                   <div className={`ml-4 space-y-4 pl-4 pr-2 overflow-hidden transition-all duration-300 ease-in-out ${
-                    isTradesExpanded 
+                    isClient && isTradesExpanded 
                       ? 'max-h-[800px] opacity-100' 
                       : 'max-h-0 opacity-0'
                   }`}>
                     <div className={`space-y-3 pt-2 transition-all duration-300 delay-100 ${
-                      isTradesExpanded ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+                      isClient && isTradesExpanded ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
                     }`}>
                       {/* Search Header */}
                       <div className="flex items-center gap-2 mb-3">
                         <Search className="h-4 w-4 text-blue-600" />
-                        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Trade Search</h3>
+                        <h3 className="text-sm font-semibold text-card-foreground">Trade Search</h3>
                       </div>
                       
                       {/* Date Type */}
                       <div className="space-y-2">
-                        <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Date Type</label>
+                        <label className="text-xs font-medium text-foreground">Date Type</label>
                         <Select value="Order Date" disabled>
                           <SelectTrigger className="h-7 text-xs">
                             <SelectValue placeholder="Order Date" />
@@ -470,7 +357,7 @@ export default function Sidebar() {
 
                       {/* Date Range */}
                       <div className="space-y-2">
-                        <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Date Range</label>
+                        <label className="text-xs font-medium text-foreground">Date Range</label>
                         <div className="grid grid-cols-2 gap-2">
                           <Input
                             type="date"
@@ -489,7 +376,7 @@ export default function Sidebar() {
 
                       {/* Statuses */}
                       <div className="space-y-2">
-                        <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Statuses</label>
+                        <label className="text-xs font-medium text-foreground">Statuses</label>
                         <div className="space-y-1">
                           {['Executed', 'Pending', 'Cancelled'].map((status) => (
                             <div key={status} className="flex items-center space-x-2">
@@ -499,7 +386,7 @@ export default function Sidebar() {
                                 checked={tradeSearchForm.statuses.includes(status)}
                                 onCheckedChange={() => handleTradeStatusToggle(status)}
                               />
-                              <label htmlFor={`trade-status-${status}`} className="text-xs text-gray-700 dark:text-gray-300">
+                              <label htmlFor={`trade-status-${status}`} className="text-xs text-foreground">
                                 {status}
                               </label>
                             </div>
@@ -559,7 +446,7 @@ export default function Sidebar() {
 
                       {/* Fund Transaction Types */}
                       <div className="space-y-2">
-                        <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Fund Transaction Types</label>
+                        <label className="text-xs font-medium text-foreground">Fund Transaction Types</label>
                         <div className="space-y-1">
                           {['Buy', 'Sell', 'Switch'].map((type) => (
                             <div key={type} className="flex items-center space-x-2">
@@ -569,7 +456,7 @@ export default function Sidebar() {
                                 checked={tradeSearchForm.fundTransactionTypes.includes(type)}
                                 onCheckedChange={() => handleTradeTransactionTypeToggle(type)}
                               />
-                              <label htmlFor={`trade-type-${type}`} className="text-xs text-gray-700 dark:text-gray-300">
+                              <label htmlFor={`trade-type-${type}`} className="text-xs text-foreground">
                                 {type}
                               </label>
                             </div>
@@ -622,7 +509,7 @@ export default function Sidebar() {
               </div>
 
               <div>
-                <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Management
                 </div>
                 <div className="space-y-1">
@@ -642,7 +529,7 @@ export default function Sidebar() {
               </div>
 
               <div>
-                <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   System
                 </div>
                 <div className="space-y-1">

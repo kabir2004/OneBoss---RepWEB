@@ -41,13 +41,13 @@ export default function SignInForm() {
       {/* Header */}
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-3 mb-6">
-          <div className="p-2 rounded-lg bg-gray-900">
-            <Building2 className="h-6 w-6 text-gray-50" />
+          <div className="p-2 rounded-lg bg-primary">
+            <Building2 className="h-6 w-6 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">OneBoss</h1>
+          <h1 className="text-2xl font-bold text-card-foreground">OneBoss</h1>
         </div>
-        <h2 className="text-xl font-semibold text-gray-900">Sign in to your account</h2>
-        <p className="text-sm text-gray-600">
+        <h2 className="text-xl font-semibold text-card-foreground">Sign in to your account</h2>
+        <p className="text-sm text-muted-foreground">
           Enter your credentials to access your dashboard
         </p>
       </div>
@@ -55,10 +55,10 @@ export default function SignInForm() {
 
 
       {/* Sign In Form */}
-      <Card className="border border-gray-200 bg-white shadow-sm">
+      <Card className="border border-border bg-card shadow-sm">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-lg font-semibold text-gray-900">Sign In</CardTitle>
-          <CardDescription className="text-gray-600">
+          <CardTitle className="text-lg font-semibold text-card-foreground">Sign In</CardTitle>
+          <CardDescription className="text-muted-foreground">
             Enter your user ID and password to continue
           </CardDescription>
         </CardHeader>
@@ -72,16 +72,16 @@ export default function SignInForm() {
 
             {/* User ID Field */}
             <div className="space-y-2">
-              <Label htmlFor="userId" className="text-sm font-medium text-gray-900">
+              <Label htmlFor="userId" className="text-sm font-medium text-card-foreground">
                 User ID
               </Label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary-foreground0" />
                 <Input
                   id="userId"
                   type="text"
                   placeholder="Enter your user ID"
-                  className="pl-10 border-gray-200 bg-white text-gray-900 placeholder:text-gray-500"
+                  className="pl-10 border-gray-200 bg-white text-card-foreground placeholder:text-primary-foreground0"
                   required
                 />
               </div>
@@ -89,22 +89,22 @@ export default function SignInForm() {
 
             {/* Password Field */}
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-gray-900">
+              <Label htmlFor="password" className="text-sm font-medium text-card-foreground">
                 Password
               </Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary-foreground0" />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
-                  className="pl-10 pr-10 border-gray-200 bg-white text-gray-900 placeholder:text-gray-500"
+                  className="pl-10 pr-10 border-gray-200 bg-white text-card-foreground placeholder:text-primary-foreground0"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-primary-foreground0 hover:text-gray-700"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -118,7 +118,7 @@ export default function SignInForm() {
             {/* Sign In Button */}
             <Button
               type="submit"
-              className="w-full bg-gray-900 text-gray-50 hover:bg-gray-800 border border-gray-200"
+              className="w-full bg-primary text-primary-foreground hover:bg-gray-800 border border-gray-200"
               disabled={isLoading}
             >
               {isLoading ? "Signing in..." : "Sign In"}
@@ -132,7 +132,7 @@ export default function SignInForm() {
                 variant="ghost"
                 size="sm"
                 onClick={handleForgotPassword}
-                className="text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                className="text-sm text-muted-foreground hover:text-card-foreground hover:bg-gray-50"
               >
                 Forgot your password?
               </Button>
@@ -140,7 +140,7 @@ export default function SignInForm() {
                 variant="ghost"
                 size="sm"
                 onClick={handleForgotId}
-                className="text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                className="text-sm text-muted-foreground hover:text-card-foreground hover:bg-gray-50"
               >
                 Forgot your ID?
               </Button>
@@ -149,7 +149,7 @@ export default function SignInForm() {
 
           {/* Additional Info */}
           <div className="mt-6 pt-6 border-t border-gray-200">
-            <p className="text-xs text-center text-gray-500">
+            <p className="text-xs text-center text-primary-foreground0">
               Need help? Contact your system administrator
             </p>
           </div>

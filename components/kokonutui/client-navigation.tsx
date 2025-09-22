@@ -8,12 +8,8 @@ import {
   FileText, 
   CheckSquare, 
   BarChart2,
-  Search,
-  Plus
+  Search
 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
 
 const clientNavItems = [
   {
@@ -75,7 +71,7 @@ export default function ClientNavigation() {
                     group relative flex items-center gap-2 px-2 py-1 text-sm font-medium rounded transition-all duration-200
                     ${isActive 
                       ? 'text-white bg-blue-800' 
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                     }
                   `}
                 >
@@ -86,19 +82,6 @@ export default function ClientNavigation() {
             })}
           </div>
           
-          <div className="flex items-center gap-3">
-            <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Search clients..."
-                className="pl-10 w-64 h-8 text-sm"
-              />
-            </div>
-            <Button size="sm" className="bg-blue-600 hover:bg-blue-700 h-8">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Client
-            </Button>
-          </div>
         </div>
       </div>
     </div>

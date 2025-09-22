@@ -175,9 +175,9 @@ export default function Approval() {
       case 'pending_signature':
         return 'bg-orange-100 text-orange-800'
       case 'expired':
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-muted text-muted-foreground'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-muted text-muted-foreground'
     }
   }
 
@@ -188,7 +188,7 @@ export default function Approval() {
       case 'esignature':
         return 'bg-purple-100 text-purple-800'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-muted text-muted-foreground'
     }
   }
 
@@ -207,9 +207,9 @@ export default function Approval() {
       case 'pending_signature':
         return <PenTool className="h-3 w-3 text-orange-600 mr-1" />
       case 'expired':
-        return <XCircle className="h-3 w-3 text-gray-600 mr-1" />
+        return <XCircle className="h-3 w-3 text-muted-foreground mr-1" />
       default:
-        return <Clock className="h-3 w-3 text-gray-600 mr-1" />
+        return <Clock className="h-3 w-3 text-muted-foreground mr-1" />
     }
   }
 
@@ -220,7 +220,7 @@ export default function Approval() {
       case 'esignature':
         return <FileSignature className="h-3 w-3 text-purple-600 mr-1" />
       default:
-        return <FileText className="h-3 w-3 text-gray-600 mr-1" />
+        return <FileText className="h-3 w-3 text-muted-foreground mr-1" />
     }
   }
 
@@ -232,54 +232,54 @@ export default function Approval() {
           <CheckSquare className="h-6 w-6 text-green-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Approval & eSignature Management</h1>
-          <p className="text-gray-600">Review and process client approvals and electronic signatures</p>
+          <h1 className="text-2xl font-bold text-card-foreground">Approval & eSignature Management</h1>
+          <p className="text-muted-foreground">Review and process client approvals and electronic signatures</p>
         </div>
       </div>
 
       {/* Statistics Overview - Clean Style */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-blue-50 via-white to-blue-50/30 p-4">
+        <div className="rounded-xl border border-border bg-gradient-to-br from-blue-50 via-white to-blue-50/30 p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
               <FileText className="h-4 w-4 text-blue-600" />
             </div>
-            <span className="text-sm font-medium text-gray-600">Total</span>
+            <span className="text-sm font-medium text-muted-foreground">Total</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">{totalItems}</div>
+          <div className="text-2xl font-bold text-card-foreground">{totalItems}</div>
           <div className="text-xs text-gray-500 mt-1">Items</div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-amber-50 via-white to-amber-50/30 p-4">
+        <div className="rounded-xl border border-border bg-gradient-to-br from-amber-50 via-white to-amber-50/30 p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
               <Clock className="h-4 w-4 text-amber-600" />
             </div>
-            <span className="text-sm font-medium text-gray-600">Pending</span>
+            <span className="text-sm font-medium text-muted-foreground">Pending</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">{pendingApprovals}</div>
+          <div className="text-2xl font-bold text-card-foreground">{pendingApprovals}</div>
           <div className="text-xs text-gray-500 mt-1">Approvals</div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-purple-50 via-white to-purple-50/30 p-4">
+        <div className="rounded-xl border border-border bg-gradient-to-br from-purple-50 via-white to-purple-50/30 p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
               <PenTool className="h-4 w-4 text-purple-600" />
             </div>
-            <span className="text-sm font-medium text-gray-600">Signatures</span>
+            <span className="text-sm font-medium text-muted-foreground">Signatures</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">{pendingSignatures}</div>
+          <div className="text-2xl font-bold text-card-foreground">{pendingSignatures}</div>
           <div className="text-xs text-gray-500 mt-1">Pending</div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/30 p-4">
+        <div className="rounded-xl border border-border bg-gradient-to-br from-emerald-50 via-white to-emerald-50/30 p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
               <CheckCircle className="h-4 w-4 text-emerald-600" />
             </div>
-            <span className="text-sm font-medium text-gray-600">Completed</span>
+            <span className="text-sm font-medium text-muted-foreground">Completed</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">{completedItems}</div>
+          <div className="text-2xl font-bold text-card-foreground">{completedItems}</div>
           <div className="text-xs text-gray-500 mt-1">Items</div>
         </div>
       </div>
@@ -287,7 +287,7 @@ export default function Approval() {
       {/* Main Content - Full Width Layout */}
       <div className={`grid gap-6 ${selectedItem ? 'grid-cols-1 lg:grid-cols-4' : 'grid-cols-1'}`}>
         <div className={selectedItem ? 'lg:col-span-3 space-y-6' : 'space-y-6'}>
-          <Card className="border border-gray-200 shadow-sm">
+          <Card className="border border-border shadow-sm">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
@@ -366,7 +366,7 @@ export default function Approval() {
               </div>
 
               {/* Data Table */}
-              <div className="rounded-lg border border-gray-200 overflow-hidden">
+              <div className="rounded-lg border border-border overflow-hidden">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
@@ -387,8 +387,8 @@ export default function Approval() {
                         className="hover:bg-gray-50 cursor-pointer"
                         onClick={() => setSelectedItem(item)}
                       >
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.startDate}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.endDate}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-card-foreground">{item.startDate}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-card-foreground">{item.endDate}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
                             {getStatusIcon(item.status)}
@@ -401,9 +401,9 @@ export default function Approval() {
                             {item.type}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.clientName}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.clientSurname}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.module}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-card-foreground">{item.clientName}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-card-foreground">{item.clientSurname}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-card-foreground">{item.module}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex space-x-2">
                             {(item.status === 'pending' || item.status === 'pending_signature' || item.status === 'under_review') && (
@@ -433,7 +433,7 @@ export default function Approval() {
         {/* Conditional Right Sidebar */}
         {selectedItem && (
           <div className="space-y-6">
-            <Card className="border border-gray-200 shadow-sm">
+            <Card className="border border-border shadow-sm">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>{selectedItem.type === 'approval' ? 'Approval Details' : 'eSignature Details'}</CardTitle>
@@ -445,7 +445,7 @@ export default function Approval() {
               <CardContent>
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-sm font-medium text-gray-900 mb-2">Client Information</h3>
+                    <h3 className="text-sm font-medium text-card-foreground mb-2">Client Information</h3>
                     <div className="bg-gray-50 rounded-lg p-4">
                       <div className="text-sm">
                         <div className="font-medium">{selectedItem.clientName} {selectedItem.clientSurname}</div>
@@ -456,7 +456,7 @@ export default function Approval() {
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-medium text-gray-900 mb-2">Description</h3>
+                    <h3 className="text-sm font-medium text-card-foreground mb-2">Description</h3>
                     <div className="bg-gray-50 rounded-lg p-4">
                       <div className="text-sm">
                         {selectedItem.description}
@@ -465,7 +465,7 @@ export default function Approval() {
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-medium text-gray-900 mb-2">Timeline</h3>
+                    <h3 className="text-sm font-medium text-card-foreground mb-2">Timeline</h3>
                     <div className="bg-gray-50 rounded-lg p-4">
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
@@ -485,7 +485,7 @@ export default function Approval() {
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-medium text-gray-900 mb-2">Status</h3>
+                    <h3 className="text-sm font-medium text-card-foreground mb-2">Status</h3>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(selectedItem.status)}`}>
                       {getStatusIcon(selectedItem.status)}
                       {selectedItem.status}

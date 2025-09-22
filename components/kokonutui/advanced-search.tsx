@@ -234,8 +234,8 @@ export default function AdvancedSearch() {
             <Search className="h-6 w-6 text-blue-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Advanced Client Search</h1>
-            <p className="text-gray-600">Pinpoint clients with detailed search criteria across all data points</p>
+            <h1 className="text-2xl font-bold text-card-foreground">Advanced Client Search</h1>
+            <p className="text-muted-foreground">Pinpoint clients with detailed search criteria across all data points</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -266,7 +266,7 @@ export default function AdvancedSearch() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Alias</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Alias</label>
                   <Input
                     placeholder="Enter alias"
                     value={searchCriteria.alias}
@@ -274,7 +274,7 @@ export default function AdvancedSearch() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">File ID #</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">File ID #</label>
                   <Input
                     placeholder="Enter file ID"
                     value={searchCriteria.fileId}
@@ -282,7 +282,7 @@ export default function AdvancedSearch() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Business Number</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Business Number</label>
                   <Input
                     placeholder="Enter business number"
                     value={searchCriteria.businessNumber}
@@ -290,7 +290,7 @@ export default function AdvancedSearch() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Asset Value</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Asset Value</label>
                   <Input
                     type="number"
                     placeholder="Enter asset value"
@@ -299,7 +299,7 @@ export default function AdvancedSearch() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Address</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Address</label>
                   <Input
                     placeholder="Enter address"
                     value={searchCriteria.address}
@@ -307,7 +307,7 @@ export default function AdvancedSearch() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">City</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">City</label>
                   <Input
                     placeholder="Enter city"
                     value={searchCriteria.city}
@@ -315,7 +315,7 @@ export default function AdvancedSearch() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Postal Code</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Postal Code</label>
                   <Input
                     placeholder="Enter postal code"
                     value={searchCriteria.postalCode}
@@ -323,7 +323,7 @@ export default function AdvancedSearch() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Phone</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Phone</label>
                   <Input
                     placeholder="Enter phone number"
                     value={searchCriteria.phone}
@@ -331,7 +331,7 @@ export default function AdvancedSearch() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Email</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Email</label>
                   <Input
                     type="email"
                     placeholder="Enter email address"
@@ -340,7 +340,7 @@ export default function AdvancedSearch() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Employer</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Employer</label>
                   <Input
                     placeholder="Enter employer"
                     value={searchCriteria.employer}
@@ -348,7 +348,7 @@ export default function AdvancedSearch() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Occupation</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Occupation</label>
                   <Input
                     placeholder="Enter occupation"
                     value={searchCriteria.occupation}
@@ -371,7 +371,7 @@ export default function AdvancedSearch() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Client Type</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Client Type</label>
                   <Select value={searchCriteria.clientType} onValueChange={(value) => handleInputChange('clientType', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="All" />
@@ -386,7 +386,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Gender</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Gender</label>
                   <Select value={searchCriteria.gender} onValueChange={(value) => handleInputChange('gender', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="All" />
@@ -400,7 +400,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Title</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Title</label>
                   <Select value={searchCriteria.title} onValueChange={(value) => handleInputChange('title', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="All" />
@@ -416,7 +416,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Client Status</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Client Status</label>
                   <Select value={searchCriteria.clientStatus} onValueChange={(value) => handleInputChange('clientStatus', value)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -430,7 +430,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Delivery Status</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Delivery Status</label>
                   <Select value={searchCriteria.deliveryStatus} onValueChange={(value) => handleInputChange('deliveryStatus', value)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -444,7 +444,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Returned Mail</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Returned Mail</label>
                   <Select value={searchCriteria.returnedMail} onValueChange={(value) => handleInputChange('returnedMail', value)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -457,7 +457,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">POA</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">POA</label>
                   <Select value={searchCriteria.poa} onValueChange={(value) => handleInputChange('poa', value)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -470,7 +470,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">LTA</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">LTA</label>
                   <Select value={searchCriteria.lta} onValueChange={(value) => handleInputChange('lta', value)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -483,7 +483,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">FATCA Eligibility</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">FATCA Eligibility</label>
                   <Select value={searchCriteria.fatcaEligibility} onValueChange={(value) => handleInputChange('fatcaEligibility', value)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -496,7 +496,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">CRS Eligibility</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">CRS Eligibility</label>
                   <Select value={searchCriteria.crsEligibility} onValueChange={(value) => handleInputChange('crsEligibility', value)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -509,7 +509,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Citizenship</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Citizenship</label>
                   <Select value={searchCriteria.citizenship} onValueChange={(value) => handleInputChange('citizenship', value)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -523,7 +523,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Language</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Language</label>
                   <Select value={searchCriteria.language} onValueChange={(value) => handleInputChange('language', value)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -537,7 +537,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Marital Status</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Marital Status</label>
                   <Select value={searchCriteria.maritalStatus} onValueChange={(value) => handleInputChange('maritalStatus', value)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -552,7 +552,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Accredited Investor</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Accredited Investor</label>
                   <Select value={searchCriteria.accreditedInvestor} onValueChange={(value) => handleInputChange('accreditedInvestor', value)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -565,7 +565,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">W-8BEN/W9</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">W-8BEN/W9</label>
                   <Select value={searchCriteria.w8BenW9} onValueChange={(value) => handleInputChange('w8BenW9', value)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -579,7 +579,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">CASL Permission</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">CASL Permission</label>
                   <Select value={searchCriteria.caslPermission} onValueChange={(value) => handleInputChange('caslPermission', value)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -592,7 +592,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Pro Account</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Pro Account</label>
                   <Select value={searchCriteria.proAccount} onValueChange={(value) => handleInputChange('proAccount', value)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -605,7 +605,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Province</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Province</label>
                   <Select value={searchCriteria.province} onValueChange={(value) => handleInputChange('province', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="All" />
@@ -626,7 +626,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Country</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Country</label>
                   <Select value={searchCriteria.country} onValueChange={(value) => handleInputChange('country', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="All" />
@@ -642,7 +642,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Client DOB Month</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Client DOB Month</label>
                   <Select value={searchCriteria.dobMonth} onValueChange={(value) => handleInputChange('dobMonth', value)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -665,7 +665,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Transfer Fee Agreement</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Transfer Fee Agreement</label>
                   <Select value={searchCriteria.transferFeeAgreement} onValueChange={(value) => handleInputChange('transferFeeAgreement', value)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -678,7 +678,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Rebate – Primary</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Rebate – Primary</label>
                   <Select value={searchCriteria.rebatePrimary} onValueChange={(value) => handleInputChange('rebatePrimary', value)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -691,7 +691,7 @@ export default function AdvancedSearch() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Rebate – Secondary</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Rebate – Secondary</label>
                   <Select value={searchCriteria.rebateSecondary} onValueChange={(value) => handleInputChange('rebateSecondary', value)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -719,7 +719,7 @@ export default function AdvancedSearch() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Date of Birth</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Date of Birth</label>
                   <Input
                     type="date"
                     value={searchCriteria.dateOfBirth}
@@ -727,7 +727,7 @@ export default function AdvancedSearch() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Age</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Age</label>
                   <Input
                     type="number"
                     placeholder="Enter age"
@@ -739,10 +739,10 @@ export default function AdvancedSearch() {
               
               <div className="mt-6 space-y-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Date of Birth Range</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Date of Birth Range</label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs text-gray-600 mb-1 block">From</label>
+                      <label className="text-xs text-muted-foreground mb-1 block">From</label>
                       <Input
                         type="date"
                         value={searchCriteria.dobFrom}
@@ -750,7 +750,7 @@ export default function AdvancedSearch() {
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-600 mb-1 block">To</label>
+                      <label className="text-xs text-muted-foreground mb-1 block">To</label>
                       <Input
                         type="date"
                         value={searchCriteria.dobTo}
@@ -761,10 +761,10 @@ export default function AdvancedSearch() {
                 </div>
                 
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Client Created Date Range</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Client Created Date Range</label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs text-gray-600 mb-1 block">From</label>
+                      <label className="text-xs text-muted-foreground mb-1 block">From</label>
                       <Input
                         type="date"
                         value={searchCriteria.clientCreatedFrom}
@@ -772,7 +772,7 @@ export default function AdvancedSearch() {
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-600 mb-1 block">To</label>
+                      <label className="text-xs text-muted-foreground mb-1 block">To</label>
                       <Input
                         type="date"
                         value={searchCriteria.clientCreatedTo}
@@ -797,7 +797,7 @@ export default function AdvancedSearch() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Representative Defined Field 1</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Representative Defined Field 1</label>
                   <Input
                     placeholder="Enter custom field 1"
                     value={searchCriteria.repDefinedField1}
@@ -805,7 +805,7 @@ export default function AdvancedSearch() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Representative Defined Field 2</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Representative Defined Field 2</label>
                   <Input
                     placeholder="Enter custom field 2"
                     value={searchCriteria.repDefinedField2}
@@ -813,7 +813,7 @@ export default function AdvancedSearch() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Representative Defined Field 3</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Representative Defined Field 3</label>
                   <Input
                     placeholder="Enter custom field 3"
                     value={searchCriteria.repDefinedField3}
@@ -829,7 +829,7 @@ export default function AdvancedSearch() {
                     checked={searchCriteria.pinnedDocuments}
                     onCheckedChange={(checked) => handleInputChange('pinnedDocuments', checked)}
                   />
-                  <label htmlFor="pinnedDocuments" className="text-sm font-medium text-gray-700">
+                  <label htmlFor="pinnedDocuments" className="text-sm font-medium text-muted-foreground">
                     Search By Pinned Documents
                   </label>
                 </div>
@@ -852,11 +852,11 @@ export default function AdvancedSearch() {
               <div className="relative">
                 <button
                   onClick={() => setIsStatusDropdownOpen(!isStatusDropdownOpen)}
-                  className="flex items-center justify-between w-full px-3 py-2 text-left bg-gray-50 border border-gray-200 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="flex items-center justify-between w-full px-3 py-2 text-left bg-muted border border-border rounded-md hover:bg-accent focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <div className="flex items-center gap-2">
                     <Users className="h-4 w-4 text-indigo-600" />
-                    <span className="text-sm font-medium text-gray-700">Status Filters</span>
+                    <span className="text-sm font-medium text-muted-foreground">Status Filters</span>
                     {(() => {
                       const activeCount = [searchCriteria.showActive, searchCriteria.showInactive, searchCriteria.showProspects, 
                                          searchCriteria.showHighValue, searchCriteria.showRecentJoiners, searchCriteria.showAccreditedInvestors]
@@ -868,15 +868,15 @@ export default function AdvancedSearch() {
                       ) : null
                     })()}
                   </div>
-                  <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isStatusDropdownOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${isStatusDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
                 
                 {isStatusDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-10">
                     <div className="p-3 space-y-3">
                       {/* Status Toggles */}
                       <div>
-                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Client Status</h4>
+                        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Client Status</h4>
                         <div className="flex flex-wrap gap-2">
                           <div className="flex items-center space-x-2">
                             <Checkbox
@@ -884,7 +884,7 @@ export default function AdvancedSearch() {
                               checked={searchCriteria.showActive}
                               onCheckedChange={(checked) => handleInputChange('showActive', checked)}
                             />
-                            <label htmlFor="showActive" className="text-sm text-gray-700 flex items-center gap-1">
+                            <label htmlFor="showActive" className="text-sm text-muted-foreground flex items-center gap-1">
                               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                               Active
                             </label>
@@ -895,7 +895,7 @@ export default function AdvancedSearch() {
                               checked={searchCriteria.showInactive}
                               onCheckedChange={(checked) => handleInputChange('showInactive', checked)}
                             />
-                            <label htmlFor="showInactive" className="text-sm text-gray-700 flex items-center gap-1">
+                            <label htmlFor="showInactive" className="text-sm text-muted-foreground flex items-center gap-1">
                               <div className="w-2 h-2 bg-red-500 rounded-full"></div>
                               Inactive
                             </label>
@@ -906,7 +906,7 @@ export default function AdvancedSearch() {
                               checked={searchCriteria.showProspects}
                               onCheckedChange={(checked) => handleInputChange('showProspects', checked)}
                             />
-                            <label htmlFor="showProspects" className="text-sm text-gray-700 flex items-center gap-1">
+                            <label htmlFor="showProspects" className="text-sm text-muted-foreground flex items-center gap-1">
                               <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                               Prospects
                             </label>
@@ -916,7 +916,7 @@ export default function AdvancedSearch() {
                       
                       {/* Additional Filters */}
                       <div>
-                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Additional</h4>
+                        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Additional</h4>
                         <div className="flex flex-wrap gap-2">
                           <div className="flex items-center space-x-2">
                             <Checkbox
@@ -924,7 +924,7 @@ export default function AdvancedSearch() {
                               checked={searchCriteria.showHighValue}
                               onCheckedChange={(checked) => handleInputChange('showHighValue', checked)}
                             />
-                            <label htmlFor="showHighValue" className="text-sm text-gray-700">
+                            <label htmlFor="showHighValue" className="text-sm text-muted-foreground">
                               High Value
                             </label>
                           </div>
@@ -934,7 +934,7 @@ export default function AdvancedSearch() {
                               checked={searchCriteria.showRecentJoiners}
                               onCheckedChange={(checked) => handleInputChange('showRecentJoiners', checked)}
                             />
-                            <label htmlFor="showRecentJoiners" className="text-sm text-gray-700">
+                            <label htmlFor="showRecentJoiners" className="text-sm text-muted-foreground">
                               Recent
                             </label>
                           </div>
@@ -944,7 +944,7 @@ export default function AdvancedSearch() {
                               checked={searchCriteria.showAccreditedInvestors}
                               onCheckedChange={(checked) => handleInputChange('showAccreditedInvestors', checked)}
                             />
-                            <label htmlFor="showAccreditedInvestors" className="text-sm text-gray-700">
+                            <label htmlFor="showAccreditedInvestors" className="text-sm text-muted-foreground">
                               Accredited
                             </label>
                           </div>
@@ -966,7 +966,7 @@ export default function AdvancedSearch() {
               
               {getActiveFiltersCount() > 0 && (
                 <div className="pt-4 border-t">
-                  <p className="text-sm text-gray-600 mb-2">Active Filters:</p>
+                  <p className="text-sm text-muted-foreground mb-2">Active Filters:</p>
                   <div className="flex flex-wrap gap-1">
                     {/* Status summary */}
                     {(() => {

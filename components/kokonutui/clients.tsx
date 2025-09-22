@@ -9,10 +9,10 @@ import {
   Mail,
   Users,
   Download,
-  Search,
   Grid,
   List,
-  User
+  User,
+  Search
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -28,14 +28,14 @@ export default function Clients() {
   const [clients] = useState(mockClients)
   const { selectedClientIds, handleClientSelection, handleSelectAll, handleSelectNone } = useClientSelection()
   const [filteredClients, setFilteredClients] = useState(mockClients)
-  const [quickSearchTerm, setQuickSearchTerm] = useState("")
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
   const [activeTab, setActiveTab] = useState<'all' | 'active' | 'inactive' | 'prospect'>('all')
+  const [searchQuery, setSearchQuery] = useState('')
 
 
 
 
-  // Handle search parameters from sidebar
+  // Handle search parameters from sidebar and local search
   useEffect(() => {
     let filtered = clients
     
@@ -48,7 +48,7 @@ export default function Clients() {
     const planId = searchParams.get('planId')
     const clientId = searchParams.get('clientId')
     
-    // Apply filters if parameters exist
+    // Apply URL parameter filters if they exist
     if (firstName || surname || city || province || sin || planId || clientId) {
       filtered = clients.filter(client => {
         const matchesFirstName = !firstName || 
@@ -71,22 +71,25 @@ export default function Clients() {
       })
     }
     
-    setFilteredClients(filtered)
-  }, [searchParams, clients])
-
-  // Apply quick search filter
-  useEffect(() => {
-    if (quickSearchTerm) {
-      const quickFiltered = filteredClients.filter(client =>
-        client.firstName.toLowerCase().includes(quickSearchTerm.toLowerCase()) ||
-        client.surname.toLowerCase().includes(quickSearchTerm.toLowerCase()) ||
-        client.email.toLowerCase().includes(quickSearchTerm.toLowerCase()) ||
-        client.clientId.toLowerCase().includes(quickSearchTerm.toLowerCase()) ||
-        client.phone.includes(quickSearchTerm)
-      )
-      setFilteredClients(quickFiltered)
+    // Apply local search query
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(client => {
+        const query = searchQuery.toLowerCase()
+        return (
+          client.firstName.toLowerCase().includes(query) ||
+          client.surname.toLowerCase().includes(query) ||
+          client.email.toLowerCase().includes(query) ||
+          client.clientId.toLowerCase().includes(query) ||
+          client.city.toLowerCase().includes(query) ||
+          client.province.toLowerCase().includes(query) ||
+          client.location.toLowerCase().includes(query)
+        )
+      })
     }
-  }, [quickSearchTerm])
+    
+    setFilteredClients(filtered)
+  }, [searchParams, clients, searchQuery])
+
 
   // Filter clients by status
   const getClientsByStatus = useCallback((status: string) => {
@@ -136,11 +139,10 @@ export default function Clients() {
 
   const handleClearSearch = useCallback(() => {
     router.push('/clients')
-    setQuickSearchTerm("")
   }, [router])
 
   const ClientCard = ({ client }: { client: any }) => (
-    <Card className="border border-gray-200 dark:border-gray-700 hover:shadow-sm transition-all duration-200 cursor-pointer group bg-white dark:bg-gray-900" onClick={() => handleClientClick(client)}>
+    <Card className="border border-border hover:shadow-sm transition-all duration-200 cursor-pointer group bg-card" onClick={() => handleClientClick(client)}>
       <CardContent className="p-3">
         <div className="flex items-center gap-3">
           <div className="flex-shrink-0">
@@ -152,7 +154,7 @@ export default function Clients() {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-medium text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-sm">
+              <h3 className="font-medium text-card-foreground truncate group-hover:text-primary transition-colors text-sm">
                 {client.firstName} {client.surname}
               </h3>
               {getStatusIcon(client.status)}
@@ -160,12 +162,12 @@ export default function Clients() {
                 <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse flex-shrink-0"></div>
               )}
             </div>
-            <div className="space-y-0.5 text-xs text-gray-600 dark:text-gray-400">
+            <div className="space-y-0.5 text-xs text-muted-foreground">
               <div>ID: {client.clientId} • {client.location}</div>
               <div>{client.email}</div>
               <div className="flex items-center justify-between">
                 <span>Portfolio: ${(client.totalVolume / 1000).toFixed(0)}K</span>
-                <Badge variant="outline" className="text-xs px-2 py-0.5 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300">
+                <Badge variant="outline" className="text-xs px-2 py-0.5">
                   {client.status.charAt(0).toUpperCase() + client.status.slice(1)}
                 </Badge>
               </div>
@@ -179,141 +181,156 @@ export default function Clients() {
 
 
   return (
-    <div className="space-y-6">
-      {/* Search and Filters */}
-      <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
-        <CardContent className="p-4">
-          <div className="space-y-4">
-            {/* Search Field */}
-            <div className="flex-1 max-w-md">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
-                <Input
-                  placeholder="Search clients..."
-                  value={quickSearchTerm}
-                  onChange={(e) => setQuickSearchTerm(e.target.value)}
-                  className="pl-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white"
-                />
-              </div>
+    <div className="space-y-8">
+      {/* Search and Status Filters */}
+      <div className="space-y-6">
+        {/* Search Field */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            type="text"
+            placeholder="Search clients by name, email, ID, or location..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 h-11 text-sm bg-background border-input"
+          />
+        </div>
+
+        {/* Status Checkboxes and Controls */}
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+          {/* Status Checkboxes */}
+          <div className="flex items-center gap-8 flex-wrap">
+            <div className="flex items-center space-x-3">
+              <Checkbox
+                id="all-status"
+                checked={activeTab === 'all'}
+                onCheckedChange={() => setActiveTab('all')}
+              />
+            <label htmlFor="all-status" className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-2">
+              <span>All</span>
+              <span className="text-lg font-bold text-muted-foreground">({allClients.length})</span>
+            </label>
             </div>
             
-            {/* Status Checkboxes */}
-            <div className="flex items-center gap-6">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="all-status"
-                  checked={activeTab === 'all'}
-                  onCheckedChange={() => setActiveTab('all')}
-                />
-                <label htmlFor="all-status" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-                  All ({allClients.length})
-                </label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="active-status"
-                  checked={activeTab === 'active'}
-                  onCheckedChange={() => setActiveTab('active')}
-                />
-                <label htmlFor="active-status" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-                  Active ({activeClients.length})
-                </label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="inactive-status"
-                  checked={activeTab === 'inactive'}
-                  onCheckedChange={() => setActiveTab('inactive')}
-                />
-                <label htmlFor="inactive-status" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-                  Inactive ({inactiveClients.length})
-                </label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="prospect-status"
-                  checked={activeTab === 'prospect'}
-                  onCheckedChange={() => setActiveTab('prospect')}
-                />
-                <label htmlFor="prospect-status" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-                  Prospects ({prospectClients.length})
-                </label>
-              </div>
+            <div className="flex items-center space-x-3">
+              <Checkbox
+                id="active-status"
+                checked={activeTab === 'active'}
+                onCheckedChange={() => setActiveTab('active')}
+              />
+              <label htmlFor="active-status" className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <span>Active</span>
+                <span className="text-lg font-bold text-muted-foreground">({activeClients.length})</span>
+              </label>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              <Checkbox
+                id="inactive-status"
+                checked={activeTab === 'inactive'}
+                onCheckedChange={() => setActiveTab('inactive')}
+              />
+              <label htmlFor="inactive-status" className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-2">
+                <PauseCircle className="h-4 w-4 text-muted-foreground" />
+                <span>Inactive</span>
+                <span className="text-lg font-bold text-muted-foreground">({inactiveClients.length})</span>
+              </label>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              <Checkbox
+                id="prospect-status"
+                checked={activeTab === 'prospect'}
+                onCheckedChange={() => setActiveTab('prospect')}
+              />
+              <label htmlFor="prospect-status" className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-2">
+                <Clock className="h-4 w-4 text-yellow-600" />
+                <span>Prospects</span>
+                <span className="text-lg font-bold text-muted-foreground">({prospectClients.length})</span>
+              </label>
             </div>
           </div>
-          
-          <div className="flex items-center justify-between gap-4">
-            {/* Left side - Active Search Filters */}
-            <div className="flex items-center gap-2">
-              {searchParams.toString() && (
-                <>
-                  <Badge variant="secondary">Search Active</Badge>
-                  <Button variant="outline" size="sm" onClick={handleClearSearch}>
-                    Clear Filters
-                  </Button>
-                </>
-              )}
-              {selectedClientIds.length > 0 && (
-                <>
-                  <Button variant="outline" size="sm" onClick={handleSelectNone} className="h-7 text-xs px-2">
-                    Clear ({selectedClientIds.length})
-                  </Button>
-                  <Button variant="outline" size="sm" className="h-7 text-xs px-2">
-                    <Mail className="h-3 w-3 mr-1" />
-                    Bulk Contact
-                  </Button>
-                </>
-              )}
-            </div>
+
+          {/* Right side - Select All and View Toggle */}
+          <div className="flex items-center gap-3">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleSelectAllClients}
+              className="h-8 px-4"
+            >
+              Select All
+            </Button>
             
-            {/* Right side - Select All and View Toggle */}
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={handleSelectAllClients}>
-                Select All
+            <div className="flex bg-card border border-border rounded-lg overflow-hidden">
+              <Button
+                variant={viewMode === 'list' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('list')}
+                className="rounded-none border-0 h-8 px-3"
+              >
+                <List className="h-4 w-4" />
               </Button>
-              
-              <div className="flex border border-gray-200 rounded-md">
-                <Button
-                  variant={viewMode === 'list' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('list')}
-                  className="rounded-r-none"
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('grid')}
-                  className="rounded-l-none"
-                >
-                  <Grid className="h-4 w-4" />
-                </Button>
-              </div>
+              <Button
+                variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('grid')}
+                className="rounded-none border-0 h-8 px-3"
+              >
+                <Grid className="h-4 w-4" />
+              </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      {/* Active Search Filters and Bulk Actions */}
+      {(searchParams.toString() || selectedClientIds.length > 0) && (
+        <div className="flex items-center gap-2 flex-wrap">
+          {searchParams.toString() && (
+            <>
+              <Badge variant="secondary" className="bg-primary/10 text-primary">
+                Search Active
+              </Badge>
+              <Button variant="outline" size="sm" onClick={handleClearSearch} className="h-8">
+                Clear Filters
+              </Button>
+            </>
+          )}
+          {selectedClientIds.length > 0 && (
+            <>
+              <Button variant="outline" size="sm" onClick={handleSelectNone} className="h-8 text-xs px-3">
+                Clear ({selectedClientIds.length})
+              </Button>
+              <Button variant="outline" size="sm" className="h-8 text-xs px-3">
+                <Mail className="h-3 w-3 mr-1" />
+                Bulk Contact
+              </Button>
+            </>
+          )}
+        </div>
+      )}
 
       {/* Clients List */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         {getDisplayClients().length > 0 ? (
-          <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-3'}>
+          <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
             {getDisplayClients().map((client) => (
               <ClientCard key={client.id} client={client} />
             ))}
           </div>
         ) : (
-          <Card className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+          <Card className="border border-border bg-card">
             <CardContent className="p-12 text-center">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                <User className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                <User className="h-8 w-8 text-muted-foreground" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                {searchParams.toString() || quickSearchTerm ? "No clients found" : `No ${activeTab === 'all' ? '' : activeTab} clients to display`}
+              <h3 className="text-lg font-semibold text-card-foreground mb-2">
+                {searchParams.toString() ? "No clients found" : `No ${activeTab === 'all' ? '' : activeTab} clients to display`}
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                {searchParams.toString() || quickSearchTerm 
+              <p className="text-muted-foreground mb-4">
+                {searchParams.toString() 
                   ? "Try adjusting your search criteria or clear the filters to see all clients."
                   : activeTab === 'prospect' 
                     ? "No prospect clients found. These are clients with pending status."
@@ -324,7 +341,7 @@ export default function Clients() {
                   : "Start by adding a new client or use the search function to find existing clients."
                 }
               </p>
-              {(searchParams.toString() || quickSearchTerm) && (
+              {searchParams.toString() && (
                 <Button variant="outline" onClick={handleClearSearch}>
                   Clear Search
                 </Button>

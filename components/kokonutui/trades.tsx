@@ -242,8 +242,8 @@ export function Trades() {
             <FileText className="h-6 w-6 text-blue-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Trades</h1>
-            <p className="text-gray-600">Manage and track trading activities</p>
+            <h1 className="text-2xl font-bold text-card-foreground">Trades</h1>
+            <p className="text-muted-foreground">Manage and track trading activities</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -260,52 +260,52 @@ export function Trades() {
 
       {/* Statistics Overview - Compact Vercel-like Style */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-blue-50 via-white to-blue-50/30 p-4">
+        <div className="rounded-xl border border-border bg-gradient-to-br from-blue-50 via-white to-blue-50/30 p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
               <FileText className="h-4 w-4 text-blue-600" />
             </div>
-            <span className="text-sm font-medium text-gray-600">Total Trades</span>
+            <span className="text-sm font-medium text-muted-foreground">Total Trades</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
+          <div className="text-2xl font-bold text-card-foreground">{stats.total}</div>
         </div>
         
-        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-green-50 via-white to-green-50/30 p-4">
+        <div className="rounded-xl border border-border bg-gradient-to-br from-green-50 via-white to-green-50/30 p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
               <CheckCircle className="h-4 w-4 text-green-600" />
             </div>
-            <span className="text-sm font-medium text-gray-600">Executed</span>
+            <span className="text-sm font-medium text-muted-foreground">Executed</span>
           </div>
           <div className="text-2xl font-bold text-green-600">{stats.executed}</div>
         </div>
         
-        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-yellow-50 via-white to-yellow-50/30 p-4">
+        <div className="rounded-xl border border-border bg-gradient-to-br from-yellow-50 via-white to-yellow-50/30 p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center">
               <Clock className="h-4 w-4 text-yellow-600" />
             </div>
-            <span className="text-sm font-medium text-gray-600">Pending</span>
+            <span className="text-sm font-medium text-muted-foreground">Pending</span>
           </div>
           <div className="text-2xl font-bold text-yellow-600">{stats.pending}</div>
         </div>
         
-        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-red-50 via-white to-red-50/30 p-4">
+        <div className="rounded-xl border border-border bg-gradient-to-br from-red-50 via-white to-red-50/30 p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
               <XCircle className="h-4 w-4 text-red-600" />
             </div>
-            <span className="text-sm font-medium text-gray-600">Cancelled</span>
+            <span className="text-sm font-medium text-muted-foreground">Cancelled</span>
           </div>
           <div className="text-2xl font-bold text-red-600">{stats.cancelled}</div>
         </div>
         
-        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-purple-50 via-white to-purple-50/30 p-4">
+        <div className="rounded-xl border border-border bg-gradient-to-br from-purple-50 via-white to-purple-50/30 p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
               <DollarSign className="h-4 w-4 text-purple-600" />
             </div>
-            <span className="text-sm font-medium text-gray-600">Total Value</span>
+            <span className="text-sm font-medium text-muted-foreground">Total Value</span>
           </div>
           <div className="text-2xl font-bold text-purple-600">{formatCurrency(stats.totalValue)}</div>
         </div>
@@ -372,7 +372,7 @@ export function Trades() {
           )}
 
           {/* Trades List */}
-          <Card className="border border-gray-200 shadow-sm">
+          <Card className="border border-border shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>All Trades ({filteredTrades.length})</span>
@@ -393,7 +393,7 @@ export function Trades() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div>
-                          <div className="font-medium text-gray-900">{trade.id}</div>
+                          <div className="font-medium text-card-foreground">{trade.id}</div>
                           <div className="text-sm text-gray-500">{trade.clientName}</div>
                         </div>
                         <div className="flex items-center gap-1">
@@ -402,7 +402,7 @@ export function Trades() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-sm font-medium text-gray-900">{formatCurrency(trade.totalValue)}</div>
+                        <div className="text-sm font-medium text-card-foreground">{formatCurrency(trade.totalValue)}</div>
                         <div className="text-xs text-gray-500">{trade.quantity} @ {formatCurrency(trade.price)}</div>
                       </div>
                       <Badge className={`${statusConfig[trade.status as keyof typeof statusConfig].color} flex items-center gap-1 text-xs px-2 py-1`}>
@@ -411,7 +411,7 @@ export function Trades() {
                       </Badge>
                     </div>
                     <div className="mt-2">
-                      <div className="text-sm text-gray-600">{trade.product}</div>
+                      <div className="text-sm text-muted-foreground">{trade.product}</div>
                       <div className="text-xs text-gray-500">Created: {formatDate(trade.createdAt)}</div>
                     </div>
                   </div>
@@ -444,7 +444,7 @@ export function Trades() {
                   <div className="space-y-3">
                     <div>
                       <div className="text-sm text-gray-500 mb-1">Client</div>
-                      <div className="font-medium text-gray-900">{selectedTrade.clientName}</div>
+                      <div className="font-medium text-card-foreground">{selectedTrade.clientName}</div>
                       <div className="text-xs text-gray-500">{selectedTrade.clientId}</div>
                     </div>
                     
@@ -471,17 +471,17 @@ export function Trades() {
                     </div>
                     
                     <div className="grid grid-cols-1 gap-3">
-                      <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gradient-to-r from-gray-50 to-white p-3 transition-all duration-300 hover:shadow-md hover:border-gray-300">
+                      <div className="group relative overflow-hidden rounded-lg border border-border bg-gradient-to-r from-gray-50 to-white p-3 transition-all duration-300 hover:shadow-md hover:border-gray-300">
                         <div className="text-sm text-gray-500">Quantity</div>
-                        <div className="font-bold text-gray-900 text-lg group-hover:text-blue-700 transition-colors">{selectedTrade.quantity.toLocaleString()}</div>
+                        <div className="font-bold text-card-foreground text-lg group-hover:text-blue-700 transition-colors">{selectedTrade.quantity.toLocaleString()}</div>
                       </div>
-                      <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gradient-to-r from-gray-50 to-white p-3 transition-all duration-300 hover:shadow-md hover:border-gray-300">
+                      <div className="group relative overflow-hidden rounded-lg border border-border bg-gradient-to-r from-gray-50 to-white p-3 transition-all duration-300 hover:shadow-md hover:border-gray-300">
                         <div className="text-sm text-gray-500">Price</div>
-                        <div className="font-bold text-gray-900 text-lg group-hover:text-blue-700 transition-colors">{formatCurrency(selectedTrade.price)}</div>
+                        <div className="font-bold text-card-foreground text-lg group-hover:text-blue-700 transition-colors">{formatCurrency(selectedTrade.price)}</div>
                       </div>
-                      <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gradient-to-r from-gray-50 to-white p-3 transition-all duration-300 hover:shadow-md hover:border-gray-300">
+                      <div className="group relative overflow-hidden rounded-lg border border-border bg-gradient-to-r from-gray-50 to-white p-3 transition-all duration-300 hover:shadow-md hover:border-gray-300">
                         <div className="text-sm text-gray-500">Total Value</div>
-                        <div className="font-bold text-gray-900 text-lg group-hover:text-blue-700 transition-colors">{formatCurrency(selectedTrade.totalValue)}</div>
+                        <div className="font-bold text-card-foreground text-lg group-hover:text-blue-700 transition-colors">{formatCurrency(selectedTrade.totalValue)}</div>
                       </div>
                     </div>
 

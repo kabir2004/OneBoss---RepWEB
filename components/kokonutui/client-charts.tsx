@@ -142,7 +142,7 @@ const AllocationTable: React.FC<{ data: ChartData[] }> = ({ data }) => {
       <table className="w-full text-sm">
         <tbody>
           {sortedData.map((item) => (
-            <tr key={item.label} className="border-b border-gray-200">
+            <tr key={item.label} className="border-b border-border">
               <td className="py-2 pr-4">{item.label}</td>
               <td className="py-2 pr-4 text-right">{item.percentage.toFixed(2)}%</td>
               <td className="py-2 text-right font-medium">
@@ -218,7 +218,7 @@ export default function ClientCharts({ clientId, clientName }: ClientChartsProps
       <TabsContent value="smart-charts" className="space-y-6">
         {/* Client Name */}
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">{clientName}</h1>
+          <h1 className="text-3xl font-bold text-card-foreground">{clientName}</h1>
         </div>
 
         {/* Financial Metrics Table */}
@@ -226,7 +226,7 @@ export default function ClientCharts({ clientId, clientName }: ClientChartsProps
           <CardContent className="p-6">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200">
+                <tr className="border-b border-border">
                   <th className="text-left py-2">Date</th>
                   <th className="text-right py-2">Market Value</th>
                   <th className="text-right py-2">Net Invested</th>
@@ -235,7 +235,7 @@ export default function ClientCharts({ clientId, clientName }: ClientChartsProps
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-b border-gray-200">
+                <tr className="border-b border-border">
                   <td className="py-2">May 19, 2008</td>
                   <td className="text-right py-2">{formatCurrency(financialMetrics.startDate.marketValue)}</td>
                   <td className="text-right py-2">{formatCurrency(financialMetrics.startDate.netInvested)}</td>
@@ -307,7 +307,7 @@ export default function ClientCharts({ clientId, clientName }: ClientChartsProps
           <CardContent>
             <div className="flex items-center gap-4">
               <div>
-                <label className="text-sm text-gray-600">Start Date:</label>
+                <label className="text-sm text-muted-foreground">Start Date:</label>
                 <div className="flex gap-2 mt-1">
                   <Select defaultValue="May">
                     <SelectTrigger className="w-20">
@@ -342,7 +342,7 @@ export default function ClientCharts({ clientId, clientName }: ClientChartsProps
                 </div>
               </div>
               <div>
-                <label className="text-sm text-gray-600">End Date:</label>
+                <label className="text-sm text-muted-foreground">End Date:</label>
                 <div className="flex gap-2 mt-1">
                   <Select defaultValue="September">
                     <SelectTrigger className="w-20">
@@ -389,9 +389,9 @@ export default function ClientCharts({ clientId, clientName }: ClientChartsProps
             <div className="h-96 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex items-center justify-center">
               <div className="text-center">
                 <TrendingUp className="h-16 w-16 text-blue-600 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Growth Chart</h3>
-                <p className="text-gray-600">Interactive chart showing portfolio growth from 2008 to 2025</p>
-                <p className="text-sm text-gray-500 mt-2">Market Value: $0 → $124,726.40</p>
+                <h3 className="text-lg font-semibold text-card-foreground mb-2">Growth Chart</h3>
+                <p className="text-muted-foreground">Interactive chart showing portfolio growth from 2008 to 2025</p>
+                <p className="text-sm text-muted-foreground mt-2">Market Value: $0 → $124,726.40</p>
               </div>
             </div>
           </CardContent>
@@ -401,7 +401,7 @@ export default function ClientCharts({ clientId, clientName }: ClientChartsProps
       {/* Allocations Tab */}
       <TabsContent value="allocations" className="space-y-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">Asset Allocations</h1>
+          <h1 className="text-3xl font-bold text-card-foreground">Asset Allocations</h1>
         </div>
 
         {/* Top Row Charts */}

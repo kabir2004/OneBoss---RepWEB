@@ -18,7 +18,7 @@ export default function Layout({ children }: LayoutProps) {
           <header className="h-16">
             <TopNav />
           </header>
-          <main className="flex-1 overflow-auto p-6 bg-white dark:bg-gray-900">{children}</main>
+          <main className="flex-1 overflow-auto p-6 bg-background">{children}</main>
         </div>
       </div>
     </ClientSelectionProvider>

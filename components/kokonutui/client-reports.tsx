@@ -163,15 +163,15 @@ export default function ClientReports({ clientId, clientName }: ClientReportsPro
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Client Reports</h1>
-          <p className="text-gray-600">Generate and view reports for {clientName}</p>
+          <h1 className="text-2xl font-bold text-card-foreground">Client Reports</h1>
+          <p className="text-muted-foreground">Generate and view reports for {clientName}</p>
         </div>
       </div>
 
       {/* Reports by Category */}
       <div className="space-y-4">
         {Object.entries(reportsByCategory).map(([category, reports]) => (
-          <Card key={category} className="border border-gray-200 shadow-sm">
+          <Card key={category} className="border border-border shadow-sm">
             <CardHeader 
               className={`${categoryConfig[category as keyof typeof categoryConfig].color} cursor-pointer hover:opacity-80 transition-opacity`}
               onClick={() => toggleCategory(category)}
@@ -199,20 +199,20 @@ export default function ClientReports({ clientId, clientName }: ClientReportsPro
                     return (
                       <div
                         key={report.id}
-                        className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
+                        className={`p-4 hover:bg-accent cursor-pointer transition-colors ${
                           selectedReport === report.id ? 'bg-blue-50 border-l-4 border-blue-500' : ''
                         }`}
                         onClick={() => handleReportClick(report.id)}
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
-                            <Icon className="h-4 w-4 text-gray-600" />
+                          <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+                            <Icon className="h-4 w-4 text-muted-foreground" />
                           </div>
                           <div className="flex-1">
-                            <h3 className="font-medium text-gray-900">{report.name}</h3>
-                            <p className="text-sm text-gray-500 mt-1">{report.description}</p>
+                            <h3 className="font-medium text-card-foreground">{report.name}</h3>
+                            <p className="text-sm text-muted-foreground mt-1">{report.description}</p>
                           </div>
-                          <div className="text-xs text-gray-400">
+                          <div className="text-xs text-muted-foreground">
                             Click to generate
                           </div>
                         </div>
@@ -240,10 +240,10 @@ export default function ClientReports({ clientId, clientName }: ClientReportsPro
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <FileText className="h-8 w-8 text-blue-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-lg font-semibold text-card-foreground mb-2">
                 Report Generation
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-muted-foreground mb-6">
                 {reportItems.find(r => r.id === selectedReport)?.description}
               </p>
               <div className="flex items-center justify-center gap-4">

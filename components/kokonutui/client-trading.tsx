@@ -257,19 +257,19 @@ const StatCard: React.FC<StatCardProps> = ({ icon: Icon, iconColor, label, value
   }
 
   const valueColorClasses = {
-    gray: 'text-gray-900',
+    gray: 'text-card-foreground',
     green: 'text-green-600',
     yellow: 'text-yellow-600',
     purple: 'text-purple-600'
   }
 
   return (
-    <div className={`rounded-xl border border-gray-200 bg-gradient-to-br ${colorClasses[iconColor]} p-4`}>
+    <div className={`rounded-xl border border-border bg-gradient-to-br ${colorClasses[iconColor]} p-4`}>
       <div className="flex items-center gap-2 mb-2">
         <div className={`w-8 h-8 rounded-lg flex items-center justify-center`}>
           <Icon className="h-4 w-4" />
         </div>
-        <span className="text-sm font-medium text-gray-600">{label}</span>
+        <span className="text-sm font-medium text-muted-foreground">{label}</span>
       </div>
       <div className={`text-2xl font-bold ${valueColorClasses[valueColor]}`}>{value}</div>
     </div>
@@ -377,7 +377,7 @@ export default function ClientTrading({ clientId, clientName }: ClientTradingPro
 
       {/* Plan Selector */}
       <div className="flex items-center gap-4">
-        <label className="text-sm font-medium text-gray-700">Plan:</label>
+        <label className="text-sm font-medium text-muted-foreground">Plan:</label>
         <Select defaultValue="all">
           <SelectTrigger className="w-64">
             <SelectValue placeholder="Select a Plan" />
@@ -393,20 +393,20 @@ export default function ClientTrading({ clientId, clientName }: ClientTradingPro
       {/* Plans with Trades Table */}
       <div className="space-y-6">
         {filteredPlans.map((plan) => (
-          <Card key={plan.id} className="border border-gray-200 shadow-sm">
-            <CardHeader className="bg-gray-50">
+          <Card key={plan.id} className="border border-border shadow-sm">
+            <CardHeader className="bg-muted">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => togglePlanExpansion(plan.id)}
-                    className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded transition-colors"
+                    className="flex items-center gap-2 hover:bg-accent p-2 rounded transition-colors"
                   >
                     {expandedPlans.has(plan.id) ? (
-                      <Minus className="h-4 w-4 text-gray-500" />
+                      <Minus className="h-4 w-4 text-muted-foreground" />
                     ) : (
-                      <ChevronRight className="h-4 w-4 text-gray-500" />
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
                     )}
-                    <span className="font-medium text-gray-900">{plan.fullName}</span>
+                    <span className="font-medium text-card-foreground">{plan.fullName}</span>
                   </button>
                 </div>
                 <div className="flex items-center gap-2">
@@ -423,28 +423,28 @@ export default function ClientTrading({ clientId, clientName }: ClientTradingPro
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-50 border-b">
+                    <thead className="bg-muted border-b">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Account</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Objective</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Market value</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Supplier</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Account</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Product</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Risk</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Objective</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Market value</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {plan.trades.map((trade) => (
                         <tr 
                           key={trade.id}
-                          className="hover:bg-gray-50 cursor-pointer"
+                          className="hover:bg-muted cursor-pointer"
                           onClick={() => handleTradeClick(trade)}
                         >
                           <td className="px-4 py-3 text-sm text-blue-600 font-medium">{trade.supplier}</td>
-                          <td className="px-4 py-3 text-sm text-gray-900">{trade.account}</td>
-                          <td className="px-4 py-3 text-sm text-gray-900">{trade.product}</td>
-                          <td className="px-4 py-3 text-sm text-gray-900">{trade.risk}</td>
-                          <td className="px-4 py-3 text-sm text-gray-900">
+                          <td className="px-4 py-3 text-sm text-card-foreground">{trade.account}</td>
+                          <td className="px-4 py-3 text-sm text-card-foreground">{trade.product}</td>
+                          <td className="px-4 py-3 text-sm text-card-foreground">{trade.risk}</td>
+                          <td className="px-4 py-3 text-sm text-card-foreground">
                             <div className="flex items-center gap-2">
                               <span>{trade.objective}</span>
                               <div className="flex items-center gap-1">
@@ -454,7 +454,7 @@ export default function ClientTrading({ clientId, clientName }: ClientTradingPro
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-900 font-medium">{formatCurrency(trade.marketValue)}</td>
+                          <td className="px-4 py-3 text-sm text-card-foreground font-medium">{formatCurrency(trade.marketValue)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -462,14 +462,14 @@ export default function ClientTrading({ clientId, clientName }: ClientTradingPro
                 </div>
                 
                 {/* Summary Section */}
-                <div className="bg-gray-50 px-4 py-3 border-t">
+                <div className="bg-muted px-4 py-3 border-t">
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Settled Trust Account Balance CAD:</span>
+                      <span className="text-muted-foreground">Settled Trust Account Balance CAD:</span>
                       <span className="font-medium">$0.00</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Settled Trust Account Balance USD:</span>
+                      <span className="text-muted-foreground">Settled Trust Account Balance USD:</span>
                       <span className="font-medium">$0.00</span>
                     </div>
                     <div className="flex justify-between font-semibold border-t pt-1">

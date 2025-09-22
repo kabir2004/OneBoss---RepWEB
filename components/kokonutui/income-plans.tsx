@@ -138,7 +138,7 @@ export default function IncomePlans() {
       case "Instructions Required":
         return <AlertCircle className="h-3 w-3 text-orange-600" />
       default:
-        return <Clock className="h-3 w-3 text-gray-500" />
+        return <Clock className="h-3 w-3 text-muted-foreground" />
     }
   }
 
@@ -149,7 +149,7 @@ export default function IncomePlans() {
       case "Scheduled":
         return <Clock className="h-3 w-3 text-blue-600" />
       default:
-        return <div className="h-3 w-3 rounded-full bg-gray-400" />
+        return <div className="h-3 w-3 rounded-full bg-muted-foreground" />
     }
   }
 
@@ -160,7 +160,7 @@ export default function IncomePlans() {
       case "Instructions Required":
         return 'bg-orange-100 text-orange-800'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-muted text-muted-foreground'
     }
   }
 
@@ -171,7 +171,7 @@ export default function IncomePlans() {
       case "Scheduled":
         return 'bg-blue-100 text-blue-800'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-muted text-muted-foreground'
     }
   }
 
@@ -183,55 +183,55 @@ export default function IncomePlans() {
           <TrendingUp className="h-6 w-6 text-orange-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Systematic Income Plans</h1>
-          <p className="text-gray-600">Manage client recurring income setups (RRIF, LIF, etc.)</p>
+          <h1 className="text-2xl font-bold text-card-foreground">Systematic Income Plans</h1>
+          <p className="text-muted-foreground">Manage client recurring income setups (RRIF, LIF, etc.)</p>
         </div>
       </div>
 
       {/* Statistics Overview - Compact Vercel-like Style */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-orange-50 via-white to-orange-50/30 p-4">
+        <div className="rounded-xl border border-border bg-gradient-to-br from-orange-50 via-white to-orange-50/30 p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center">
               <TrendingUp className="h-4 w-4 text-orange-600" />
             </div>
-            <span className="text-sm font-medium text-gray-600">Total</span>
+            <span className="text-sm font-medium text-muted-foreground">Total</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">{totalPlans}</div>
-          <div className="text-xs text-gray-500 mt-1">Income Plans</div>
+          <div className="text-2xl font-bold text-card-foreground">{totalPlans}</div>
+          <div className="text-xs text-muted-foreground mt-1">Income Plans</div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-blue-50 via-white to-blue-50/30 p-4">
+        <div className="rounded-xl border border-border bg-gradient-to-br from-blue-50 via-white to-blue-50/30 p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
               <Users className="h-4 w-4 text-blue-600" />
             </div>
-            <span className="text-sm font-medium text-gray-600">Clients</span>
+            <span className="text-sm font-medium text-muted-foreground">Clients</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">{uniqueClients}</div>
-          <div className="text-xs text-gray-500 mt-1">With Plans</div>
+          <div className="text-2xl font-bold text-card-foreground">{uniqueClients}</div>
+          <div className="text-xs text-muted-foreground mt-1">With Plans</div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-green-50 via-white to-green-50/30 p-4">
+        <div className="rounded-xl border border-border bg-gradient-to-br from-green-50 via-white to-green-50/30 p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
               <DollarSign className="h-4 w-4 text-green-600" />
             </div>
-            <span className="text-sm font-medium text-gray-600">YTD Paid</span>
+            <span className="text-sm font-medium text-muted-foreground">YTD Paid</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">{formatCurrency(totalYTDPaid)}</div>
-          <div className="text-xs text-gray-500 mt-1">To Clients</div>
+          <div className="text-2xl font-bold text-card-foreground">{formatCurrency(totalYTDPaid)}</div>
+          <div className="text-xs text-muted-foreground mt-1">To Clients</div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-red-50 via-white to-red-50/30 p-4">
+        <div className="rounded-xl border border-border bg-gradient-to-br from-red-50 via-white to-red-50/30 p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
               <AlertCircle className="h-4 w-4 text-red-600" />
             </div>
-            <span className="text-sm font-medium text-gray-600">Action</span>
+            <span className="text-sm font-medium text-muted-foreground">Action</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">{instructionsRequired}</div>
-          <div className="text-xs text-gray-500 mt-1">Instructions Required</div>
+          <div className="text-2xl font-bold text-card-foreground">{instructionsRequired}</div>
+          <div className="text-xs text-muted-foreground mt-1">Instructions Required</div>
         </div>
       </div>
 
@@ -240,7 +240,7 @@ export default function IncomePlans() {
         <div className={selectedPlan ? 'lg:col-span-3 space-y-6' : 'space-y-6'}>
           
           {/* Filters and Search */}
-          <Card className="border border-gray-200 shadow-sm">
+          <Card className="border border-border shadow-sm">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
@@ -256,9 +256,9 @@ export default function IncomePlans() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Year</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Year</label>
                   <Select value={selectedYear} onValueChange={setSelectedYear}>
-                    <SelectTrigger className="border-gray-200 focus:border-orange-300 focus:ring-orange-200">
+                    <SelectTrigger className="border-border focus:border-orange-300 focus:ring-orange-200">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -269,9 +269,9 @@ export default function IncomePlans() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Client Instruction Status</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Client Instruction Status</label>
                   <Select value={clientInstructionFilter} onValueChange={setClientInstructionFilter}>
-                    <SelectTrigger className="border-gray-200 focus:border-orange-300 focus:ring-orange-200">
+                    <SelectTrigger className="border-border focus:border-orange-300 focus:ring-orange-200">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -282,9 +282,9 @@ export default function IncomePlans() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Payment Schedule Status</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Payment Schedule Status</label>
                   <Select value={paymentScheduleFilter} onValueChange={setPaymentScheduleFilter}>
-                    <SelectTrigger className="border-gray-200 focus:border-orange-300 focus:ring-orange-200">
+                    <SelectTrigger className="border-border focus:border-orange-300 focus:ring-orange-200">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -295,14 +295,14 @@ export default function IncomePlans() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Search</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Search</label>
                   <div className="relative">
                     <Search className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                     <Input
                       placeholder="Client, plan, or rep..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-9 border-gray-200 focus:border-orange-300 focus:ring-orange-200 transition-all duration-200"
+                      className="pl-9 border-border focus:border-orange-300 focus:ring-orange-200 transition-all duration-200"
                     />
                   </div>
                 </div>
@@ -320,7 +320,7 @@ export default function IncomePlans() {
           </Card>
 
           {/* Income Plans Table */}
-          <Card className="border border-gray-200 shadow-sm">
+          <Card className="border border-border shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-orange-600" />
@@ -328,7 +328,7 @@ export default function IncomePlans() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="rounded-lg border border-gray-200 overflow-hidden">
+              <div className="rounded-lg border border-border overflow-hidden">
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
@@ -360,14 +360,14 @@ export default function IncomePlans() {
                         >
                           <TableCell>
                             <div>
-                              <div className="font-medium text-gray-900">{item.clientName}</div>
-                              <div className="text-sm text-gray-500">ID: {item.clientId}</div>
+                              <div className="font-medium text-card-foreground">{item.clientName}</div>
+                              <div className="text-sm text-muted-foreground">ID: {item.clientId}</div>
                             </div>
                           </TableCell>
                           <TableCell>
                             <div>
                               <div className="font-medium">{item.planNumber}</div>
-                              <div className="text-xs text-gray-500">{item.planType}</div>
+                              <div className="text-xs text-muted-foreground">{item.planType}</div>
                             </div>
                           </TableCell>
                           <TableCell className="text-sm">{item.representative}</TableCell>
@@ -433,49 +433,49 @@ export default function IncomePlans() {
                         <div className="relative">
                           <div className="text-sm text-orange-600 font-medium mb-1">Client & Plan</div>
                           <div className="font-bold text-orange-900 text-lg">{selectedPlanData.clientName}</div>
-                          <div className="text-sm text-gray-600">{selectedPlanData.planNumber}</div>
+                          <div className="text-sm text-muted-foreground">{selectedPlanData.planNumber}</div>
                         </div>
                       </div>
                       
                       <div className="space-y-3">
                         <div>
-                          <div className="text-sm text-gray-500 mb-1">Plan Type</div>
-                          <div className="text-sm font-medium text-gray-900">{selectedPlanData.planType}</div>
+                          <div className="text-sm text-muted-foreground mb-1">Plan Type</div>
+                          <div className="text-sm font-medium text-card-foreground">{selectedPlanData.planType}</div>
                         </div>
                         <div>
-                          <div className="text-sm text-gray-500 mb-1">Representative</div>
-                          <div className="text-sm font-medium text-gray-900">{selectedPlanData.representative}</div>
+                          <div className="text-sm text-muted-foreground mb-1">Representative</div>
+                          <div className="text-sm font-medium text-card-foreground">{selectedPlanData.representative}</div>
                         </div>
                       </div>
                       
                       <div className="grid grid-cols-1 gap-3">
-                        <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gradient-to-r from-gray-50 to-white p-3 transition-all duration-300 hover:shadow-md hover:border-gray-300">
-                          <div className="text-sm text-gray-500">Minimum Payment</div>
-                          <div className="font-bold text-gray-900 text-lg group-hover:text-orange-700 transition-colors">{formatCurrency(selectedPlanData.minimum)}</div>
+                        <div className="group relative overflow-hidden rounded-lg border border-border bg-gradient-to-r from-gray-50 to-white p-3 transition-all duration-300 hover:shadow-md hover:border-gray-300">
+                          <div className="text-sm text-muted-foreground">Minimum Payment</div>
+                          <div className="font-bold text-card-foreground text-lg group-hover:text-orange-700 transition-colors">{formatCurrency(selectedPlanData.minimum)}</div>
                         </div>
-                        <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gradient-to-r from-gray-50 to-white p-3 transition-all duration-300 hover:shadow-md hover:border-gray-300">
-                          <div className="text-sm text-gray-500">Maximum Payment</div>
-                          <div className="font-bold text-gray-900 text-lg group-hover:text-orange-700 transition-colors">{formatCurrency(selectedPlanData.maximum)}</div>
+                        <div className="group relative overflow-hidden rounded-lg border border-border bg-gradient-to-r from-gray-50 to-white p-3 transition-all duration-300 hover:shadow-md hover:border-gray-300">
+                          <div className="text-sm text-muted-foreground">Maximum Payment</div>
+                          <div className="font-bold text-card-foreground text-lg group-hover:text-orange-700 transition-colors">{formatCurrency(selectedPlanData.maximum)}</div>
                         </div>
-                        <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gradient-to-r from-green-50 to-white p-3 transition-all duration-300 hover:shadow-md hover:border-green-300">
-                          <div className="text-sm text-gray-500">YTD Paid to Client</div>
+                        <div className="group relative overflow-hidden rounded-lg border border-border bg-gradient-to-r from-green-50 to-white p-3 transition-all duration-300 hover:shadow-md hover:border-green-300">
+                          <div className="text-sm text-muted-foreground">YTD Paid to Client</div>
                           <div className="font-bold text-green-700 text-lg group-hover:text-green-800 transition-colors">{formatCurrency(selectedPlanData.ytdPaidToClient)}</div>
                         </div>
-                        <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gradient-to-r from-red-50 to-white p-3 transition-all duration-300 hover:shadow-md hover:border-red-300">
-                          <div className="text-sm text-gray-500">YTD Withholding Tax</div>
+                        <div className="group relative overflow-hidden rounded-lg border border-border bg-gradient-to-r from-red-50 to-white p-3 transition-all duration-300 hover:shadow-md hover:border-red-300">
+                          <div className="text-sm text-muted-foreground">YTD Withholding Tax</div>
                           <div className="font-bold text-red-700 text-lg group-hover:text-red-800 transition-colors">{formatCurrency(selectedPlanData.ytdWithholdingTax)}</div>
                         </div>
                       </div>
                       
                       <div className="space-y-2 pt-2 border-t border-gray-100">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-500">Instruction Status</span>
+                          <span className="text-sm text-muted-foreground">Instruction Status</span>
                           <Badge className={getInstructionStatusColor(selectedPlanData.clientInstructionStatus)}>
                             {selectedPlanData.clientInstructionStatus}
                           </Badge>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-500">Payment Status</span>
+                          <span className="text-sm text-muted-foreground">Payment Status</span>
                           <Badge className={getPaymentStatusColor(selectedPlanData.paymentScheduleStatus)}>
                             {selectedPlanData.paymentScheduleStatus}
                           </Badge>
@@ -488,7 +488,7 @@ export default function IncomePlans() {
             </Card>
 
             {/* Allocation Charts */}
-            <Card className="border border-gray-200 shadow-sm">
+            <Card className="border border-border shadow-sm">
               <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-50/50 border-b border-purple-100">
                 <CardTitle className="flex items-center gap-2 text-purple-900">
                   <div className="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center">

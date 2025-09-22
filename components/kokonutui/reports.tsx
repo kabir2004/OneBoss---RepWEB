@@ -192,7 +192,7 @@ export default function Reports() {
       case 'failed':
         return 'bg-red-100 text-red-800'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-muted text-muted-foreground'
     }
   }
 
@@ -204,44 +204,44 @@ export default function Reports() {
           <BarChart3 className="h-6 w-6 text-green-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Reports & Analytics</h1>
-          <p className="text-gray-600">Generate and manage client reports</p>
+          <h1 className="text-2xl font-bold text-card-foreground">Reports & Analytics</h1>
+          <p className="text-muted-foreground">Generate and manage client reports</p>
         </div>
       </div>
 
       {/* Statistics Overview - Compact Vercel-like Style */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-green-50 via-white to-green-50/30 p-4">
+        <div className="rounded-xl border border-border bg-gradient-to-br from-green-50 via-white to-green-50/30 p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
               <FileText className="h-4 w-4 text-green-600" />
             </div>
-            <span className="text-sm font-medium text-gray-600">Total</span>
+            <span className="text-sm font-medium text-muted-foreground">Total</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">{totalReports}</div>
-          <div className="text-xs text-gray-500 mt-1">Report Types</div>
+          <div className="text-2xl font-bold text-card-foreground">{totalReports}</div>
+          <div className="text-xs text-muted-foreground mt-1">Report Types</div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-blue-50 via-white to-blue-50/30 p-4">
+        <div className="rounded-xl border border-border bg-gradient-to-br from-blue-50 via-white to-blue-50/30 p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
               <BarChart3 className="h-4 w-4 text-blue-600" />
             </div>
-            <span className="text-sm font-medium text-gray-600">Categories</span>
+            <span className="text-sm font-medium text-muted-foreground">Categories</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">{totalCategories}</div>
-          <div className="text-xs text-gray-500 mt-1">Available</div>
+          <div className="text-2xl font-bold text-card-foreground">{totalCategories}</div>
+          <div className="text-xs text-muted-foreground mt-1">Available</div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-purple-50 via-white to-purple-50/30 p-4">
+        <div className="rounded-xl border border-border bg-gradient-to-br from-purple-50 via-white to-purple-50/30 p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
               <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
             </div>
-            <span className="text-sm font-medium text-gray-600">Recent</span>
+            <span className="text-sm font-medium text-muted-foreground">Recent</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">{completedReports}</div>
-          <div className="text-xs text-gray-500 mt-1">Completed</div>
+          <div className="text-2xl font-bold text-card-foreground">{completedReports}</div>
+          <div className="text-xs text-muted-foreground mt-1">Completed</div>
         </div>
       </div>
 
@@ -250,7 +250,7 @@ export default function Reports() {
         <div className={selectedReportType ? 'lg:col-span-3 space-y-6' : 'space-y-6'}>
           
           {/* Search and Categories */}
-          <Card className="border border-gray-200 shadow-sm">
+          <Card className="border border-border shadow-sm">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
@@ -305,16 +305,16 @@ export default function Reports() {
                             <Icon className={`h-5 w-5 ${category.color}`} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-gray-900 mb-1">{category.name}</h3>
-                            <p className="text-xs text-gray-500 mb-2">{category.reports.length} report{category.reports.length !== 1 ? 's' : ''} available</p>
+                            <h3 className="font-semibold text-card-foreground mb-1">{category.name}</h3>
+                            <p className="text-xs text-muted-foreground mb-2">{category.reports.length} report{category.reports.length !== 1 ? 's' : ''} available</p>
                             <div className="space-y-1 max-h-20 overflow-hidden">
                               {category.reports.slice(0, 3).map((report, index) => (
-                                <div key={index} className="text-xs text-gray-600 truncate">
+                                <div key={index} className="text-xs text-muted-foreground truncate">
                                   • {report.name}
                                 </div>
                               ))}
                               {category.reports.length > 3 && (
-                                <div className="text-xs text-gray-500">
+                                <div className="text-xs text-muted-foreground">
                                   +{category.reports.length - 3} more...
                                 </div>
                               )}
@@ -376,7 +376,7 @@ export default function Reports() {
             </Card>
           )}
 
-          <Card className="border border-gray-200 shadow-sm">
+          <Card className="border border-border shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5 text-green-600" />
@@ -384,7 +384,7 @@ export default function Reports() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="rounded-lg border border-gray-200 overflow-hidden">
+              <div className="rounded-lg border border-border overflow-hidden">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-50/80">
@@ -401,7 +401,7 @@ export default function Reports() {
                     {recentReports.map((report) => (
                       <TableRow key={report.id} className="hover:bg-green-50/50 transition-colors duration-200">
                         <TableCell className="font-medium">{report.id}</TableCell>
-                        <TableCell className="font-medium text-gray-900">{report.name}</TableCell>
+                        <TableCell className="font-medium text-card-foreground">{report.name}</TableCell>
                         <TableCell>
                           <Badge variant="outline">{report.type}</Badge>
                         </TableCell>
@@ -456,12 +456,12 @@ export default function Reports() {
                       </div>
                       
                       <div>
-                        <div className="text-sm text-gray-500 mb-2">Available Reports ({selectedCategory.reports.length})</div>
+                        <div className="text-sm text-muted-foreground mb-2">Available Reports ({selectedCategory.reports.length})</div>
                         <div className="space-y-2 max-h-64 overflow-y-auto">
                           {selectedCategory.reports.map((report, index) => (
                             <div key={index} className="group p-3 rounded-lg border border-gray-100 hover:border-green-200 hover:bg-green-50/50 transition-all duration-200 cursor-pointer">
-                              <div className="font-medium text-gray-900 text-sm mb-1">{report.name}</div>
-                              <div className="text-xs text-gray-600">{report.description}</div>
+                              <div className="font-medium text-card-foreground text-sm mb-1">{report.name}</div>
+                              <div className="text-xs text-muted-foreground">{report.description}</div>
                             </div>
                           ))}
                         </div>

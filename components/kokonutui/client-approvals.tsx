@@ -179,7 +179,7 @@ export default function ClientApprovals({ clientId, clientName }: ClientApproval
 
   const getSortIcon = (field: keyof Approval) => {
     if (sortField !== field) {
-      return <ChevronUp className="h-4 w-4 text-gray-400" />
+      return <ChevronUp className="h-4 w-4 text-muted-foreground" />
     }
     return sortDirection === 'asc' ? 
       <ChevronUp className="h-4 w-4 text-blue-600" /> : 
@@ -265,7 +265,7 @@ export default function ClientApprovals({ clientId, clientName }: ClientApproval
             </div>
             
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Items per page:</span>
+              <span className="text-sm text-muted-foreground">Items per page:</span>
               <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(Number(value))}>
                 <SelectTrigger className="w-20">
                   <SelectValue />
@@ -286,7 +286,7 @@ export default function ClientApprovals({ clientId, clientName }: ClientApproval
               <TableHeader>
                 <TableRow>
                   <TableHead 
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-accent"
                     onClick={() => handleSort('description')}
                   >
                     <div className="flex items-center gap-2">
@@ -295,7 +295,7 @@ export default function ClientApprovals({ clientId, clientName }: ClientApproval
                     </div>
                   </TableHead>
                   <TableHead 
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-accent"
                     onClick={() => handleSort('dateCreated')}
                   >
                     <div className="flex items-center gap-2">
@@ -304,7 +304,7 @@ export default function ClientApprovals({ clientId, clientName }: ClientApproval
                     </div>
                   </TableHead>
                   <TableHead 
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-accent"
                     onClick={() => handleSort('dateCompleted')}
                   >
                     <div className="flex items-center gap-2">
@@ -313,7 +313,7 @@ export default function ClientApprovals({ clientId, clientName }: ClientApproval
                     </div>
                   </TableHead>
                   <TableHead 
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-accent"
                     onClick={() => handleSort('type')}
                   >
                     <div className="flex items-center gap-2">
@@ -322,7 +322,7 @@ export default function ClientApprovals({ clientId, clientName }: ClientApproval
                     </div>
                   </TableHead>
                   <TableHead 
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-accent"
                     onClick={() => handleSort('status')}
                   >
                     <div className="flex items-center gap-2">
@@ -331,7 +331,7 @@ export default function ClientApprovals({ clientId, clientName }: ClientApproval
                     </div>
                   </TableHead>
                   <TableHead 
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-accent"
                     onClick={() => handleSort('createdFrom')}
                   >
                     <div className="flex items-center gap-2">
@@ -344,7 +344,7 @@ export default function ClientApprovals({ clientId, clientName }: ClientApproval
               </TableHeader>
               <TableBody>
                 {paginatedApprovals.map((approval) => (
-                  <TableRow key={approval.id} className="hover:bg-gray-50">
+                  <TableRow key={approval.id} className="hover:bg-accent">
                     <TableCell className="font-medium">
                       {approval.description || '-'}
                     </TableCell>
@@ -398,7 +398,7 @@ export default function ClientApprovals({ clientId, clientName }: ClientApproval
             </div>
             
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Items per page:</span>
+              <span className="text-sm text-muted-foreground">Items per page:</span>
               <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(Number(value))}>
                 <SelectTrigger className="w-20">
                   <SelectValue />
