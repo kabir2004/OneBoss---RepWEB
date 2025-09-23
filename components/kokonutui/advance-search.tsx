@@ -39,7 +39,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ChevronDown } from "lucide-react"
 
-export default function AdvancedSearch() {
+export default function AdvanceSearch() {
   const router = useRouter()
   const [searchCriteria, setSearchCriteria] = useState({
     // Text Input Fields

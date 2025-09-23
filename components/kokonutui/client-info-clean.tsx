@@ -686,11 +686,21 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
               {/* Financial Portfolio Section */}
               <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200">
                 <div className="p-6 border-b border-gray-200/60 bg-gradient-to-r from-blue-50/80 to-blue-50/40 rounded-t-xl">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <TrendingUp className="h-5 w-5 text-blue-600" />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <TrendingUp className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-card-foreground">Financial Portfolio</h3>
                     </div>
-                    <h3 className="text-lg font-semibold text-card-foreground">Financial Portfolio</h3>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-all duration-200"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Plan
+                    </Button>
                   </div>
                 </div>
                 
@@ -735,36 +745,24 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                           className="p-6 border-b border-gray-200/60 bg-gradient-to-r from-blue-50/80 to-blue-50/40 cursor-pointer hover:from-blue-100/80 hover:to-blue-100/40 transition-all duration-200 rounded-t-xl"
                           onClick={() => togglePlan('resp')}
                         >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <Target className="h-5 w-5 text-blue-600" />
-                              </div>
-                              <div className="flex items-center gap-3">
-                                {expandedPlans.resp ? (
-                                  <ChevronDown className="h-5 w-5 text-blue-600" />
-                                ) : (
-                                  <ChevronUp className="h-5 w-5 text-blue-600" />
-                                )}
-                                <div>
-                                  <h4 className="font-semibold text-card-foreground text-lg">
-                                    RESP Education Savings Plan
-                                  </h4>
-                                  <p className="text-sm text-muted-foreground mt-1">
-                                    Account: 3238677748 • Family Plan • {client.currentRepresentative || 'Representative'}
-                                  </p>
-                                </div>
-                              </div>
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                              <Target className="h-5 w-5 text-blue-600" />
                             </div>
-                            <div className="flex items-center">
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-all duration-200"
-                              >
-                                <Plus className="h-4 w-4 mr-2" />
-                                Add Plan
-                              </Button>
+                            <div className="flex items-center gap-3">
+                              {expandedPlans.resp ? (
+                                <ChevronDown className="h-5 w-5 text-blue-600" />
+                              ) : (
+                                <ChevronUp className="h-5 w-5 text-blue-600" />
+                              )}
+                              <div>
+                                <h4 className="font-semibold text-card-foreground text-lg">
+                                  RESP Education Savings Plan
+                                </h4>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  Account: 3238677748 • Family Plan • {client.currentRepresentative || 'Representative'}
+                                </p>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -905,36 +903,24 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                           className="p-6 border-b border-gray-200/60 bg-gradient-to-r from-green-50/80 to-green-50/40 cursor-pointer hover:from-green-100/80 hover:to-green-100/40 transition-all duration-200 rounded-t-xl"
                           onClick={() => togglePlan('rrsp')}
                         >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                <Target className="h-5 w-5 text-green-600" />
-                              </div>
-                              <div className="flex items-center gap-3">
-                                {expandedPlans.rrsp ? (
-                                  <ChevronDown className="h-5 w-5 text-green-600" />
-                                ) : (
-                                  <ChevronUp className="h-5 w-5 text-green-600" />
-                                )}
-                                <div>
-                                  <h4 className="font-semibold text-card-foreground text-lg">
-                                    RRSP Retirement Savings Plan
-                                  </h4>
-                                  <p className="text-sm text-muted-foreground mt-1">
-                                    Account: 7545538518 • Individual Plan • {client.currentRepresentative || 'Representative'}
-                                  </p>
-                                </div>
-                              </div>
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                              <Target className="h-5 w-5 text-green-600" />
                             </div>
-                            <div className="flex items-center">
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-all duration-200"
-                              >
-                                <Plus className="h-4 w-4 mr-2" />
-                                Add Plan
-                              </Button>
+                            <div className="flex items-center gap-3">
+                              {expandedPlans.rrsp ? (
+                                <ChevronDown className="h-5 w-5 text-green-600" />
+                              ) : (
+                                <ChevronUp className="h-5 w-5 text-green-600" />
+                              )}
+                              <div>
+                                <h4 className="font-semibold text-card-foreground text-lg">
+                                  RRSP Retirement Savings Plan
+                                </h4>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  Account: 7545538518 • Individual Plan • {client.currentRepresentative || 'Representative'}
+                                </p>
+                              </div>
                             </div>
                           </div>
                         </div>

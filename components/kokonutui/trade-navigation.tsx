@@ -15,7 +15,7 @@ export function TradeNavigation() {
   const router = useRouter()
 
   const handleAdvancedSearch = () => {
-    router.push('/trades/advanced-search')
+    router.push('/trades/advance-search')
   }
 
   return (
@@ -46,19 +46,19 @@ export function TradeNavigation() {
               )
             })}
             
-            {/* Advanced Search Button */}
+            {/* Advance Search Button */}
             <Button
-              variant={pathname === '/trades/advanced-search' ? "default" : "ghost"}
+              variant={pathname === '/trades/advance-search' ? "default" : "ghost"}
               size="sm"
               onClick={handleAdvancedSearch}
               className={`h-7 px-2 text-sm font-medium transition-colors ${
-                pathname === '/trades/advanced-search'
+                pathname === '/trades/advance-search'
                   ? 'text-white bg-blue-800 hover:bg-blue-900'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               }`}
             >
               <Filter className="h-4 w-4 mr-2" />
-              Advanced Search
+              Advance Search
             </Button>
           </div>
 
