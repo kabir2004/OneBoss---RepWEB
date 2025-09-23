@@ -58,7 +58,7 @@ export default function ClientNavigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header with Navigation */}
         <div className="flex items-center justify-between py-4">
-          <div className="flex items-center gap-0.5">
+          <div className="flex items-center gap-1">
             {clientNavItems.map((item) => {
               const isActive = pathname === item.href
               const Icon = item.icon
@@ -68,7 +68,7 @@ export default function ClientNavigation() {
                   key={item.href}
                   href={item.href}
                   className={`
-                    group relative flex items-center gap-2 px-2 py-1 text-sm font-medium rounded transition-all duration-200
+                    group relative flex items-center gap-2 px-3 py-2 text-sm font-medium rounded transition-all duration-200
                     ${isActive 
                       ? 'text-white bg-blue-800' 
                       : 'text-muted-foreground hover:text-foreground hover:bg-accent'

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { 
   CheckCircle,
   Clock,
@@ -23,6 +24,10 @@ import {
   Mail,
   BarChart3,
   FileText,
+  Users2,
+  Home,
+  CheckSquare,
+  BarChart2,
   AlertTriangle,
   Eye,
   Edit,
@@ -37,7 +42,6 @@ import {
   User,
   MessageSquare,
   PieChart,
-  Home,
   UserCheck,
   MapPin as AddressIcon,
   Phone as PhoneIcon,
@@ -213,66 +217,64 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
 
   return (
     <div className="space-y-8">
+      {/* Search Field */}
+      <div className="space-y-6">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            type="text"
+            placeholder="Search clients by name, email, ID, or location..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value)
+              setShowSearchResults(true)
+            }}
+            onFocus={() => setShowSearchResults(true)}
+            onBlur={handleSearchBlur}
+            className="pl-10 h-11 text-sm bg-background border-input"
+          />
+
+          {/* Search Results Dropdown */}
+          {showSearchResults && searchResults.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
+              {searchResults.map((result) => (
+                <div
+                  key={result.id}
+                  onClick={() => handleClientSelect(result)}
+                  className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-xs">
+                      {result.firstName[0]}{result.surname[0]}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm text-gray-900 truncate">
+                        {result.firstName} {result.surname}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        ID: {result.clientId} • {result.status.charAt(0).toUpperCase() + result.status.slice(1)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* No Results */}
+          {showSearchResults && searchQuery.trim().length > 0 && searchResults.length === 0 && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+              <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                No clients found matching the search criteria
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Client Header */}
       <div className="bg-card border-b border-border shadow-sm">
         <div className="px-4 sm:px-6 lg:px-8 pb-4">
-          {/* Search Fields */}
-          <div className="relative mb-6">
-            <div className="relative w-full">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="Search clients by name, email, ID, or location..."
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value)
-                    setShowSearchResults(true)
-                  }}
-                  onFocus={() => setShowSearchResults(true)}
-                  onBlur={handleSearchBlur}
-                  className="pl-10 pr-4 py-2 h-11 text-sm border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800"
-                />
-              </div>
-              
-              {/* Search Results Dropdown */}
-              {showSearchResults && searchResults.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
-                  {searchResults.map((result) => (
-                    <div
-                      key={result.id}
-                      onClick={() => handleClientSelect(result)}
-                      className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-xs">
-                          {result.firstName[0]}{result.surname[0]}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-medium text-sm text-gray-900 truncate">
-                            {result.firstName} {result.surname}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            ID: {result.clientId} • {result.status.charAt(0).toUpperCase() + result.status.slice(1)}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              
-              {/* No Results */}
-              {showSearchResults && searchQuery.trim().length > 0 && searchResults.length === 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                  <div className="px-4 py-3 text-sm text-gray-500 text-center">
-                    No clients found matching the search criteria
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-          
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button 
