@@ -80,14 +80,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
   const [showNFUMessagesModal, setShowNFUMessagesModal] = useState(false)
   const [activePlanTab, setActivePlanTab] = useState('details')
   const [activeAllocationTab, setActiveAllocationTab] = useState('chart')
-  const [searchFields, setSearchFields] = useState({
-    firstName: '',
-    surname: '',
-    address: '',
-    phoneNumber: '',
-    cellphone: '',
-    emailAddress: ''
-  })
+  const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<any[]>([])
   const [showSearchResults, setShowSearchResults] = useState(false)
 
@@ -114,58 +107,45 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
   }, [])
 
   // Search functionality
-  const handleSearchFieldChange = useCallback((field: string, value: string) => {
-    setSearchFields(prev => ({
-      ...prev,
-      [field]: value
-    }))
-  }, [])
 
   const performSearch = useCallback(() => {
-    const hasSearchCriteria = Object.values(searchFields).some(value => value.trim().length > 0)
-    
-    if (!hasSearchCriteria) {
+    if (!searchQuery.trim()) {
       setSearchResults([])
       setShowSearchResults(false)
       return
     }
 
+    const query = searchQuery.toLowerCase()
     const results = mockClients.filter(client => {
       if (client.id === parseInt(clientId)) return false // Exclude current client
       
       return (
-        (!searchFields.firstName || client.firstName.toLowerCase().includes(searchFields.firstName.toLowerCase())) &&
-        (!searchFields.surname || client.surname.toLowerCase().includes(searchFields.surname.toLowerCase())) &&
-        (!searchFields.address || (client.mailingAddress && client.mailingAddress.toLowerCase().includes(searchFields.address.toLowerCase()))) &&
-        (!searchFields.phoneNumber || (client.phone && client.phone.toLowerCase().includes(searchFields.phoneNumber.toLowerCase()))) &&
-        (!searchFields.cellphone || (client.cellPhone && client.cellPhone.toLowerCase().includes(searchFields.cellphone.toLowerCase()))) &&
-        (!searchFields.emailAddress || (client.email && client.email.toLowerCase().includes(searchFields.emailAddress.toLowerCase())))
+        client.firstName.toLowerCase().includes(query) ||
+        client.surname.toLowerCase().includes(query) ||
+        client.email.toLowerCase().includes(query) ||
+        client.clientId.toLowerCase().includes(query) ||
+        client.city.toLowerCase().includes(query) ||
+        client.province.toLowerCase().includes(query) ||
+        client.location.toLowerCase().includes(query)
       )
     })
     
     setSearchResults(results)
     setShowSearchResults(true)
-  }, [searchFields, clientId])
+  }, [searchQuery, clientId])
 
-  // Trigger search when any field changes
+  // Trigger search when query changes
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       performSearch()
     }, 300) // Debounce search
 
     return () => clearTimeout(timeoutId)
-  }, [searchFields, performSearch])
+  }, [searchQuery, performSearch])
 
   const handleClientSelect = useCallback((selectedClient: any) => {
     router.push(`/clients/${selectedClient.id}`)
-    setSearchFields({
-      firstName: '',
-      surname: '',
-      address: '',
-      phoneNumber: '',
-      cellphone: '',
-      emailAddress: ''
-    })
+    setSearchQuery('')
     setShowSearchResults(false)
   }, [router])
 
@@ -238,116 +218,21 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
         <div className="max-w-7xl mx-auto px-6 py-4">
           {/* Search Fields */}
           <div className="mb-6 relative">
-            <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-              <div className="mb-4 flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Search for Another Client</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Use any combination of fields below to find and navigate to other clients</p>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setSearchFields({
-                      firstName: '',
-                      surname: '',
-                      address: '',
-                      phoneNumber: '',
-                      cellphone: '',
-                      emailAddress: ''
-                    })
-                    setShowSearchResults(false)
+            <div className="relative w-full">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search clients by name, email, ID, or location..."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value)
+                    setShowSearchResults(true)
                   }}
-                  className="text-gray-600 hover:text-gray-800"
-                >
-                  Clear All
-                </Button>
-              </div>
-              <div className="relative w-full">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-                {/* First Name */}
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="First Name"
-                    value={searchFields.firstName}
-                    onChange={(e) => handleSearchFieldChange('firstName', e.target.value)}
-                    onFocus={() => setShowSearchResults(true)}
-                    onBlur={handleSearchBlur}
-                    className="pl-10 pr-4 py-2 h-10 text-sm border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800"
-                  />
-                </div>
-
-                {/* Surname */}
-                <div className="relative">
-                  <UserCheck className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="Surname"
-                    value={searchFields.surname}
-                    onChange={(e) => handleSearchFieldChange('surname', e.target.value)}
-                    onFocus={() => setShowSearchResults(true)}
-                    onBlur={handleSearchBlur}
-                    className="pl-10 pr-4 py-2 h-10 text-sm border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800"
-                  />
-                </div>
-
-                {/* Address */}
-                <div className="relative">
-                  <AddressIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="Address"
-                    value={searchFields.address}
-                    onChange={(e) => handleSearchFieldChange('address', e.target.value)}
-                    onFocus={() => setShowSearchResults(true)}
-                    onBlur={handleSearchBlur}
-                    className="pl-10 pr-4 py-2 h-10 text-sm border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800"
-                  />
-                </div>
-
-                {/* Phone Number */}
-                <div className="relative">
-                  <PhoneIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="Phone Number"
-                    value={searchFields.phoneNumber}
-                    onChange={(e) => handleSearchFieldChange('phoneNumber', e.target.value)}
-                    onFocus={() => setShowSearchResults(true)}
-                    onBlur={handleSearchBlur}
-                    className="pl-10 pr-4 py-2 h-10 text-sm border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800"
-                  />
-                </div>
-
-                {/* Cellphone */}
-                <div className="relative">
-                  <Smartphone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="Cellphone"
-                    value={searchFields.cellphone}
-                    onChange={(e) => handleSearchFieldChange('cellphone', e.target.value)}
-                    onFocus={() => setShowSearchResults(true)}
-                    onBlur={handleSearchBlur}
-                    className="pl-10 pr-4 py-2 h-10 text-sm border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800"
-                  />
-                </div>
-
-                {/* Email Address */}
-                <div className="relative">
-                  <AtSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="Email Address"
-                    value={searchFields.emailAddress}
-                    onChange={(e) => handleSearchFieldChange('emailAddress', e.target.value)}
-                    onFocus={() => setShowSearchResults(true)}
-                    onBlur={handleSearchBlur}
-                    className="pl-10 pr-4 py-2 h-10 text-sm border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800"
-                  />
-                </div>
+                  onFocus={() => setShowSearchResults(true)}
+                  onBlur={handleSearchBlur}
+                  className="pl-10 pr-4 py-2 h-11 text-sm border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800"
+                />
               </div>
               
               {/* Search Results Dropdown */}
@@ -378,16 +263,15 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
               )}
               
               {/* No Results */}
-              {showSearchResults && Object.values(searchFields).some(value => value.trim().length > 0) && searchResults.length === 0 && (
+              {showSearchResults && searchQuery.trim().length > 0 && searchResults.length === 0 && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                   <div className="px-4 py-3 text-sm text-gray-500 text-center">
                     No clients found matching the search criteria
                   </div>
                 </div>
               )}
-                </div>
-              </div>
             </div>
+          </div>
           
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -559,126 +443,104 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
           {/* Summary Tab */}
           <TabsContent value="summary" className="flex-1 p-6 bg-white">
             <div className="max-w-7xl mx-auto space-y-6">
-              {/* Client Overview Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-200">
+              {/* Client Overview - Compact Layout */}
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                  {/* Client ID */}
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <User className="h-5 w-5 text-blue-600" />
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <User className="h-4 w-4 text-blue-600" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Client ID</p>
-                      <p className="text-lg font-semibold text-card-foreground">{client.clientId}</p>
+                      <p className="text-xs text-muted-foreground">Client ID</p>
+                      <p className="text-sm font-semibold text-card-foreground">{client.clientId}</p>
                     </div>
                   </div>
-                </div>
-                
-                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-200">
+                  
+                  {/* Total Assets */}
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                      <DollarSign className="h-5 w-5 text-green-600" />
+                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                      <DollarSign className="h-4 w-4 text-green-600" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Total Assets</p>
-                      <p className="text-lg font-semibold text-green-600">{formatCurrency(calculateGrandTotal(client))}</p>
+                      <p className="text-xs text-muted-foreground">Total Assets</p>
+                      <p className="text-sm font-semibold text-green-600">{formatCurrency(calculateGrandTotal(client))}</p>
                     </div>
                   </div>
-                </div>
-                
-                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-200">
+                  
+                  {/* Total Trades */}
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <TrendingUp className="h-5 w-5 text-purple-600" />
+                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <TrendingUp className="h-4 w-4 text-purple-600" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Total Trades</p>
-                      <p className="text-lg font-semibold text-card-foreground">{client.totalTrades || 0}</p>
+                      <p className="text-xs text-muted-foreground">Total Trades</p>
+                      <p className="text-sm font-semibold text-card-foreground">{client.totalTrades || 0}</p>
                     </div>
                   </div>
-                </div>
-                
-                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-200">
+                  
+                  {/* Join Date */}
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                      <Calendar className="h-5 w-5 text-orange-600" />
+                    <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                      <Calendar className="h-4 w-4 text-orange-600" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Join Date</p>
-                      <p className="text-lg font-semibold text-card-foreground">{client.joinDate || 'N/A'}</p>
+                      <p className="text-xs text-muted-foreground">Join Date</p>
+                      <p className="text-sm font-semibold text-card-foreground">{client.joinDate || 'N/A'}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Client Contact Information */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Contact & Address Information - Compact Layout */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {/* Mailing Address */}
-                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <MapPin className="h-5 w-5 text-blue-600" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-card-foreground">Mailing Address</h3>
+                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <MapPin className="h-4 w-4 text-blue-600" />
+                    <h3 className="text-sm font-semibold text-card-foreground">Mailing Address</h3>
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-sm text-card-foreground">230 Meadowbrook Dr. Unit 4</p>
-                    <p className="text-sm text-card-foreground">ANCASTER ON L9K 1J3</p>
+                  <div className="text-xs text-card-foreground space-y-1">
+                    <p>230 Meadowbrook Dr. Unit 4</p>
+                    <p>ANCASTER ON L9K 1J3</p>
                   </div>
                 </div>
 
                 {/* Contact Information */}
-                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                      <Phone className="h-5 w-5 text-green-600" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-card-foreground">Contact Information</h3>
+                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Phone className="h-4 w-4 text-green-600" />
+                    <h3 className="text-sm font-semibold text-card-foreground">Contact Information</h3>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1 text-xs">
                     <div className="flex justify-between">
-                      <span className="text-sm text-muted-foreground">Home:</span>
-                      <span className="text-sm text-card-foreground">555-555-5555</span>
+                      <span className="text-muted-foreground">Home:</span>
+                      <span className="text-card-foreground">555-555-5555</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-muted-foreground">Cell:</span>
-                      <span className="text-sm text-card-foreground">555-555-5555</span>
+                      <span className="text-muted-foreground">Cell:</span>
+                      <span className="text-card-foreground">555-555-5555</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-muted-foreground">Email:</span>
-                      <span className="text-sm text-card-foreground">client@onebosstest.com</span>
+                      <span className="text-muted-foreground">Email:</span>
+                      <span className="text-card-foreground">client@onebosstest.com</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Residential Address */}
-                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <Home className="h-5 w-5 text-purple-600" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-card-foreground">Residential Address</h3>
+                {/* Representative & Language */}
+                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <User className="h-4 w-4 text-orange-600" />
+                    <h3 className="text-sm font-semibold text-card-foreground">Representative</h3>
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-sm text-card-foreground">230 Meadowbrook Dr. Unit 4</p>
-                    <p className="text-sm text-card-foreground">ANCASTER ON L9K 1J3</p>
-                    <div className="flex justify-between mt-3">
-                      <span className="text-sm text-muted-foreground">Preferred Language:</span>
-                      <span className="text-sm text-card-foreground">English</span>
+                  <div className="space-y-1 text-xs">
+                    <p className="text-card-foreground font-medium">Marsh, Antoine</p>
+                    <p className="text-muted-foreground">ID: 9823-2232</p>
+                    <div className="flex justify-between mt-2">
+                      <span className="text-muted-foreground">Language:</span>
+                      <span className="text-card-foreground">English</span>
                     </div>
-                  </div>
-                </div>
-
-                {/* Current Representative */}
-                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                      <User className="h-5 w-5 text-orange-600" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-card-foreground">Current Representative</h3>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-lg font-semibold text-card-foreground">Marsh, Antoine</p>
-                    <p className="text-sm text-muted-foreground">Representative ID: 9823-2232</p>
                   </div>
                 </div>
               </div>
@@ -762,6 +624,15 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                 <p className="text-sm text-muted-foreground mt-1">
                                   Account: 3238677748 • Family Plan • {client.currentRepresentative || 'Representative'}
                                 </p>
+                                {!expandedPlans.resp && (
+                                  <div className="flex items-center gap-4 mt-2">
+                                    <div className="flex items-center gap-2">
+                                      <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50 text-xs">Medium Risk</Badge>
+                                      <span className="text-sm text-muted-foreground">Speculation</span>
+                                    </div>
+                                    <div className="text-lg font-semibold text-green-600">$42,000.12</div>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -780,7 +651,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                       <TableHead className="font-semibold text-gray-700 py-4">Risk</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4">Objective</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4 text-right">Market Value</TableHead>
-                                      <TableHead className="font-semibold text-gray-700 py-4 text-center">Actions</TableHead>
+                                      <TableHead className="font-semibold text-gray-700 py-4 text-center">Trading</TableHead>
                                     </TableRow>
                                   </TableHeader>
                                   <TableBody>
@@ -920,6 +791,15 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                 <p className="text-sm text-muted-foreground mt-1">
                                   Account: 7545538518 • Individual Plan • {client.currentRepresentative || 'Representative'}
                                 </p>
+                                {!expandedPlans.rrsp && (
+                                  <div className="flex items-center gap-4 mt-2">
+                                    <div className="flex items-center gap-2">
+                                      <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50 text-xs">Medium Risk</Badge>
+                                      <span className="text-sm text-muted-foreground">Growth</span>
+                                    </div>
+                                    <div className="text-lg font-semibold text-green-600">$26,700.30</div>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -938,7 +818,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                       <TableHead className="font-semibold text-gray-700 py-4">Risk</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4">Objective</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4 text-right">Market Value</TableHead>
-                                      <TableHead className="font-semibold text-gray-700 py-4 text-center">Actions</TableHead>
+                                      <TableHead className="font-semibold text-gray-700 py-4 text-center">Trading</TableHead>
                                     </TableRow>
                                   </TableHeader>
                                   <TableBody>
@@ -1482,7 +1362,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                               : 'text-muted-foreground hover:text-gray-700'
                           }`}
                         >
-                          Actions
+                          Trading
                         </button>
                         <button 
                           onClick={() => setActivePlanTab('trust')}
@@ -1660,7 +1540,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <TableHead className="font-semibold text-right">Market Value</TableHead>
                                     <TableHead className="font-semibold">Status</TableHead>
                                     <TableHead className="font-semibold">Account Type</TableHead>
-                                    <TableHead className="font-semibold">Actions</TableHead>
+                                    <TableHead className="font-semibold">Trading</TableHead>
                                   </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -1733,7 +1613,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <TableHead className="font-semibold text-gray-700 py-4">Birth Date</TableHead>
                                     <TableHead className="font-semibold text-gray-700 py-4">Allocation %</TableHead>
                                     <TableHead className="font-semibold text-gray-700 py-4">Status</TableHead>
-                                    <TableHead className="font-semibold text-gray-700 py-4">Actions</TableHead>
+                                    <TableHead className="font-semibold text-gray-700 py-4">Trading</TableHead>
                                   </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -2047,7 +1927,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                       <TableHead className="font-semibold text-gray-700 py-4">Document Type</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4">Date Created</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4">Status</TableHead>
-                                      <TableHead className="font-semibold text-gray-700 py-4">Actions</TableHead>
+                                      <TableHead className="font-semibold text-gray-700 py-4">Trading</TableHead>
                                     </TableRow>
                                   </TableHeader>
                                   <TableBody>
@@ -2114,7 +1994,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <TableHead className="font-semibold text-gray-700 py-4">Document Type</TableHead>
                                     <TableHead className="font-semibold text-gray-700 py-4">On File</TableHead>
                                     <TableHead className="font-semibold text-gray-700 py-4">Date Received</TableHead>
-                                    <TableHead className="font-semibold text-gray-700 py-4">Actions</TableHead>
+                                    <TableHead className="font-semibold text-gray-700 py-4">Trading</TableHead>
                                   </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -2608,7 +2488,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                         <TableHead className="font-semibold text-gray-700 py-4">Type</TableHead>
                         <TableHead className="font-semibold text-gray-700 py-4">Upload Date</TableHead>
                         <TableHead className="font-semibold text-gray-700 py-4">Size</TableHead>
-                        <TableHead className="font-semibold text-gray-700 py-4">Actions</TableHead>
+                        <TableHead className="font-semibold text-gray-700 py-4">Trading</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
