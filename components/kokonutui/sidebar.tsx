@@ -145,7 +145,7 @@ export default function Sidebar() {
 
   // Handle Advance Search button click
   const handleAdvanceSearch = () => {
-    router.push('/clients/advance-search')
+    router.push('/clients/advanced-search')
     handleNavigation()
   }
 
@@ -290,7 +290,7 @@ export default function Sidebar() {
                           className="w-full h-7 text-xs"
                         >
                           <Search className="h-3 w-3 mr-1" />
-                          Advance Search
+                          Advanced Search
                         </Button>
                       </div>
 

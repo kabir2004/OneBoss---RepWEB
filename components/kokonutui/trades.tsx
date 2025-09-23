@@ -351,7 +351,7 @@ export function Trades() {
             </Select>
           </div>
 
-          {/* Advance Search Alert */}
+          {/* Advanced Search Alert */}
           {advancedSearchCriteria && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex items-center justify-between">

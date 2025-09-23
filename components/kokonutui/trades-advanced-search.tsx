@@ -9,14 +9,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Search, Filter, Building, X } from "lucide-react"
 
-interface TradesAdvanceSearchProps {
+interface TradesAdvancedSearchProps {
   onSearch: (criteria: any) => void
   onReset: () => void
 }
 
-export default function TradesAdvanceSearch({ onSearch, onReset }: TradesAdvanceSearchProps) {
+export default function TradesAdvancedSearch({ onSearch, onReset }: TradesAdvancedSearchProps) {
   const [searchCriteria, setSearchCriteria] = useState({
-    // Advance Search Criteria
+    // Advanced Search Criteria
     interactiveOrderStatus: "All",
     netSettledCommission: "All",
     transactionId: "",

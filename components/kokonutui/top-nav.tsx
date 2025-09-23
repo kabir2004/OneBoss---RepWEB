@@ -47,9 +47,9 @@ export default function TopNav() {
           breadcrumbItems.push({ label: "Approvals", href: "/clients/approval" })
         } else if (pathSegments[1] === 'reports') {
           breadcrumbItems.push({ label: "Reports", href: "/clients/reports" })
-        } else if (pathSegments[1] === 'advance-search') {
-          breadcrumbItems.push({ label: "Advance Search", href: "/clients/advance-search" })
-        } else if (pathSegments[1] && pathSegments[1] !== 'households' && pathSegments[1] !== 'income-plans' && pathSegments[1] !== 'approval' && pathSegments[1] !== 'reports' && pathSegments[1] !== 'advance-search') {
+        } else if (pathSegments[1] === 'advanced-search') {
+          breadcrumbItems.push({ label: "Advanced Search", href: "/clients/advanced-search" })
+        } else if (pathSegments[1] && pathSegments[1] !== 'households' && pathSegments[1] !== 'income-plans' && pathSegments[1] !== 'approval' && pathSegments[1] !== 'reports' && pathSegments[1] !== 'advanced-search') {
           breadcrumbItems.push({ label: "Client Details", href: `/clients/${pathSegments[1]}` })
         }
       } else if (pathSegments[0] === 'trades') {

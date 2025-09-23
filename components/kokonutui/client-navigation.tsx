@@ -43,8 +43,8 @@ const clientNavItems = [
     description: "Client reports and analytics"
   },
   {
-    href: "/clients/advance-search",
-    label: "Advance Search",
+    href: "/clients/advanced-search",
+    label: "Advanced Search",
     icon: Search,
     description: "Advanced client search tools"
   }

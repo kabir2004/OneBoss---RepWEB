@@ -235,9 +235,9 @@ export default function Approval() {
                 <Users className="h-4 w-4 mr-2" />
                 Client Management
               </Button>
-              <Button variant="ghost" size="sm" onClick={() => router.push('/clients/advance-search')} className="transition-all duration-200 hover:scale-105">
+              <Button variant="ghost" size="sm" onClick={() => router.push('/clients/advanced-search')} className="transition-all duration-200 hover:scale-105">
                 <Search className="h-4 w-4 mr-2" />
-                Advance Search
+                Advanced Search
               </Button>
               <Button variant="ghost" size="sm" onClick={() => router.push('/clients/households')} className="transition-all duration-200 hover:scale-105">
                 <Users className="h-4 w-4 mr-2" />

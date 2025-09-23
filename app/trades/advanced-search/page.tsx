@@ -1,9 +1,9 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import TradesAdvanceSearch from '@/components/kokonutui/trades-advance-search'
+import TradesAdvancedSearch from '@/components/kokonutui/trades-advanced-search'
 
-export default function TradesAdvanceSearchPage() {
+export default function TradesAdvancedSearchPage() {
   const router = useRouter()
 
   const handleSearch = (criteria: any) => {
@@ -19,7 +19,7 @@ export default function TradesAdvanceSearchPage() {
   }
 
   return (
-    <TradesAdvanceSearch 
+    <TradesAdvancedSearch 
       onSearch={handleSearch}
       onReset={handleReset}
     />

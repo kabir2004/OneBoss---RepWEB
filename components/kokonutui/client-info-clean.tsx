@@ -212,12 +212,12 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="space-y-8">
       {/* Client Header */}
       <div className="bg-card border-b border-border shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="px-4 sm:px-6 lg:px-8 pb-4">
           {/* Search Fields */}
-          <div className="mb-6 relative">
+          <div className="relative mb-6">
             <div className="relative w-full">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -347,8 +347,8 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
       {/* Client Tabs */}
       <div className="flex-1 overflow-y-auto bg-white">
         <Tabs defaultValue="summary" className="h-full">
-          <div className="bg-card border-b border-border shadow-sm">
-            <div className="max-w-7xl mx-auto px-6">
+          <div className="bg-card shadow-sm">
+            <div className="px-4 sm:px-6 lg:px-8">
               <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                 <TabsList className="h-14 w-full justify-start bg-transparent p-1 min-w-max">
                   <TabsTrigger 
@@ -442,7 +442,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
 
           {/* Summary Tab */}
           <TabsContent value="summary" className="flex-1 p-6 bg-white">
-            <div className="max-w-7xl mx-auto space-y-6">
+            <div className="space-y-6">
               {/* Client Overview - Compact Layout */}
               <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
@@ -1232,7 +1232,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
 
           {/* Plans Tab */}
           <TabsContent value="plans" className="flex-1 p-6 bg-white">
-            <div className="max-w-7xl mx-auto">
+            <div>
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-card-foreground mb-4">Investment Plans</h3>
                 <div className="flex gap-6">
@@ -2307,7 +2307,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
 
           {/* Questionnaires Tab */}
           <TabsContent value="questionnaires" className="flex-1 p-6 bg-white">
-            <div className="max-w-7xl mx-auto">
+            <div>
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-card-foreground mb-4">Questionnaires</h3>
                 <div className="text-center py-8">
@@ -2341,7 +2341,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
 
           {/* Details Tab */}
           <TabsContent value="details" className="flex-1 p-6 bg-white">
-            <div className="max-w-7xl mx-auto">
+            <div>
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-card-foreground mb-4">Client Details</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -2396,7 +2396,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
 
           {/* Notes Tab */}
           <TabsContent value="notes" className="flex-1 p-6 bg-white">
-            <div className="max-w-7xl mx-auto">
+            <div>
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-semibold text-card-foreground">Client Notes</h3>
@@ -2433,7 +2433,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
 
           {/* Charts Tab */}
           <TabsContent value="charts" className="flex-1 p-6 bg-white">
-            <div className="max-w-7xl mx-auto">
+            <div>
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-card-foreground mb-4">Client Charts</h3>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -2472,7 +2472,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
 
           {/* Attachments Tab */}
           <TabsContent value="attachments" className="flex-1 p-6 bg-white">
-            <div className="max-w-7xl mx-auto">
+            <div>
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-semibold text-card-foreground">Client Attachments</h3>
