@@ -208,6 +208,19 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
     setOrderDetails(null)
   }, [])
 
+  // Helper function to determine if it's a conversion (different company)
+  const isConversion = useCallback(() => {
+    if (!selectedNewFund || !selectedFund?.company) return false
+
+    const currentCompany = selectedFund.company
+    const isNewFundDifferentCompany =
+      (currentCompany === 'Fidelity' && selectedNewFund.startsWith('td-')) ||
+      (currentCompany === 'TD' && selectedNewFund.startsWith('fid-')) ||
+      selectedNewFund.startsWith('other-')
+
+    return isNewFundDifferentCompany
+  }, [selectedNewFund, selectedFund])
+
   // Calculation functions
   const calculateBuyUnits = useCallback((amount: string) => {
     if (!amount || !selectedFund?.avgCost) return '0'
@@ -737,7 +750,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                       <span className="text-sm text-muted-foreground">{client.currentRepresentative || 'Smith, John'}</span>
                                       <span className="text-xs text-muted-foreground">•</span>
                                       <span className="text-sm text-orange-600">Risk: Medium</span>
-                                      <span className="text-sm text-orange-700">Speculation Strategy</span>
+                                      <span className="text-sm text-orange-700">Objective: Speculation</span>
                                     </div>
                                   </div>
                                 </div>
@@ -1035,7 +1048,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                       <span className="text-sm text-muted-foreground">{client.currentRepresentative || 'Smith, John'}</span>
                                       <span className="text-xs text-muted-foreground">•</span>
                                       <span className="text-sm text-blue-600">Risk: Medium</span>
-                                      <span className="text-sm text-blue-700">Growth Strategy</span>
+                                      <span className="text-sm text-blue-700">Objective: Growth</span>
                                     </div>
                                   </div>
                                 </div>
@@ -3299,7 +3312,10 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                   Switch Fund
                 </DialogTitle>
                 <div className="text-sm text-muted-foreground mt-2">
-                  Switch from {selectedFund?.product} to another {selectedFund?.company} fund
+                  {isConversion()
+                    ? `Switch from ${selectedFund?.product} to a different fund company`
+                    : `Switch from ${selectedFund?.product} to another ${selectedFund?.company} fund`
+                  }
                 </div>
               </DialogHeader>
               <div className="space-y-4">
@@ -3312,13 +3328,16 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
 
                 <div className="space-y-3">
                   <div>
-                    <Label className="text-sm font-medium">Select New {selectedFund?.company} Fund</Label>
+                    <Label className="text-sm font-medium">
+                      {isConversion() ? 'Select Fund to Convert To' : `Select New ${selectedFund?.company} Fund`}
+                    </Label>
                     <Select value={selectedNewFund} onValueChange={setSelectedNewFund}>
                       <SelectTrigger className="mt-1">
                         <SelectValue placeholder="Choose a fund to switch to" />
                       </SelectTrigger>
                       <SelectContent className="z-[9999]" position="popper">
-                        {selectedFund?.company === 'Fidelity' ? (
+                        {/* Same Company Funds */}
+                        {selectedFund?.company === 'Fidelity' && (
                           <>
                             <SelectItem value="fid-northstar">Fidelity NorthStar Fund - Series B ISC</SelectItem>
                             <SelectItem value="fid-income">Fidelity Monthly Income Fund - Series B ISC</SelectItem>
@@ -3328,8 +3347,17 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                             <SelectItem value="fid-equity">Fidelity Canadian Equity Fund - Series B ISC</SelectItem>
                             <SelectItem value="fid-global">Fidelity Global Equity Fund - Series B ISC</SelectItem>
                             <SelectItem value="fid-dividend">Fidelity Canadian Dividend Fund - Series A</SelectItem>
+                            <div className="border-t my-2"></div>
+                            {/* Different Company - TD */}
+                            <div className="text-xs text-muted-foreground px-2 py-1">TD Funds (Conversion)</div>
+                            <SelectItem value="td-equity">TD Canadian Equity Fund - Series A</SelectItem>
+                            <SelectItem value="td-balanced">TD Balanced Growth Fund - Series F</SelectItem>
+                            <SelectItem value="td-income">TD Monthly Income Fund - Series A</SelectItem>
+                            <SelectItem value="td-index">TD Canadian Index Fund - Series E</SelectItem>
                           </>
-                        ) : selectedFund?.company === 'TD' ? (
+                        )}
+
+                        {selectedFund?.company === 'TD' && (
                           <>
                             <SelectItem value="td-equity">TD Canadian Equity Fund - Series A</SelectItem>
                             <SelectItem value="td-balanced">TD Balanced Growth Fund - Series F</SelectItem>
@@ -3337,8 +3365,18 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                             <SelectItem value="td-index">TD Canadian Index Fund - Series E</SelectItem>
                             <SelectItem value="td-bond">TD Canadian Bond Fund - Series A</SelectItem>
                             <SelectItem value="td-global">TD Global Equity Fund - Series F</SelectItem>
+                            <div className="border-t my-2"></div>
+                            {/* Different Company - Fidelity */}
+                            <div className="text-xs text-muted-foreground px-2 py-1">Fidelity Funds (Conversion)</div>
+                            <SelectItem value="fid-northstar">Fidelity NorthStar Fund - Series B ISC</SelectItem>
+                            <SelectItem value="fid-income">Fidelity Monthly Income Fund - Series B ISC</SelectItem>
+                            <SelectItem value="fid-growth">Fidelity Growth Fund - Series B ISC</SelectItem>
+                            <SelectItem value="fid-balanced">Fidelity Balanced Fund - Series A</SelectItem>
                           </>
-                        ) : (
+                        )}
+
+                        {/* Other companies */}
+                        {!selectedFund?.company || (selectedFund?.company !== 'Fidelity' && selectedFund?.company !== 'TD') && (
                           <>
                             <SelectItem value="other-equity">Canadian Equity Fund</SelectItem>
                             <SelectItem value="other-balanced">Balanced Growth Fund</SelectItem>
@@ -3351,29 +3389,9 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                   </div>
 
                   <div>
-                    <Label className="text-sm font-medium">Switch Amount</Label>
-                    <div className="flex gap-2 mt-1">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1"
-                        onClick={() => setSwitchUnits('')}
-                      >
-                        Partial Switch
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1"
-                        onClick={() => setSwitchUnits(selectedFund?.units?.toString() || '')}
-                      >
-                        Full Switch
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label className="text-sm font-medium">Units to Switch</Label>
+                    <Label className="text-sm font-medium">
+                      {isConversion() ? 'Units to Convert' : 'Units to Switch'}
+                    </Label>
                     <Input
                       type="number"
                       placeholder={`Max: ${selectedFund?.units}`}
@@ -3388,9 +3406,11 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                   </div>
 
                   <div className="bg-blue-50 p-3 rounded-lg">
-                    <div className="text-sm text-blue-700">Switch Preview:</div>
+                    <div className="text-sm text-blue-700">
+                      {isConversion() ? 'Conversion Preview:' : 'Switch Preview:'}
+                    </div>
                     <div className="text-xs text-blue-600 mt-1">
-                      Units to switch: {switchUnits || '0'}
+                      Units to {isConversion() ? 'convert' : 'switch'}: {switchUnits || '0'}
                     </div>
                     <div className="text-xs text-blue-600">
                       Estimated value: ${((parseFloat(switchUnits) || 0) * (selectedFund?.avgCost || 0)).toFixed(2)}
@@ -3410,7 +3430,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                     onClick={() => handlePlaceOrder('switch')}
                     disabled={!switchUnits}
                   >
-                    Execute Switch
+                    Execute {isConversion() ? 'Conversion' : 'Switch'}
                   </Button>
                 </div>
               </div>
@@ -3434,7 +3454,9 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                     <div className="text-sm text-blue-700">From: {orderDetails?.fund?.product}</div>
                     <div className="text-sm text-blue-700">To: {orderDetails?.newFund || 'Fund selection required'}</div>
                     <div className="text-sm text-blue-700">Plan: {orderDetails?.plan}</div>
-                    <div className="text-sm text-blue-700">Units to Switch: {orderDetails?.units}</div>
+                    <div className="text-sm text-blue-700">
+                      Units to {isConversion() ? 'Convert' : 'Switch'}: {orderDetails?.units}
+                    </div>
                     <div className="text-sm text-blue-700">Time: {orderDetails?.timestamp}</div>
                   </div>
                 </div>
