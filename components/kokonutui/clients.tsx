@@ -2,13 +2,11 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
-import { 
+import {
   CheckCircle,
   Clock,
   PauseCircle,
   Mail,
-  Users,
-  Download,
   Grid,
   List,
   User,
@@ -16,7 +14,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { mockClients } from "@/lib/client-data"
@@ -180,20 +178,26 @@ export default function Clients() {
 
 
 
+  const SearchField = ({ className = "" }: { className?: string }) => (
+    <div className={`relative ${className}`}>
+      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+      <Input
+        type="text"
+        placeholder="Search clients by name, email, ID, or location..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="pl-10 h-11 text-sm bg-background border-input"
+      />
+    </div>
+  )
+
   return (
-    <div className="space-y-8">
-      {/* Search and Status Filters */}
-      <div className="space-y-6">
+    <div className="space-y-6">
+      {/* Sticky Search and Status Filters */}
+      <div className="sticky top-16 z-30 bg-background/95 backdrop-blur-sm border-b border-border pb-6 -mx-6 px-6 -mt-6 pt-6">
         {/* Search Field */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            type="text"
-            placeholder="Search clients by name, email, ID, or location..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 h-11 text-sm bg-background border-input"
-          />
+        <div className="mb-6">
+          <SearchField />
         </div>
 
         {/* Status Checkboxes and Controls */}
@@ -285,6 +289,9 @@ export default function Clients() {
         </div>
       </div>
 
+      {/* Client List Content */}
+      <div className="space-y-6">
+
       {/* Active Search Filters and Bulk Actions */}
       {(searchParams.toString() || selectedClientIds.length > 0) && (
         <div className="flex items-center gap-2 flex-wrap">
@@ -350,7 +357,6 @@ export default function Clients() {
           </Card>
         )}
       </div>
-
     </div>
   )
 }

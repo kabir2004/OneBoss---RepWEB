@@ -87,6 +87,19 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<any[]>([])
   const [showSearchResults, setShowSearchResults] = useState(false)
+  const [showBuyModal, setShowBuyModal] = useState(false)
+  const [showSellModal, setShowSellModal] = useState(false)
+  const [showSwitchModal, setShowSwitchModal] = useState(false)
+  const [selectedFund, setSelectedFund] = useState<any>(null)
+  const [selectedPlan, setSelectedPlan] = useState('')
+  const [buyAmount, setBuyAmount] = useState('')
+  const [buyUnits, setBuyUnits] = useState('')
+  const [sellAmount, setSellAmount] = useState('')
+  const [sellUnits, setSellUnits] = useState('')
+  const [switchUnits, setSwitchUnits] = useState('')
+  const [selectedNewFund, setSelectedNewFund] = useState('')
+  const [orderConfirmed, setOrderConfirmed] = useState(false)
+  const [orderDetails, setOrderDetails] = useState<any>(null)
 
   // Utility functions
   const getStatusIcon = useCallback((status: string) => {
@@ -160,6 +173,90 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
     }, 200)
   }, [])
 
+  // Modal handlers
+  const handleBuyFund = useCallback((fund: any, plan: string) => {
+    setSelectedFund(fund)
+    setSelectedPlan(plan)
+    setShowBuyModal(true)
+  }, [])
+
+  const handleSellFund = useCallback((fund: any, plan: string) => {
+    setSelectedFund(fund)
+    setSelectedPlan(plan)
+    setShowSellModal(true)
+  }, [])
+
+  const handleSwitchFund = useCallback((fund: any, plan: string) => {
+    setSelectedFund(fund)
+    setSelectedPlan(plan)
+    setShowSwitchModal(true)
+  }, [])
+
+  const closeAllModals = useCallback(() => {
+    setShowBuyModal(false)
+    setShowSellModal(false)
+    setShowSwitchModal(false)
+    setSelectedFund(null)
+    setSelectedPlan('')
+    setBuyAmount('')
+    setBuyUnits('')
+    setSellAmount('')
+    setSellUnits('')
+    setSwitchUnits('')
+    setSelectedNewFund('')
+    setOrderConfirmed(false)
+    setOrderDetails(null)
+  }, [])
+
+  // Calculation functions
+  const calculateBuyUnits = useCallback((amount: string) => {
+    if (!amount || !selectedFund?.avgCost) return '0'
+    const units = parseFloat(amount) / selectedFund.avgCost
+    return units.toFixed(2)
+  }, [selectedFund])
+
+  const calculateBuyAmount = useCallback((units: string) => {
+    if (!units || !selectedFund?.avgCost) return '0'
+    const amount = parseFloat(units) * selectedFund.avgCost
+    return amount.toFixed(2)
+  }, [selectedFund])
+
+  const calculateSellUnits = useCallback((amount: string) => {
+    if (!amount || !selectedFund?.avgCost) return '0'
+    const units = parseFloat(amount) / selectedFund.avgCost
+    return Math.min(units, selectedFund.units || 0).toFixed(2)
+  }, [selectedFund])
+
+  const calculateSellAmount = useCallback((units: string) => {
+    if (!units || !selectedFund?.avgCost) return '0'
+    const amount = parseFloat(units) * selectedFund.avgCost
+    return amount.toFixed(2)
+  }, [selectedFund])
+
+  const handlePlaceOrder = useCallback((orderType: 'buy' | 'sell' | 'switch') => {
+    const details = {
+      type: orderType,
+      fund: selectedFund,
+      plan: selectedPlan,
+      timestamp: new Date().toLocaleString(),
+      orderId: `ORD-${Date.now()}`,
+      ...(orderType === 'buy' && {
+        amount: buyAmount || calculateBuyAmount(buyUnits),
+        units: buyUnits || calculateBuyUnits(buyAmount)
+      }),
+      ...(orderType === 'sell' && {
+        amount: sellAmount || calculateSellAmount(sellUnits),
+        units: sellUnits || calculateSellUnits(sellAmount)
+      }),
+      ...(orderType === 'switch' && {
+        units: switchUnits,
+        newFund: selectedNewFund
+      })
+    }
+    setOrderDetails(details)
+    setOrderConfirmed(true)
+  }, [selectedFund, selectedPlan, buyAmount, buyUnits, sellAmount, sellUnits, switchUnits, calculateBuyAmount, calculateBuyUnits, calculateSellAmount, calculateSellUnits])
+
   const togglePlan = useCallback((planKey: string) => {
     setExpandedPlans(prev => ({
       ...prev,
@@ -215,61 +312,65 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
     )
   }
 
-  return (
-    <div className="space-y-8">
-      {/* Search Field */}
-      <div className="space-y-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            type="text"
-            placeholder="Search clients by name, email, ID, or location..."
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value)
-              setShowSearchResults(true)
-            }}
-            onFocus={() => setShowSearchResults(true)}
-            onBlur={handleSearchBlur}
-            className="pl-10 h-11 text-sm bg-background border-input"
-          />
+  const SearchFieldWithResults = ({ className = "", showDropdown = true }: { className?: string, showDropdown?: boolean }) => (
+    <div className={`relative ${className}`}>
+      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+      <Input
+        type="text"
+        placeholder="Search clients by name, email, ID, or location..."
+        value={searchQuery}
+        onChange={(e) => {
+          setSearchQuery(e.target.value)
+          setShowSearchResults(true)
+        }}
+        onFocus={() => setShowSearchResults(true)}
+        onBlur={handleSearchBlur}
+        className="pl-10 h-11 text-sm bg-background border-input"
+      />
 
-          {/* Search Results Dropdown */}
-          {showSearchResults && searchResults.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
-              {searchResults.map((result) => (
-                <div
-                  key={result.id}
-                  onClick={() => handleClientSelect(result)}
-                  className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-xs">
-                      {result.firstName[0]}{result.surname[0]}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium text-sm text-gray-900 truncate">
-                        {result.firstName} {result.surname}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        ID: {result.clientId} • {result.status.charAt(0).toUpperCase() + result.status.slice(1)}
-                      </div>
-                    </div>
+      {/* Search Results Dropdown */}
+      {showDropdown && showSearchResults && searchResults.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
+          {searchResults.map((result) => (
+            <div
+              key={result.id}
+              onClick={() => handleClientSelect(result)}
+              className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-xs">
+                  {result.firstName[0]}{result.surname[0]}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-sm text-gray-900 truncate">
+                    {result.firstName} {result.surname}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    ID: {result.clientId} • {result.status.charAt(0).toUpperCase() + result.status.slice(1)}
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-
-          {/* No Results */}
-          {showSearchResults && searchQuery.trim().length > 0 && searchResults.length === 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-              <div className="px-4 py-3 text-sm text-gray-500 text-center">
-                No clients found matching the search criteria
               </div>
             </div>
-          )}
+          ))}
         </div>
+      )}
+
+      {/* No Results */}
+      {showDropdown && showSearchResults && searchQuery.trim().length > 0 && searchResults.length === 0 && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+          <div className="px-4 py-3 text-sm text-gray-500 text-center">
+            No clients found matching the search criteria
+          </div>
+        </div>
+      )}
+    </div>
+  )
+
+  return (
+    <div className="space-y-6">
+      {/* Sticky Search Field */}
+      <div className="sticky top-16 z-30 bg-background/95 backdrop-blur-sm border-b border-border pb-6 -mx-6 px-6 -mt-6 pt-6">
+        <SearchFieldWithResults />
       </div>
 
       {/* Client Header */}
@@ -605,38 +706,66 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                     <div className="space-y-6">
                       {/* RESP Plan Section */}
                       <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200">
-                        <div 
-                          className="p-6 border-b border-gray-200/60 bg-gradient-to-r from-blue-50/80 to-blue-50/40 cursor-pointer hover:from-blue-100/80 hover:to-blue-100/40 transition-all duration-200 rounded-t-xl"
-                          onClick={() => togglePlan('resp')}
+                        <div
+                          className="p-6 border-b border-gray-200/60 bg-gradient-to-r from-blue-50/80 to-blue-50/40 hover:from-blue-100/80 hover:to-blue-100/40 transition-all duration-200 rounded-t-xl"
                         >
-                          <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                              <Target className="h-5 w-5 text-blue-600" />
-                            </div>
-                            <div className="flex items-center gap-3">
-                              {expandedPlans.resp ? (
-                                <ChevronDown className="h-5 w-5 text-blue-600" />
-                              ) : (
-                                <ChevronUp className="h-5 w-5 text-blue-600" />
-                              )}
-                              <div>
-                                <h4 className="font-semibold text-card-foreground text-lg">
-                                  RESP Education Savings Plan
-                                </h4>
-                                <p className="text-sm text-muted-foreground mt-1">
-                                  Account: 3238677748 • Family Plan • {client.currentRepresentative || 'Representative'}
-                                </p>
-                                {!expandedPlans.resp && (
-                                  <div className="flex items-center gap-4 mt-2">
-                                    <div className="flex items-center gap-2">
-                                      <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50 text-xs">Medium Risk</Badge>
-                                      <span className="text-sm text-muted-foreground">Speculation</span>
+                          <div className="flex items-center justify-between">
+                            <div
+                              className="flex items-center gap-4 cursor-pointer flex-1"
+                              onClick={() => togglePlan('resp')}
+                            >
+                              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <Target className="h-5 w-5 text-blue-600" />
+                              </div>
+                              <div className="flex items-center justify-between w-full">
+                                {/* Left side - Plan info and controls */}
+                                <div className="flex items-center gap-3">
+                                  {expandedPlans.resp ? (
+                                    <ChevronDown className="h-5 w-5 text-blue-600" />
+                                  ) : (
+                                    <ChevronUp className="h-5 w-5 text-blue-600" />
+                                  )}
+                                  <div>
+                                    <h4 className="font-semibold text-card-foreground text-lg">
+                                      RESP Education Savings Plan
+                                    </h4>
+                                    <div className="flex items-center gap-4 mt-1">
+                                      <span className="text-sm text-muted-foreground">
+                                        Account: <span className="font-mono text-blue-700">3238677748</span>
+                                      </span>
+                                      <span className="text-sm text-blue-600">Family Plan</span>
+                                      <span className="text-sm text-muted-foreground">{client.currentRepresentative || 'Smith, John'}</span>
+                                      <span className="text-xs text-muted-foreground">•</span>
+                                      <span className="text-sm text-orange-600">Risk: Medium</span>
+                                      <span className="text-sm text-orange-700">Speculation Strategy</span>
                                     </div>
-                                    <div className="text-lg font-semibold text-green-600">$42,000.12</div>
                                   </div>
-                                )}
+                                </div>
+
+                                {/* Right side - Financial Card */}
+                                <div className="flex items-center gap-6">
+                                  {/* Portfolio Value Card */}
+                                  <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-2 text-center h-10 flex flex-col justify-center min-w-[130px]">
+                                    <div className="text-xs text-green-600 font-medium leading-tight">Total Value</div>
+                                    <div className="text-sm font-bold text-green-700 leading-tight">$42,000.12</div>
+                                  </div>
+                                </div>
                               </div>
                             </div>
+
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="bg-white/80 border-blue-300 text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                // Handle add investment logic here
+                                console.log('Add Investment to RESP plan')
+                              }}
+                            >
+                              <Plus className="h-4 w-4 mr-1" />
+                              Investment
+                            </Button>
                           </div>
                         </div>
                         
@@ -652,6 +781,9 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                       <TableHead className="font-semibold text-gray-700 py-4">Product</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4">Risk</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4">Objective</TableHead>
+                                      <TableHead className="font-semibold text-gray-700 py-4 text-right">Units</TableHead>
+                                      <TableHead className="font-semibold text-gray-700 py-4 text-right">Avg. Cost</TableHead>
+                                      <TableHead className="font-semibold text-gray-700 py-4 text-right">Book Value</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4 text-right">Market Value</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4 text-center">Trading</TableHead>
                                     </TableRow>
@@ -685,17 +817,67 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                       </TableCell>
                                       <TableCell className="py-4 text-sm text-muted-foreground">Speculation</TableCell>
                                       <TableCell className="py-4 text-right">
+                                        <div className="text-sm font-medium text-card-foreground">1,247.32</div>
+                                        <div className="text-xs text-muted-foreground">Units</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <div className="text-sm font-medium text-card-foreground">$9.41</div>
+                                        <div className="text-xs text-muted-foreground">Per Unit</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <div className="text-sm font-medium text-blue-600">$11,734.50</div>
+                                        <div className="text-xs text-muted-foreground">Purchase</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
                                         <div className="text-lg font-semibold text-green-600">$11,734.85</div>
+                                        <div className="text-xs text-green-600">+$0.35 (0.003%)</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-center">
                                         <div className="flex items-center justify-center gap-1">
-                                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-700 transition-all duration-200">
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-700 transition-all duration-200"
+                                            onClick={() => handleBuyFund({
+                                              supplier: 'FID-253',
+                                              product: 'FIDELITY NORTHSTAR FUND',
+                                              series: 'Series B ISC',
+                                              units: 1247.32,
+                                              avgCost: 9.41,
+                                              marketValue: 11734.85
+                                            }, 'RESP')}
+                                          >
                                             <Plus className="h-4 w-4" />
                                           </Button>
-                                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200">
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200"
+                                            onClick={() => handleSellFund({
+                                              supplier: 'FID-253',
+                                              product: 'FIDELITY NORTHSTAR FUND',
+                                              series: 'Series B ISC',
+                                              units: 1247.32,
+                                              avgCost: 9.41,
+                                              marketValue: 11734.85
+                                            }, 'RESP')}
+                                          >
                                             <Minus className="h-4 w-4" />
                                           </Button>
-                                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-700 transition-all duration-200">
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-700 transition-all duration-200"
+                                            onClick={() => handleSwitchFund({
+                                              supplier: 'FID-253',
+                                              company: 'Fidelity',
+                                              product: 'FIDELITY NORTHSTAR FUND',
+                                              series: 'Series B ISC',
+                                              units: 1247.32,
+                                              avgCost: 9.41,
+                                              marketValue: 11734.85
+                                            }, 'RESP')}
+                                          >
                                             <ArrowLeftRight className="h-4 w-4" />
                                           </Button>
                                         </div>
@@ -729,17 +911,67 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                       </TableCell>
                                       <TableCell className="py-4 text-sm text-muted-foreground">Balanced</TableCell>
                                       <TableCell className="py-4 text-right">
+                                        <div className="text-sm font-medium text-card-foreground">2,789.44</div>
+                                        <div className="text-xs text-muted-foreground">Units</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <div className="text-sm font-medium text-card-foreground">$10.85</div>
+                                        <div className="text-xs text-muted-foreground">Per Unit</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <div className="text-sm font-medium text-blue-600">$30,265.52</div>
+                                        <div className="text-xs text-muted-foreground">Purchase</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
                                         <div className="text-lg font-semibold text-green-600">$30,265.27</div>
+                                        <div className="text-xs text-red-500">-$0.25 (-0.001%)</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-center">
                                         <div className="flex items-center justify-center gap-1">
-                                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-700 transition-all duration-200">
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-700 transition-all duration-200"
+                                            onClick={() => handleBuyFund({
+                                              supplier: 'FID-269',
+                                              product: 'FIDELITY MONTHLY INCOME FUND',
+                                              series: 'Series B ISC',
+                                              units: 2789.44,
+                                              avgCost: 10.85,
+                                              marketValue: 30265.27
+                                            }, 'RESP')}
+                                          >
                                             <Plus className="h-4 w-4" />
                                           </Button>
-                                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200">
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200"
+                                            onClick={() => handleSellFund({
+                                              supplier: 'FID-269',
+                                              product: 'FIDELITY MONTHLY INCOME FUND',
+                                              series: 'Series B ISC',
+                                              units: 2789.44,
+                                              avgCost: 10.85,
+                                              marketValue: 30265.27
+                                            }, 'RESP')}
+                                          >
                                             <Minus className="h-4 w-4" />
                                           </Button>
-                                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-700 transition-all duration-200">
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-700 transition-all duration-200"
+                                            onClick={() => handleSwitchFund({
+                                              supplier: 'FID-269',
+                                              company: 'Fidelity',
+                                              product: 'FIDELITY MONTHLY INCOME FUND',
+                                              series: 'Series B ISC',
+                                              units: 2789.44,
+                                              avgCost: 10.85,
+                                              marketValue: 30265.27
+                                            }, 'RESP')}
+                                          >
                                             <ArrowLeftRight className="h-4 w-4" />
                                           </Button>
                                         </div>
@@ -772,38 +1004,66 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
 
                       {/* RRSP Plan Section */}
                       <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200">
-                        <div 
-                          className="p-6 border-b border-gray-200/60 bg-gradient-to-r from-green-50/80 to-green-50/40 cursor-pointer hover:from-green-100/80 hover:to-green-100/40 transition-all duration-200 rounded-t-xl"
-                          onClick={() => togglePlan('rrsp')}
+                        <div
+                          className="p-6 border-b border-gray-200/60 bg-gradient-to-r from-green-50/80 to-green-50/40 hover:from-green-100/80 hover:to-green-100/40 transition-all duration-200 rounded-t-xl"
                         >
-                          <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                              <Target className="h-5 w-5 text-green-600" />
-                            </div>
-                            <div className="flex items-center gap-3">
-                              {expandedPlans.rrsp ? (
-                                <ChevronDown className="h-5 w-5 text-green-600" />
-                              ) : (
-                                <ChevronUp className="h-5 w-5 text-green-600" />
-                              )}
-                              <div>
-                                <h4 className="font-semibold text-card-foreground text-lg">
-                                  RRSP Retirement Savings Plan
-                                </h4>
-                                <p className="text-sm text-muted-foreground mt-1">
-                                  Account: 7545538518 • Individual Plan • {client.currentRepresentative || 'Representative'}
-                                </p>
-                                {!expandedPlans.rrsp && (
-                                  <div className="flex items-center gap-4 mt-2">
-                                    <div className="flex items-center gap-2">
-                                      <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50 text-xs">Medium Risk</Badge>
-                                      <span className="text-sm text-muted-foreground">Growth</span>
+                          <div className="flex items-center justify-between">
+                            <div
+                              className="flex items-center gap-4 cursor-pointer flex-1"
+                              onClick={() => togglePlan('rrsp')}
+                            >
+                              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                <Target className="h-5 w-5 text-green-600" />
+                              </div>
+                              <div className="flex items-center justify-between w-full">
+                                {/* Left side - Plan info and controls */}
+                                <div className="flex items-center gap-3">
+                                  {expandedPlans.rrsp ? (
+                                    <ChevronDown className="h-5 w-5 text-green-600" />
+                                  ) : (
+                                    <ChevronUp className="h-5 w-5 text-green-600" />
+                                  )}
+                                  <div>
+                                    <h4 className="font-semibold text-card-foreground text-lg">
+                                      RRSP Retirement Savings Plan
+                                    </h4>
+                                    <div className="flex items-center gap-4 mt-1">
+                                      <span className="text-sm text-muted-foreground">
+                                        Account: <span className="font-mono text-green-700">7545538518</span>
+                                      </span>
+                                      <span className="text-sm text-green-600">Individual Plan</span>
+                                      <span className="text-sm text-muted-foreground">{client.currentRepresentative || 'Smith, John'}</span>
+                                      <span className="text-xs text-muted-foreground">•</span>
+                                      <span className="text-sm text-blue-600">Risk: Medium</span>
+                                      <span className="text-sm text-blue-700">Growth Strategy</span>
                                     </div>
-                                    <div className="text-lg font-semibold text-green-600">$26,700.30</div>
                                   </div>
-                                )}
+                                </div>
+
+                                {/* Right side - Financial Card */}
+                                <div className="flex items-center gap-6">
+                                  {/* Portfolio Value Card */}
+                                  <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-2 text-center h-10 flex flex-col justify-center min-w-[130px]">
+                                    <div className="text-xs text-green-600 font-medium leading-tight">Total Value</div>
+                                    <div className="text-sm font-bold text-green-700 leading-tight">$26,700.30</div>
+                                  </div>
+                                </div>
                               </div>
                             </div>
+
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="bg-white/80 border-green-300 text-green-600 hover:bg-green-50 hover:text-green-700 transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                // Handle add investment logic here
+                                console.log('Add Investment to RRSP plan')
+                              }}
+                            >
+                              <Plus className="h-4 w-4 mr-1" />
+                              Investment
+                            </Button>
                           </div>
                         </div>
                         
@@ -819,6 +1079,9 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                       <TableHead className="font-semibold text-gray-700 py-4">Product</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4">Risk</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4">Objective</TableHead>
+                                      <TableHead className="font-semibold text-gray-700 py-4 text-right">Units</TableHead>
+                                      <TableHead className="font-semibold text-gray-700 py-4 text-right">Avg. Cost</TableHead>
+                                      <TableHead className="font-semibold text-gray-700 py-4 text-right">Book Value</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4 text-right">Market Value</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4 text-center">Trading</TableHead>
                                     </TableRow>
@@ -852,17 +1115,162 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                       </TableCell>
                                       <TableCell className="py-4 text-sm text-muted-foreground">Growth</TableCell>
                                       <TableCell className="py-4 text-right">
+                                        <div className="text-sm font-medium text-card-foreground">2,156.78</div>
+                                        <div className="text-xs text-muted-foreground">Units</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <div className="text-sm font-medium text-card-foreground">$11.80</div>
+                                        <div className="text-xs text-muted-foreground">Per Unit</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <div className="text-sm font-medium text-blue-600">$25,450.00</div>
+                                        <div className="text-xs text-muted-foreground">Purchase</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
                                         <div className="text-lg font-semibold text-green-600">$25,450.30</div>
+                                        <div className="text-xs text-green-600">+$0.30 (0.001%)</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-center">
                                         <div className="flex items-center justify-center gap-1">
-                                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-700 transition-all duration-200">
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-700 transition-all duration-200"
+                                            onClick={() => handleBuyFund({
+                                              supplier: 'TD-001',
+                                              product: 'TD CANADIAN EQUITY FUND',
+                                              series: 'Series A',
+                                              units: 2156.78,
+                                              avgCost: 11.80,
+                                              marketValue: 25450.30
+                                            }, 'RRSP')}
+                                          >
                                             <Plus className="h-4 w-4" />
                                           </Button>
-                                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200">
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200"
+                                            onClick={() => handleSellFund({
+                                              supplier: 'TD-001',
+                                              product: 'TD CANADIAN EQUITY FUND',
+                                              series: 'Series A',
+                                              units: 2156.78,
+                                              avgCost: 11.80,
+                                              marketValue: 25450.30
+                                            }, 'RRSP')}
+                                          >
                                             <Minus className="h-4 w-4" />
                                           </Button>
-                                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-700 transition-all duration-200">
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-700 transition-all duration-200"
+                                            onClick={() => handleSwitchFund({
+                                              supplier: 'TD-001',
+                                              company: 'TD',
+                                              product: 'TD CANADIAN EQUITY FUND',
+                                              series: 'Series A',
+                                              units: 2156.78,
+                                              avgCost: 11.80,
+                                              marketValue: 25450.30
+                                            }, 'RRSP')}
+                                          >
+                                            <ArrowLeftRight className="h-4 w-4" />
+                                          </Button>
+                                        </div>
+                                      </TableCell>
+                                    </TableRow>
+                                    <TableRow className="hover:bg-green-50/30 transition-colors duration-200">
+                                      <TableCell className="font-medium py-4">
+                                        <div className="flex items-center gap-2">
+                                          <div className="w-6 h-6 bg-green-100 rounded flex items-center justify-center">
+                                            <span className="text-xs font-bold text-green-700">T</span>
+                                          </div>
+                                          <span className="text-sm font-medium">TD-142</span>
+                                        </div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-sm text-muted-foreground">9876543210</TableCell>
+                                      <TableCell className="py-4">
+                                        <div className="max-w-xs">
+                                          <div className="text-sm font-medium text-card-foreground">TD BALANCED GROWTH FUND</div>
+                                          <div className="text-xs text-muted-foreground">Series F</div>
+                                        </div>
+                                      </TableCell>
+                                      <TableCell className="py-4">
+                                        <div className="flex items-center gap-2">
+                                          <Badge variant="outline" className="text-purple-600 border-purple-200 bg-purple-50">H</Badge>
+                                          <div className="flex gap-1">
+                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                            <FileText className="h-3 w-3 text-gray-400" />
+                                          </div>
+                                        </div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-sm text-muted-foreground">Growth</TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <div className="text-sm font-medium text-card-foreground">105.50</div>
+                                        <div className="text-xs text-muted-foreground">Units</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <div className="text-sm font-medium text-card-foreground">$12.14</div>
+                                        <div className="text-xs text-muted-foreground">Per Unit</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <div className="text-sm font-medium text-blue-600">$1,280.77</div>
+                                        <div className="text-xs text-muted-foreground">Purchase</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <div className="text-lg font-semibold text-green-600">$1,281.47</div>
+                                        <div className="text-xs text-green-600">+$0.70 (0.055%)</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-center">
+                                        <div className="flex items-center justify-center gap-1">
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-700 transition-all duration-200"
+                                            onClick={() => handleBuyFund({
+                                              supplier: 'TD-142',
+                                              product: 'TD BALANCED GROWTH FUND',
+                                              series: 'Series F',
+                                              units: 105.50,
+                                              avgCost: 12.14,
+                                              marketValue: 1281.47
+                                            }, 'RRSP')}
+                                          >
+                                            <Plus className="h-4 w-4" />
+                                          </Button>
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-700 transition-all duration-200"
+                                            onClick={() => handleSellFund({
+                                              supplier: 'TD-142',
+                                              product: 'TD BALANCED GROWTH FUND',
+                                              series: 'Series F',
+                                              units: 105.50,
+                                              avgCost: 12.14,
+                                              marketValue: 1281.47
+                                            }, 'RRSP')}
+                                          >
+                                            <Minus className="h-4 w-4" />
+                                          </Button>
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-700 transition-all duration-200"
+                                            onClick={() => handleSwitchFund({
+                                              supplier: 'TD-142',
+                                              company: 'TD',
+                                              product: 'TD BALANCED GROWTH FUND',
+                                              series: 'Series F',
+                                              units: 105.50,
+                                              avgCost: 12.14,
+                                              marketValue: 1281.47
+                                            }, 'RRSP')}
+                                          >
                                             <ArrowLeftRight className="h-4 w-4" />
                                           </Button>
                                         </div>
@@ -872,7 +1280,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                 </Table>
                               </div>
                             </div>
-                            
+
                             <div className="p-6 border-t border-gray-200/60 bg-gradient-to-r from-green-50/50 to-green-50/30">
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="bg-white p-4 rounded-lg border border-gray-200/40">
@@ -2651,6 +3059,397 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
               <p className="text-muted-foreground">This client has no NFU messages at this time.</p>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Buy Fund Modal */}
+      <Dialog open={showBuyModal} onOpenChange={closeAllModals}>
+        <DialogContent className="max-w-md">
+          {!orderConfirmed ? (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-xl font-semibold text-green-700">
+                  <Plus className="h-5 w-5" />
+                  Buy More Units
+                </DialogTitle>
+                <div className="text-sm text-muted-foreground mt-2">
+                  Purchase additional units of {selectedFund?.product}
+                </div>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                  <div className="text-sm font-medium text-gray-700">Current Holdings ({selectedPlan}):</div>
+                  <div className="text-sm text-gray-600">Units: {selectedFund?.units}</div>
+                  <div className="text-sm text-gray-600">Avg. Cost: ${selectedFund?.avgCost}</div>
+                  <div className="text-sm text-gray-600">Market Value: ${selectedFund?.marketValue?.toLocaleString()}</div>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-sm font-medium">Investment Amount ($)</Label>
+                    <Input
+                      type="number"
+                      placeholder="Enter amount to invest"
+                      value={buyAmount}
+                      onChange={(e) => {
+                        setBuyAmount(e.target.value)
+                        setBuyUnits(calculateBuyUnits(e.target.value))
+                      }}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Or Number of Units</Label>
+                    <Input
+                      type="number"
+                      placeholder="Enter number of units"
+                      value={buyUnits}
+                      onChange={(e) => {
+                        setBuyUnits(e.target.value)
+                        setBuyAmount(calculateBuyAmount(e.target.value))
+                      }}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div className="bg-blue-50 p-3 rounded-lg">
+                    <div className="text-sm text-blue-700">
+                      Estimated Cost: ${(buyAmount || calculateBuyAmount(buyUnits) || '0')}
+                    </div>
+                    <div className="text-xs text-blue-600 mt-1">
+                      Units to purchase: {buyUnits || calculateBuyUnits(buyAmount) || '0'}
+                    </div>
+                    <div className="text-xs text-blue-600">Based on avg. cost ${selectedFund?.avgCost}</div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <Button variant="outline" onClick={closeAllModals} className="flex-1">
+                    Cancel
+                  </Button>
+                  <Button
+                    className="flex-1 bg-green-600 hover:bg-green-700"
+                    onClick={() => handlePlaceOrder('buy')}
+                    disabled={!buyAmount && !buyUnits}
+                  >
+                    Place Buy Order
+                  </Button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-xl font-semibold text-green-700">
+                  <CheckCircle className="h-6 w-6 text-green-600" />
+                  Order Confirmed
+                </DialogTitle>
+                <div className="text-sm text-muted-foreground mt-2">
+                  Your buy order has been placed successfully
+                </div>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                  <div className="space-y-2">
+                    <div className="text-sm font-medium text-green-800">Order Details:</div>
+                    <div className="text-sm text-green-700">Order ID: {orderDetails?.orderId}</div>
+                    <div className="text-sm text-green-700">Fund: {orderDetails?.fund?.product}</div>
+                    <div className="text-sm text-green-700">Plan: {orderDetails?.plan}</div>
+                    <div className="text-sm text-green-700">Units: {orderDetails?.units}</div>
+                    <div className="text-sm text-green-700">Amount: ${orderDetails?.amount}</div>
+                    <div className="text-sm text-green-700">Time: {orderDetails?.timestamp}</div>
+                  </div>
+                </div>
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <div className="text-sm text-blue-700">Processing Status: Pending</div>
+                  <div className="text-xs text-blue-600 mt-1">
+                    Order will be processed at next market close
+                  </div>
+                </div>
+                <Button onClick={closeAllModals} className="w-full bg-green-600 hover:bg-green-700">
+                  Done
+                </Button>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Sell Fund Modal */}
+      <Dialog open={showSellModal} onOpenChange={closeAllModals}>
+        <DialogContent className="max-w-md">
+          {!orderConfirmed ? (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-xl font-semibold text-red-700">
+                  <Minus className="h-5 w-5" />
+                  Sell Units
+                </DialogTitle>
+                <div className="text-sm text-muted-foreground mt-2">
+                  Sell units of {selectedFund?.product}
+                </div>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                  <div className="text-sm font-medium text-gray-700">Current Holdings ({selectedPlan}):</div>
+                  <div className="text-sm text-gray-600">Units Available: {selectedFund?.units}</div>
+                  <div className="text-sm text-gray-600">Avg. Cost: ${selectedFund?.avgCost}</div>
+                  <div className="text-sm text-gray-600">Market Value: ${selectedFund?.marketValue?.toLocaleString()}</div>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-sm font-medium">Number of Units to Sell</Label>
+                    <Input
+                      type="number"
+                      placeholder={`Max: ${selectedFund?.units}`}
+                      value={sellUnits}
+                      onChange={(e) => {
+                        const units = Math.min(parseFloat(e.target.value) || 0, selectedFund?.units || 0)
+                        setSellUnits(units.toString())
+                        setSellAmount(calculateSellAmount(units.toString()))
+                      }}
+                      max={selectedFund?.units}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Or Dollar Amount ($)</Label>
+                    <Input
+                      type="number"
+                      placeholder="Enter dollar amount"
+                      value={sellAmount}
+                      onChange={(e) => {
+                        setSellAmount(e.target.value)
+                        setSellUnits(calculateSellUnits(e.target.value))
+                      }}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div className="bg-yellow-50 p-3 rounded-lg">
+                    <div className="text-sm text-yellow-700">
+                      Estimated Proceeds: ${(sellAmount || calculateSellAmount(sellUnits) || '0')}
+                    </div>
+                    <div className="text-xs text-yellow-600 mt-1">
+                      Units to sell: {sellUnits || calculateSellUnits(sellAmount) || '0'}
+                    </div>
+                    <div className="text-xs text-yellow-600">Before fees and taxes • Based on avg. cost ${selectedFund?.avgCost}</div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <Button variant="outline" onClick={closeAllModals} className="flex-1">
+                    Cancel
+                  </Button>
+                  <Button
+                    className="flex-1 bg-red-600 hover:bg-red-700"
+                    onClick={() => handlePlaceOrder('sell')}
+                    disabled={!sellAmount && !sellUnits}
+                  >
+                    Place Sell Order
+                  </Button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-xl font-semibold text-red-700">
+                  <CheckCircle className="h-6 w-6 text-green-600" />
+                  Order Confirmed
+                </DialogTitle>
+                <div className="text-sm text-muted-foreground mt-2">
+                  Your sell order has been placed successfully
+                </div>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                  <div className="space-y-2">
+                    <div className="text-sm font-medium text-red-800">Order Details:</div>
+                    <div className="text-sm text-red-700">Order ID: {orderDetails?.orderId}</div>
+                    <div className="text-sm text-red-700">Fund: {orderDetails?.fund?.product}</div>
+                    <div className="text-sm text-red-700">Plan: {orderDetails?.plan}</div>
+                    <div className="text-sm text-red-700">Units to Sell: {orderDetails?.units}</div>
+                    <div className="text-sm text-red-700">Estimated Proceeds: ${orderDetails?.amount}</div>
+                    <div className="text-sm text-red-700">Time: {orderDetails?.timestamp}</div>
+                  </div>
+                </div>
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <div className="text-sm text-blue-700">Processing Status: Pending</div>
+                  <div className="text-xs text-blue-600 mt-1">
+                    Order will be processed at next market close
+                  </div>
+                </div>
+                <Button onClick={closeAllModals} className="w-full bg-red-600 hover:bg-red-700">
+                  Done
+                </Button>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Switch Fund Modal */}
+      <Dialog open={showSwitchModal} onOpenChange={closeAllModals}>
+        <DialogContent className="max-w-lg">
+          {!orderConfirmed ? (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-xl font-semibold text-blue-700">
+                  <ArrowLeftRight className="h-5 w-5" />
+                  Switch Fund
+                </DialogTitle>
+                <div className="text-sm text-muted-foreground mt-2">
+                  Switch from {selectedFund?.product} to another {selectedFund?.company} fund
+                </div>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                  <div className="text-sm font-medium text-gray-700">Current Fund ({selectedPlan}):</div>
+                  <div className="text-sm text-gray-600">{selectedFund?.product}</div>
+                  <div className="text-sm text-gray-600">Units Available: {selectedFund?.units}</div>
+                  <div className="text-sm text-gray-600">Market Value: ${selectedFund?.marketValue?.toLocaleString()}</div>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-sm font-medium">Select New {selectedFund?.company} Fund</Label>
+                    <Select value={selectedNewFund} onValueChange={setSelectedNewFund}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Choose a fund to switch to" />
+                      </SelectTrigger>
+                      <SelectContent className="z-[9999]" position="popper">
+                        {selectedFund?.company === 'Fidelity' ? (
+                          <>
+                            <SelectItem value="fid-northstar">Fidelity NorthStar Fund - Series B ISC</SelectItem>
+                            <SelectItem value="fid-income">Fidelity Monthly Income Fund - Series B ISC</SelectItem>
+                            <SelectItem value="fid-growth">Fidelity Growth Fund - Series B ISC</SelectItem>
+                            <SelectItem value="fid-balanced">Fidelity Balanced Fund - Series A</SelectItem>
+                            <SelectItem value="fid-conservative">Fidelity Conservative Fund - Series A</SelectItem>
+                            <SelectItem value="fid-equity">Fidelity Canadian Equity Fund - Series B ISC</SelectItem>
+                            <SelectItem value="fid-global">Fidelity Global Equity Fund - Series B ISC</SelectItem>
+                            <SelectItem value="fid-dividend">Fidelity Canadian Dividend Fund - Series A</SelectItem>
+                          </>
+                        ) : selectedFund?.company === 'TD' ? (
+                          <>
+                            <SelectItem value="td-equity">TD Canadian Equity Fund - Series A</SelectItem>
+                            <SelectItem value="td-balanced">TD Balanced Growth Fund - Series F</SelectItem>
+                            <SelectItem value="td-income">TD Monthly Income Fund - Series A</SelectItem>
+                            <SelectItem value="td-index">TD Canadian Index Fund - Series E</SelectItem>
+                            <SelectItem value="td-bond">TD Canadian Bond Fund - Series A</SelectItem>
+                            <SelectItem value="td-global">TD Global Equity Fund - Series F</SelectItem>
+                          </>
+                        ) : (
+                          <>
+                            <SelectItem value="other-equity">Canadian Equity Fund</SelectItem>
+                            <SelectItem value="other-balanced">Balanced Growth Fund</SelectItem>
+                            <SelectItem value="other-income">Monthly Income Fund</SelectItem>
+                            <SelectItem value="other-bond">Bond Fund</SelectItem>
+                          </>
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label className="text-sm font-medium">Switch Amount</Label>
+                    <div className="flex gap-2 mt-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => setSwitchUnits('')}
+                      >
+                        Partial Switch
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => setSwitchUnits(selectedFund?.units?.toString() || '')}
+                      >
+                        Full Switch
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="text-sm font-medium">Units to Switch</Label>
+                    <Input
+                      type="number"
+                      placeholder={`Max: ${selectedFund?.units}`}
+                      value={switchUnits}
+                      onChange={(e) => {
+                        const units = Math.min(parseFloat(e.target.value) || 0, selectedFund?.units || 0)
+                        setSwitchUnits(units.toString())
+                      }}
+                      max={selectedFund?.units}
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div className="bg-blue-50 p-3 rounded-lg">
+                    <div className="text-sm text-blue-700">Switch Preview:</div>
+                    <div className="text-xs text-blue-600 mt-1">
+                      Units to switch: {switchUnits || '0'}
+                    </div>
+                    <div className="text-xs text-blue-600">
+                      Estimated value: ${((parseFloat(switchUnits) || 0) * (selectedFund?.avgCost || 0)).toFixed(2)}
+                    </div>
+                    <div className="text-xs text-blue-600 mt-1">
+                      This will sell your current fund and buy the selected new fund
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <Button variant="outline" onClick={closeAllModals} className="flex-1">
+                    Cancel
+                  </Button>
+                  <Button
+                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    onClick={() => handlePlaceOrder('switch')}
+                    disabled={!switchUnits}
+                  >
+                    Execute Switch
+                  </Button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-xl font-semibold text-blue-700">
+                  <CheckCircle className="h-6 w-6 text-green-600" />
+                  Switch Order Confirmed
+                </DialogTitle>
+                <div className="text-sm text-muted-foreground mt-2">
+                  Your fund switch order has been placed successfully
+                </div>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <div className="space-y-2">
+                    <div className="text-sm font-medium text-blue-800">Switch Order Details:</div>
+                    <div className="text-sm text-blue-700">Order ID: {orderDetails?.orderId}</div>
+                    <div className="text-sm text-blue-700">From: {orderDetails?.fund?.product}</div>
+                    <div className="text-sm text-blue-700">To: {orderDetails?.newFund || 'Fund selection required'}</div>
+                    <div className="text-sm text-blue-700">Plan: {orderDetails?.plan}</div>
+                    <div className="text-sm text-blue-700">Units to Switch: {orderDetails?.units}</div>
+                    <div className="text-sm text-blue-700">Time: {orderDetails?.timestamp}</div>
+                  </div>
+                </div>
+                <div className="bg-yellow-50 p-3 rounded-lg">
+                  <div className="text-sm text-yellow-700">Processing Status: Pending</div>
+                  <div className="text-xs text-yellow-600 mt-1">
+                    Switch will be processed at next market close
+                  </div>
+                </div>
+                <Button onClick={closeAllModals} className="w-full bg-blue-600 hover:bg-blue-700">
+                  Done
+                </Button>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
 
