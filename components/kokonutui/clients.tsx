@@ -357,6 +357,7 @@ export default function Clients() {
           </Card>
         )}
       </div>
+      </div>
     </div>
   )
 }
