@@ -9,14 +9,12 @@ import {
   Mail,
   Grid,
   List,
-  User,
-  Search
+  User
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
 import { mockClients } from "@/lib/client-data"
 import { useClientSelection } from "../client-selection-context"
 
@@ -28,7 +26,6 @@ export default function Clients() {
   const [filteredClients, setFilteredClients] = useState(mockClients)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
   const [activeTab, setActiveTab] = useState<'all' | 'active' | 'inactive' | 'prospect'>('all')
-  const [searchQuery, setSearchQuery] = useState('')
 
 
 
@@ -69,24 +66,9 @@ export default function Clients() {
       })
     }
     
-    // Apply local search query
-    if (searchQuery.trim()) {
-      filtered = filtered.filter(client => {
-        const query = searchQuery.toLowerCase()
-        return (
-          client.firstName.toLowerCase().includes(query) ||
-          client.surname.toLowerCase().includes(query) ||
-          client.email.toLowerCase().includes(query) ||
-          client.clientId.toLowerCase().includes(query) ||
-          client.city.toLowerCase().includes(query) ||
-          client.province.toLowerCase().includes(query) ||
-          client.location.toLowerCase().includes(query)
-        )
-      })
-    }
     
     setFilteredClients(filtered)
-  }, [searchParams, clients, searchQuery])
+  }, [searchParams, clients])
 
 
   // Filter clients by status
@@ -178,149 +160,41 @@ export default function Clients() {
 
 
 
-  const SearchField = ({ className = "" }: { className?: string }) => (
-    <div className={`relative ${className}`}>
-      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-      <Input
-        type="text"
-        placeholder="Search clients by name, email, ID, or location..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className="pl-10 h-11 text-sm bg-background border-input"
-      />
-    </div>
-  )
 
   return (
-    <div className="space-y-6">
-      {/* Sticky Search and Status Filters */}
-      <div className="sticky top-16 z-30 bg-background/95 backdrop-blur-sm border-b border-border pb-6 -mx-6 px-6 -mt-6 pt-6">
-        {/* Search Field */}
-        <div className="mb-6">
-          <SearchField />
-        </div>
-
-        {/* Status Checkboxes and Controls */}
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-          {/* Status Checkboxes */}
-          <div className="flex items-center gap-8 flex-wrap">
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="all-status"
-                checked={activeTab === 'all'}
-                onCheckedChange={() => setActiveTab('all')}
-              />
-            <label htmlFor="all-status" className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-2">
-              <span>All</span>
-              <span className="text-lg font-bold text-muted-foreground">({allClients.length})</span>
-            </label>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="active-status"
-                checked={activeTab === 'active'}
-                onCheckedChange={() => setActiveTab('active')}
-              />
-              <label htmlFor="active-status" className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <span>Active</span>
-                <span className="text-lg font-bold text-muted-foreground">({activeClients.length})</span>
-              </label>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="inactive-status"
-                checked={activeTab === 'inactive'}
-                onCheckedChange={() => setActiveTab('inactive')}
-              />
-              <label htmlFor="inactive-status" className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-2">
-                <PauseCircle className="h-4 w-4 text-muted-foreground" />
-                <span>Inactive</span>
-                <span className="text-lg font-bold text-muted-foreground">({inactiveClients.length})</span>
-              </label>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <Checkbox
-                id="prospect-status"
-                checked={activeTab === 'prospect'}
-                onCheckedChange={() => setActiveTab('prospect')}
-              />
-              <label htmlFor="prospect-status" className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-2">
-                <Clock className="h-4 w-4 text-yellow-600" />
-                <span>Prospects</span>
-                <span className="text-lg font-bold text-muted-foreground">({prospectClients.length})</span>
-              </label>
-            </div>
-          </div>
-
-          {/* Right side - Select All and View Toggle */}
-          <div className="flex items-center gap-3">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleSelectAllClients}
-              className="h-8 px-4"
-            >
-              Select All
-            </Button>
-            
-            <div className="flex bg-card border border-border rounded-lg overflow-hidden">
-              <Button
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('list')}
-                className="rounded-none border-0 h-8 px-3"
-              >
-                <List className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('grid')}
-                className="rounded-none border-0 h-8 px-3"
-              >
-                <Grid className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Client List Content */}
-      <div className="space-y-6">
+    <div className="space-y-6 pt-2">
 
       {/* Active Search Filters and Bulk Actions */}
-      {(searchParams.toString() || selectedClientIds.length > 0) && (
-        <div className="flex items-center gap-2 flex-wrap">
-          {searchParams.toString() && (
-            <>
-              <Badge variant="secondary" className="bg-primary/10 text-primary">
-                Search Active
-              </Badge>
-              <Button variant="outline" size="sm" onClick={handleClearSearch} className="h-8">
-                Clear Filters
-              </Button>
-            </>
-          )}
-          {selectedClientIds.length > 0 && (
-            <>
-              <Button variant="outline" size="sm" onClick={handleSelectNone} className="h-8 text-xs px-3">
-                Clear ({selectedClientIds.length})
-              </Button>
-              <Button variant="outline" size="sm" className="h-8 text-xs px-3">
-                <Mail className="h-3 w-3 mr-1" />
-                Bulk Contact
-              </Button>
-            </>
-          )}
-        </div>
-      )}
+      <div className="px-4 sm:px-6 lg:px-8">
+        {(searchParams.toString() || selectedClientIds.length > 0) && (
+          <div className="flex items-center gap-2 flex-wrap mb-6">
+            {searchParams.toString() && (
+              <>
+                <Badge variant="secondary" className="bg-primary/10 text-primary">
+                  Search Active
+                </Badge>
+                <Button variant="outline" size="sm" onClick={handleClearSearch} className="h-8">
+                  Clear Filters
+                </Button>
+              </>
+            )}
+            {selectedClientIds.length > 0 && (
+              <>
+                <Button variant="outline" size="sm" onClick={handleSelectNone} className="h-8 text-xs px-3">
+                  Clear ({selectedClientIds.length})
+                </Button>
+                <Button variant="outline" size="sm" className="h-8 text-xs px-3">
+                  <Mail className="h-3 w-3 mr-1" />
+                  Bulk Contact
+                </Button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Clients List */}
-      <div className="space-y-6">
+      <div className="px-4 sm:px-6 lg:px-8 pt-0">
         {getDisplayClients().length > 0 ? (
           <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
             {getDisplayClients().map((client) => (
@@ -356,7 +230,6 @@ export default function Clients() {
             </CardContent>
           </Card>
         )}
-      </div>
       </div>
     </div>
   )

@@ -7,7 +7,6 @@ import {
   CheckCircle,
   Clock,
   PauseCircle,
-  Search,
   Users,
   DollarSign,
   TrendingUp,
@@ -46,7 +45,8 @@ import {
   MapPin as AddressIcon,
   Phone as PhoneIcon,
   Smartphone,
-  AtSign
+  AtSign,
+  Search
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -84,9 +84,6 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
   const [showNFUMessagesModal, setShowNFUMessagesModal] = useState(false)
   const [activePlanTab, setActivePlanTab] = useState('details')
   const [activeAllocationTab, setActiveAllocationTab] = useState('chart')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState<any[]>([])
-  const [showSearchResults, setShowSearchResults] = useState(false)
   const [showBuyModal, setShowBuyModal] = useState(false)
   const [showSellModal, setShowSellModal] = useState(false)
   const [showSwitchModal, setShowSwitchModal] = useState(false)
@@ -98,8 +95,361 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
   const [sellUnits, setSellUnits] = useState('')
   const [switchUnits, setSwitchUnits] = useState('')
   const [selectedNewFund, setSelectedNewFund] = useState('')
+  const [selectedCompany, setSelectedCompany] = useState('')
+  const [fundSearchTerm, setFundSearchTerm] = useState('')
   const [orderConfirmed, setOrderConfirmed] = useState(false)
   const [orderDetails, setOrderDetails] = useState<any>(null)
+
+  // Comprehensive fund data structure organized by company
+  const fundData = {
+    'Fidelity Investments': [
+      { id: 'fid-northstar', name: 'Fidelity NorthStar Fund - Series B ISC', symbol: 'FID-253', category: 'Growth' },
+      { id: 'fid-income', name: 'Fidelity Monthly Income Fund - Series B ISC', symbol: 'FID-269', category: 'Income' },
+      { id: 'fid-growth', name: 'Fidelity Growth Fund - Series B ISC', symbol: 'FID-234', category: 'Growth' },
+      { id: 'fid-balanced', name: 'Fidelity Balanced Fund - Series A', symbol: 'FID-BAL', category: 'Balanced' },
+      { id: 'fid-conservative', name: 'Fidelity Conservative Fund - Series A', symbol: 'FID-CON', category: 'Conservative' },
+      { id: 'fid-equity', name: 'Fidelity Canadian Equity Fund - Series B ISC', symbol: 'FID-225', category: 'Equity' },
+      { id: 'fid-global', name: 'Fidelity Global Equity Fund - Series B ISC', symbol: 'FID-GLO', category: 'Global' },
+      { id: 'fid-dividend', name: 'Fidelity Canadian Dividend Fund - Series A', symbol: 'FID-DIV', category: 'Dividend' },
+      { id: 'fid-true-north', name: 'Fidelity True North Fund - Series B ISC', symbol: 'FID-225', category: 'Growth' },
+      { id: 'fid-us-focused', name: 'Fidelity U.S. Focused Stock Fund - Series B ISC', symbol: 'FID-234', category: 'US Equity' },
+      { id: 'fid-canadian-growth', name: 'Fidelity Canadian Growth Company Fund - Series B ISC', symbol: 'FID-265', category: 'Growth' },
+      { id: 'fid-tech', name: 'Fidelity Technology Fund - Series A', symbol: 'FID-TECH', category: 'Technology' },
+      { id: 'fid-healthcare', name: 'Fidelity Healthcare Fund - Series A', symbol: 'FID-HEALTH', category: 'Healthcare' },
+      { id: 'fid-energy', name: 'Fidelity Energy Fund - Series A', symbol: 'FID-ENERGY', category: 'Energy' },
+      { id: 'fid-financial', name: 'Fidelity Financial Services Fund - Series A', symbol: 'FID-FIN', category: 'Financial' },
+      { id: 'fid-materials', name: 'Fidelity Materials Fund - Series A', symbol: 'FID-MAT', category: 'Materials' },
+      { id: 'fid-consumer', name: 'Fidelity Consumer Discretionary Fund - Series A', symbol: 'FID-CONS', category: 'Consumer' },
+      { id: 'fid-utilities', name: 'Fidelity Utilities Fund - Series A', symbol: 'FID-UTIL', category: 'Utilities' },
+      { id: 'fid-reit', name: 'Fidelity Real Estate Investment Trust Fund - Series A', symbol: 'FID-REIT', category: 'REIT' },
+      { id: 'fid-emerging', name: 'Fidelity Emerging Markets Fund - Series A', symbol: 'FID-EM', category: 'Emerging Markets' },
+      { id: 'fid-bond', name: 'Fidelity Canadian Bond Fund - Series A', symbol: 'FID-BOND', category: 'Bond' },
+      { id: 'fid-short-term', name: 'Fidelity Short-Term Bond Fund - Series A', symbol: 'FID-STB', category: 'Short Term Bond' },
+      { id: 'fid-inflation', name: 'Fidelity Inflation-Protected Bond Fund - Series A', symbol: 'FID-INFL', category: 'Inflation Protected' },
+      { id: 'fid-high-yield', name: 'Fidelity High Yield Bond Fund - Series A', symbol: 'FID-HY', category: 'High Yield Bond' },
+      { id: 'fid-corporate', name: 'Fidelity Corporate Bond Fund - Series A', symbol: 'FID-CORP', category: 'Corporate Bond' }
+    ],
+    'TD Asset Management': [
+      { id: 'td-equity', name: 'TD Canadian Equity Fund - Series A', symbol: 'TD-CAN', category: 'Equity' },
+      { id: 'td-balanced', name: 'TD Balanced Growth Fund - Series F', symbol: 'TD-BAL', category: 'Balanced' },
+      { id: 'td-income', name: 'TD Monthly Income Fund - Series A', symbol: 'TD-INC', category: 'Income' },
+      { id: 'td-index', name: 'TD Canadian Index Fund - Series E', symbol: 'TD-IND', category: 'Index' },
+      { id: 'td-bond', name: 'TD Canadian Bond Fund - Series A', symbol: 'TD-BND', category: 'Bond' },
+      { id: 'td-global', name: 'TD Global Equity Fund - Series F', symbol: 'TD-GLO', category: 'Global' },
+      { id: 'td-us-equity', name: 'TD U.S. Equity Fund - Series F', symbol: 'TD-US', category: 'US Equity' },
+      { id: 'td-dividend', name: 'TD Dividend Growth Fund - Series A', symbol: 'TD-DIV', category: 'Dividend' },
+      { id: 'td-tech', name: 'TD Technology Fund - Series F', symbol: 'TD-TECH', category: 'Technology' },
+      { id: 'td-healthcare', name: 'TD Healthcare Fund - Series F', symbol: 'TD-HEALTH', category: 'Healthcare' },
+      { id: 'td-energy', name: 'TD Energy Fund - Series F', symbol: 'TD-ENERGY', category: 'Energy' },
+      { id: 'td-financial', name: 'TD Financial Services Fund - Series F', symbol: 'TD-FIN', category: 'Financial' },
+      { id: 'td-materials', name: 'TD Materials Fund - Series F', symbol: 'TD-MAT', category: 'Materials' },
+      { id: 'td-consumer', name: 'TD Consumer Discretionary Fund - Series F', symbol: 'TD-CONS', category: 'Consumer' },
+      { id: 'td-utilities', name: 'TD Utilities Fund - Series F', symbol: 'TD-UTIL', category: 'Utilities' },
+      { id: 'td-reit', name: 'TD Real Estate Investment Trust Fund - Series F', symbol: 'TD-REIT', category: 'REIT' },
+      { id: 'td-emerging', name: 'TD Emerging Markets Fund - Series F', symbol: 'TD-EM', category: 'Emerging Markets' },
+      { id: 'td-short-term', name: 'TD Short-Term Bond Fund - Series A', symbol: 'TD-STB', category: 'Short Term Bond' },
+      { id: 'td-inflation', name: 'TD Inflation-Protected Bond Fund - Series A', symbol: 'TD-INFL', category: 'Inflation Protected' },
+      { id: 'td-high-yield', name: 'TD High Yield Bond Fund - Series A', symbol: 'TD-HY', category: 'High Yield Bond' },
+      { id: 'td-corporate', name: 'TD Corporate Bond Fund - Series A', symbol: 'TD-CORP', category: 'Corporate Bond' },
+      { id: 'td-conservative', name: 'TD Conservative Fund - Series A', symbol: 'TD-CON', category: 'Conservative' },
+      { id: 'td-growth', name: 'TD Growth Fund - Series F', symbol: 'TD-GROWTH', category: 'Growth' },
+      { id: 'td-value', name: 'TD Value Fund - Series F', symbol: 'TD-VALUE', category: 'Value' },
+      { id: 'td-small-cap', name: 'TD Small Cap Fund - Series F', symbol: 'TD-SMALL', category: 'Small Cap' }
+    ],
+    'RBC Global Asset Management': [
+      { id: 'rbc-equity', name: 'RBC Canadian Equity Fund - Series A', symbol: 'RBC-CAN', category: 'Equity' },
+      { id: 'rbc-balanced', name: 'RBC Balanced Fund - Series A', symbol: 'RBC-BAL', category: 'Balanced' },
+      { id: 'rbc-income', name: 'RBC Monthly Income Fund - Series A', symbol: 'RBC-INC', category: 'Income' },
+      { id: 'rbc-global', name: 'RBC Global Equity Fund - Series A', symbol: 'RBC-GLO', category: 'Global' },
+      { id: 'rbc-bond', name: 'RBC Canadian Bond Fund - Series A', symbol: 'RBC-BND', category: 'Bond' },
+      { id: 'rbc-tech', name: 'RBC Technology Fund - Series A', symbol: 'RBC-TECH', category: 'Technology' },
+      { id: 'rbc-healthcare', name: 'RBC Healthcare Fund - Series A', symbol: 'RBC-HEALTH', category: 'Healthcare' },
+      { id: 'rbc-energy', name: 'RBC Energy Fund - Series A', symbol: 'RBC-ENERGY', category: 'Energy' },
+      { id: 'rbc-financial', name: 'RBC Financial Services Fund - Series A', symbol: 'RBC-FIN', category: 'Financial' },
+      { id: 'rbc-materials', name: 'RBC Materials Fund - Series A', symbol: 'RBC-MAT', category: 'Materials' },
+      { id: 'rbc-consumer', name: 'RBC Consumer Discretionary Fund - Series A', symbol: 'RBC-CONS', category: 'Consumer' },
+      { id: 'rbc-utilities', name: 'RBC Utilities Fund - Series A', symbol: 'RBC-UTIL', category: 'Utilities' },
+      { id: 'rbc-reit', name: 'RBC Real Estate Investment Trust Fund - Series A', symbol: 'RBC-REIT', category: 'REIT' },
+      { id: 'rbc-emerging', name: 'RBC Emerging Markets Fund - Series A', symbol: 'RBC-EM', category: 'Emerging Markets' },
+      { id: 'rbc-us-equity', name: 'RBC U.S. Equity Fund - Series A', symbol: 'RBC-US', category: 'US Equity' },
+      { id: 'rbc-dividend', name: 'RBC Dividend Fund - Series A', symbol: 'RBC-DIV', category: 'Dividend' },
+      { id: 'rbc-growth', name: 'RBC Growth Fund - Series A', symbol: 'RBC-GROWTH', category: 'Growth' },
+      { id: 'rbc-value', name: 'RBC Value Fund - Series A', symbol: 'RBC-VALUE', category: 'Value' },
+      { id: 'rbc-small-cap', name: 'RBC Small Cap Fund - Series A', symbol: 'RBC-SMALL', category: 'Small Cap' },
+      { id: 'rbc-conservative', name: 'RBC Conservative Fund - Series A', symbol: 'RBC-CON', category: 'Conservative' },
+      { id: 'rbc-short-term', name: 'RBC Short-Term Bond Fund - Series A', symbol: 'RBC-STB', category: 'Short Term Bond' },
+      { id: 'rbc-inflation', name: 'RBC Inflation-Protected Bond Fund - Series A', symbol: 'RBC-INFL', category: 'Inflation Protected' },
+      { id: 'rbc-high-yield', name: 'RBC High Yield Bond Fund - Series A', symbol: 'RBC-HY', category: 'High Yield Bond' },
+      { id: 'rbc-corporate', name: 'RBC Corporate Bond Fund - Series A', symbol: 'RBC-CORP', category: 'Corporate Bond' },
+      { id: 'rbc-index', name: 'RBC Canadian Index Fund - Series A', symbol: 'RBC-IND', category: 'Index' }
+    ],
+    'BMO Global Asset Management': [
+      { id: 'bmo-equity', name: 'BMO Canadian Equity Fund - Series A', symbol: 'BMO-CAN', category: 'Equity' },
+      { id: 'bmo-balanced', name: 'BMO Balanced Fund - Series A', symbol: 'BMO-BAL', category: 'Balanced' },
+      { id: 'bmo-income', name: 'BMO Monthly Income Fund - Series A', symbol: 'BMO-INC', category: 'Income' },
+      { id: 'bmo-global', name: 'BMO Global Equity Fund - Series A', symbol: 'BMO-GLO', category: 'Global' },
+      { id: 'bmo-tech', name: 'BMO Technology Fund - Series A', symbol: 'BMO-TECH', category: 'Technology' },
+      { id: 'bmo-healthcare', name: 'BMO Healthcare Fund - Series A', symbol: 'BMO-HEALTH', category: 'Healthcare' },
+      { id: 'bmo-energy', name: 'BMO Energy Fund - Series A', symbol: 'BMO-ENERGY', category: 'Energy' },
+      { id: 'bmo-financial', name: 'BMO Financial Services Fund - Series A', symbol: 'BMO-FIN', category: 'Financial' },
+      { id: 'bmo-materials', name: 'BMO Materials Fund - Series A', symbol: 'BMO-MAT', category: 'Materials' },
+      { id: 'bmo-consumer', name: 'BMO Consumer Discretionary Fund - Series A', symbol: 'BMO-CONS', category: 'Consumer' },
+      { id: 'bmo-utilities', name: 'BMO Utilities Fund - Series A', symbol: 'BMO-UTIL', category: 'Utilities' },
+      { id: 'bmo-reit', name: 'BMO Real Estate Investment Trust Fund - Series A', symbol: 'BMO-REIT', category: 'REIT' },
+      { id: 'bmo-emerging', name: 'BMO Emerging Markets Fund - Series A', symbol: 'BMO-EM', category: 'Emerging Markets' },
+      { id: 'bmo-us-equity', name: 'BMO U.S. Equity Fund - Series A', symbol: 'BMO-US', category: 'US Equity' },
+      { id: 'bmo-dividend', name: 'BMO Dividend Fund - Series A', symbol: 'BMO-DIV', category: 'Dividend' },
+      { id: 'bmo-growth', name: 'BMO Growth Fund - Series A', symbol: 'BMO-GROWTH', category: 'Growth' },
+      { id: 'bmo-value', name: 'BMO Value Fund - Series A', symbol: 'BMO-VALUE', category: 'Value' },
+      { id: 'bmo-small-cap', name: 'BMO Small Cap Fund - Series A', symbol: 'BMO-SMALL', category: 'Small Cap' },
+      { id: 'bmo-conservative', name: 'BMO Conservative Fund - Series A', symbol: 'BMO-CON', category: 'Conservative' },
+      { id: 'bmo-bond', name: 'BMO Canadian Bond Fund - Series A', symbol: 'BMO-BND', category: 'Bond' },
+      { id: 'bmo-short-term', name: 'BMO Short-Term Bond Fund - Series A', symbol: 'BMO-STB', category: 'Short Term Bond' },
+      { id: 'bmo-inflation', name: 'BMO Inflation-Protected Bond Fund - Series A', symbol: 'BMO-INFL', category: 'Inflation Protected' },
+      { id: 'bmo-high-yield', name: 'BMO High Yield Bond Fund - Series A', symbol: 'BMO-HY', category: 'High Yield Bond' },
+      { id: 'bmo-corporate', name: 'BMO Corporate Bond Fund - Series A', symbol: 'BMO-CORP', category: 'Corporate Bond' },
+      { id: 'bmo-index', name: 'BMO Canadian Index Fund - Series A', symbol: 'BMO-IND', category: 'Index' }
+    ],
+    'CIBC Asset Management': [
+      { id: 'cibc-equity', name: 'CIBC Canadian Equity Fund - Series A', symbol: 'CIBC-CAN', category: 'Equity' },
+      { id: 'cibc-balanced', name: 'CIBC Balanced Fund - Series A', symbol: 'CIBC-BAL', category: 'Balanced' },
+      { id: 'cibc-income', name: 'CIBC Monthly Income Fund - Series A', symbol: 'CIBC-INC', category: 'Income' },
+      { id: 'cibc-global', name: 'CIBC Global Equity Fund - Series A', symbol: 'CIBC-GLO', category: 'Global' },
+      { id: 'cibc-tech', name: 'CIBC Technology Fund - Series A', symbol: 'CIBC-TECH', category: 'Technology' },
+      { id: 'cibc-healthcare', name: 'CIBC Healthcare Fund - Series A', symbol: 'CIBC-HEALTH', category: 'Healthcare' },
+      { id: 'cibc-energy', name: 'CIBC Energy Fund - Series A', symbol: 'CIBC-ENERGY', category: 'Energy' },
+      { id: 'cibc-financial', name: 'CIBC Financial Services Fund - Series A', symbol: 'CIBC-FIN', category: 'Financial' },
+      { id: 'cibc-materials', name: 'CIBC Materials Fund - Series A', symbol: 'CIBC-MAT', category: 'Materials' },
+      { id: 'cibc-consumer', name: 'CIBC Consumer Discretionary Fund - Series A', symbol: 'CIBC-CONS', category: 'Consumer' },
+      { id: 'cibc-utilities', name: 'CIBC Utilities Fund - Series A', symbol: 'CIBC-UTIL', category: 'Utilities' },
+      { id: 'cibc-reit', name: 'CIBC Real Estate Investment Trust Fund - Series A', symbol: 'CIBC-REIT', category: 'REIT' },
+      { id: 'cibc-emerging', name: 'CIBC Emerging Markets Fund - Series A', symbol: 'CIBC-EM', category: 'Emerging Markets' },
+      { id: 'cibc-us-equity', name: 'CIBC U.S. Equity Fund - Series A', symbol: 'CIBC-US', category: 'US Equity' },
+      { id: 'cibc-dividend', name: 'CIBC Dividend Fund - Series A', symbol: 'CIBC-DIV', category: 'Dividend' },
+      { id: 'cibc-growth', name: 'CIBC Growth Fund - Series A', symbol: 'CIBC-GROWTH', category: 'Growth' },
+      { id: 'cibc-value', name: 'CIBC Value Fund - Series A', symbol: 'CIBC-VALUE', category: 'Value' },
+      { id: 'cibc-small-cap', name: 'CIBC Small Cap Fund - Series A', symbol: 'CIBC-SMALL', category: 'Small Cap' },
+      { id: 'cibc-conservative', name: 'CIBC Conservative Fund - Series A', symbol: 'CIBC-CON', category: 'Conservative' },
+      { id: 'cibc-bond', name: 'CIBC Canadian Bond Fund - Series A', symbol: 'CIBC-BND', category: 'Bond' },
+      { id: 'cibc-short-term', name: 'CIBC Short-Term Bond Fund - Series A', symbol: 'CIBC-STB', category: 'Short Term Bond' },
+      { id: 'cibc-inflation', name: 'CIBC Inflation-Protected Bond Fund - Series A', symbol: 'CIBC-INFL', category: 'Inflation Protected' },
+      { id: 'cibc-high-yield', name: 'CIBC High Yield Bond Fund - Series A', symbol: 'CIBC-HY', category: 'High Yield Bond' },
+      { id: 'cibc-corporate', name: 'CIBC Corporate Bond Fund - Series A', symbol: 'CIBC-CORP', category: 'Corporate Bond' },
+      { id: 'cibc-index', name: 'CIBC Canadian Index Fund - Series A', symbol: 'CIBC-IND', category: 'Index' }
+    ],
+    'SCOTIABANK Global Asset Management': [
+      { id: 'scotia-equity', name: 'Scotia Canadian Equity Fund - Series A', symbol: 'SCOTIA-CAN', category: 'Equity' },
+      { id: 'scotia-balanced', name: 'Scotia Balanced Fund - Series A', symbol: 'SCOTIA-BAL', category: 'Balanced' },
+      { id: 'scotia-income', name: 'Scotia Monthly Income Fund - Series A', symbol: 'SCOTIA-INC', category: 'Income' },
+      { id: 'scotia-global', name: 'Scotia Global Equity Fund - Series A', symbol: 'SCOTIA-GLO', category: 'Global' },
+      { id: 'scotia-tech', name: 'Scotia Technology Fund - Series A', symbol: 'SCOTIA-TECH', category: 'Technology' },
+      { id: 'scotia-healthcare', name: 'Scotia Healthcare Fund - Series A', symbol: 'SCOTIA-HEALTH', category: 'Healthcare' },
+      { id: 'scotia-energy', name: 'Scotia Energy Fund - Series A', symbol: 'SCOTIA-ENERGY', category: 'Energy' },
+      { id: 'scotia-financial', name: 'Scotia Financial Services Fund - Series A', symbol: 'SCOTIA-FIN', category: 'Financial' },
+      { id: 'scotia-materials', name: 'Scotia Materials Fund - Series A', symbol: 'SCOTIA-MAT', category: 'Materials' },
+      { id: 'scotia-consumer', name: 'Scotia Consumer Discretionary Fund - Series A', symbol: 'SCOTIA-CONS', category: 'Consumer' },
+      { id: 'scotia-utilities', name: 'Scotia Utilities Fund - Series A', symbol: 'SCOTIA-UTIL', category: 'Utilities' },
+      { id: 'scotia-reit', name: 'Scotia Real Estate Investment Trust Fund - Series A', symbol: 'SCOTIA-REIT', category: 'REIT' },
+      { id: 'scotia-emerging', name: 'Scotia Emerging Markets Fund - Series A', symbol: 'SCOTIA-EM', category: 'Emerging Markets' },
+      { id: 'scotia-us-equity', name: 'Scotia U.S. Equity Fund - Series A', symbol: 'SCOTIA-US', category: 'US Equity' },
+      { id: 'scotia-dividend', name: 'Scotia Dividend Fund - Series A', symbol: 'SCOTIA-DIV', category: 'Dividend' },
+      { id: 'scotia-growth', name: 'Scotia Growth Fund - Series A', symbol: 'SCOTIA-GROWTH', category: 'Growth' },
+      { id: 'scotia-value', name: 'Scotia Value Fund - Series A', symbol: 'SCOTIA-VALUE', category: 'Value' },
+      { id: 'scotia-small-cap', name: 'Scotia Small Cap Fund - Series A', symbol: 'SCOTIA-SMALL', category: 'Small Cap' },
+      { id: 'scotia-conservative', name: 'Scotia Conservative Fund - Series A', symbol: 'SCOTIA-CON', category: 'Conservative' },
+      { id: 'scotia-bond', name: 'Scotia Canadian Bond Fund - Series A', symbol: 'SCOTIA-BND', category: 'Bond' },
+      { id: 'scotia-short-term', name: 'Scotia Short-Term Bond Fund - Series A', symbol: 'SCOTIA-STB', category: 'Short Term Bond' },
+      { id: 'scotia-inflation', name: 'Scotia Inflation-Protected Bond Fund - Series A', symbol: 'SCOTIA-INFL', category: 'Inflation Protected' },
+      { id: 'scotia-high-yield', name: 'Scotia High Yield Bond Fund - Series A', symbol: 'SCOTIA-HY', category: 'High Yield Bond' },
+      { id: 'scotia-corporate', name: 'Scotia Corporate Bond Fund - Series A', symbol: 'SCOTIA-CORP', category: 'Corporate Bond' },
+      { id: 'scotia-index', name: 'Scotia Canadian Index Fund - Series A', symbol: 'SCOTIA-IND', category: 'Index' }
+    ],
+    'Mackenzie Investments': [
+      { id: 'mack-equity', name: 'Mackenzie Canadian Equity Fund - Series A', symbol: 'MACK-CAN', category: 'Equity' },
+      { id: 'mack-balanced', name: 'Mackenzie Balanced Fund - Series A', symbol: 'MACK-BAL', category: 'Balanced' },
+      { id: 'mack-income', name: 'Mackenzie Monthly Income Fund - Series A', symbol: 'MACK-INC', category: 'Income' },
+      { id: 'mack-global', name: 'Mackenzie Global Equity Fund - Series A', symbol: 'MACK-GLO', category: 'Global' },
+      { id: 'mack-tech', name: 'Mackenzie Technology Fund - Series A', symbol: 'MACK-TECH', category: 'Technology' },
+      { id: 'mack-healthcare', name: 'Mackenzie Healthcare Fund - Series A', symbol: 'MACK-HEALTH', category: 'Healthcare' },
+      { id: 'mack-energy', name: 'Mackenzie Energy Fund - Series A', symbol: 'MACK-ENERGY', category: 'Energy' },
+      { id: 'mack-financial', name: 'Mackenzie Financial Services Fund - Series A', symbol: 'MACK-FIN', category: 'Financial' },
+      { id: 'mack-materials', name: 'Mackenzie Materials Fund - Series A', symbol: 'MACK-MAT', category: 'Materials' },
+      { id: 'mack-consumer', name: 'Mackenzie Consumer Discretionary Fund - Series A', symbol: 'MACK-CONS', category: 'Consumer' },
+      { id: 'mack-utilities', name: 'Mackenzie Utilities Fund - Series A', symbol: 'MACK-UTIL', category: 'Utilities' },
+      { id: 'mack-reit', name: 'Mackenzie Real Estate Investment Trust Fund - Series A', symbol: 'MACK-REIT', category: 'REIT' },
+      { id: 'mack-emerging', name: 'Mackenzie Emerging Markets Fund - Series A', symbol: 'MACK-EM', category: 'Emerging Markets' },
+      { id: 'mack-us-equity', name: 'Mackenzie U.S. Equity Fund - Series A', symbol: 'MACK-US', category: 'US Equity' },
+      { id: 'mack-dividend', name: 'Mackenzie Dividend Fund - Series A', symbol: 'MACK-DIV', category: 'Dividend' },
+      { id: 'mack-growth', name: 'Mackenzie Growth Fund - Series A', symbol: 'MACK-GROWTH', category: 'Growth' },
+      { id: 'mack-value', name: 'Mackenzie Value Fund - Series A', symbol: 'MACK-VALUE', category: 'Value' },
+      { id: 'mack-small-cap', name: 'Mackenzie Small Cap Fund - Series A', symbol: 'MACK-SMALL', category: 'Small Cap' },
+      { id: 'mack-conservative', name: 'Mackenzie Conservative Fund - Series A', symbol: 'MACK-CON', category: 'Conservative' },
+      { id: 'mack-bond', name: 'Mackenzie Canadian Bond Fund - Series A', symbol: 'MACK-BND', category: 'Bond' },
+      { id: 'mack-short-term', name: 'Mackenzie Short-Term Bond Fund - Series A', symbol: 'MACK-STB', category: 'Short Term Bond' },
+      { id: 'mack-inflation', name: 'Mackenzie Inflation-Protected Bond Fund - Series A', symbol: 'MACK-INFL', category: 'Inflation Protected' },
+      { id: 'mack-high-yield', name: 'Mackenzie High Yield Bond Fund - Series A', symbol: 'MACK-HY', category: 'High Yield Bond' },
+      { id: 'mack-corporate', name: 'Mackenzie Corporate Bond Fund - Series A', symbol: 'MACK-CORP', category: 'Corporate Bond' },
+      { id: 'mack-index', name: 'Mackenzie Canadian Index Fund - Series A', symbol: 'MACK-IND', category: 'Index' }
+    ],
+    'iShares by BlackRock': [
+      { id: 'ishares-canada', name: 'iShares Core S&P/TSX Capped Composite Index ETF', symbol: 'XIC', category: 'Index' },
+      { id: 'ishares-us', name: 'iShares Core S&P 500 Index ETF', symbol: 'XUS', category: 'US Equity' },
+      { id: 'ishares-global', name: 'iShares Core MSCI World Index ETF', symbol: 'XWD', category: 'Global' },
+      { id: 'ishares-bond', name: 'iShares Core Canadian Universe Bond Index ETF', symbol: 'XBB', category: 'Bond' },
+      { id: 'ishares-tech', name: 'iShares S&P/TSX Capped Information Technology Index ETF', symbol: 'XIT', category: 'Technology' },
+      { id: 'ishares-financial', name: 'iShares S&P/TSX Capped Financials Index ETF', symbol: 'XFN', category: 'Financial' },
+      { id: 'ishares-energy', name: 'iShares S&P/TSX Capped Energy Index ETF', symbol: 'XEG', category: 'Energy' },
+      { id: 'ishares-materials', name: 'iShares S&P/TSX Capped Materials Index ETF', symbol: 'XMA', category: 'Materials' },
+      { id: 'ishares-consumer', name: 'iShares S&P/TSX Capped Consumer Discretionary Index ETF', symbol: 'XCD', category: 'Consumer' },
+      { id: 'ishares-utilities', name: 'iShares S&P/TSX Capped Utilities Index ETF', symbol: 'XUT', category: 'Utilities' },
+      { id: 'ishares-reit', name: 'iShares S&P/TSX Capped REIT Index ETF', symbol: 'XRE', category: 'REIT' },
+      { id: 'ishares-emerging', name: 'iShares Core MSCI Emerging Markets IMI Index ETF', symbol: 'XEC', category: 'Emerging Markets' },
+      { id: 'ishares-dividend', name: 'iShares S&P/TSX Canadian Dividend Aristocrats Index ETF', symbol: 'CDZ', category: 'Dividend' },
+      { id: 'ishares-growth', name: 'iShares S&P/TSX Capped Growth Index ETF', symbol: 'XCG', category: 'Growth' },
+      { id: 'ishares-value', name: 'iShares S&P/TSX Capped Value Index ETF', symbol: 'XCV', category: 'Value' },
+      { id: 'ishares-small-cap', name: 'iShares S&P/TSX SmallCap Index ETF', symbol: 'XCS', category: 'Small Cap' },
+      { id: 'ishares-short-term', name: 'iShares Core Canadian Short Term Bond Index ETF', symbol: 'XSB', category: 'Short Term Bond' },
+      { id: 'ishares-corporate', name: 'iShares Core Canadian Corporate Bond Index ETF', symbol: 'XCB', category: 'Corporate Bond' },
+      { id: 'ishares-high-yield', name: 'iShares High Yield Bond Index ETF', symbol: 'XHY', category: 'High Yield Bond' },
+      { id: 'ishares-inflation', name: 'iShares Canadian Real Return Bond Index ETF', symbol: 'XRB', category: 'Inflation Protected' }
+    ],
+    'Vanguard Investments Canada': [
+      { id: 'vanguard-canada', name: 'Vanguard FTSE Canada All Cap Index ETF', symbol: 'VCN', category: 'Index' },
+      { id: 'vanguard-us', name: 'Vanguard S&P 500 Index ETF', symbol: 'VSP', category: 'US Equity' },
+      { id: 'vanguard-global', name: 'Vanguard FTSE Global All Cap ex Canada Index ETF', symbol: 'VXC', category: 'Global' },
+      { id: 'vanguard-bond', name: 'Vanguard Canadian Aggregate Bond Index ETF', symbol: 'VAB', category: 'Bond' },
+      { id: 'vanguard-tech', name: 'Vanguard Information Technology ETF', symbol: 'VGT', category: 'Technology' },
+      { id: 'vanguard-healthcare', name: 'Vanguard Health Care ETF', symbol: 'VHT', category: 'Healthcare' },
+      { id: 'vanguard-energy', name: 'Vanguard Energy ETF', symbol: 'VDE', category: 'Energy' },
+      { id: 'vanguard-financial', name: 'Vanguard Financials ETF', symbol: 'VFH', category: 'Financial' },
+      { id: 'vanguard-materials', name: 'Vanguard Materials ETF', symbol: 'VAW', category: 'Materials' },
+      { id: 'vanguard-consumer', name: 'Vanguard Consumer Discretionary ETF', symbol: 'VCR', category: 'Consumer' },
+      { id: 'vanguard-utilities', name: 'Vanguard Utilities ETF', symbol: 'VPU', category: 'Utilities' },
+      { id: 'vanguard-reit', name: 'Vanguard Real Estate ETF', symbol: 'VNQ', category: 'REIT' },
+      { id: 'vanguard-emerging', name: 'Vanguard FTSE Emerging Markets ETF', symbol: 'VWO', category: 'Emerging Markets' },
+      { id: 'vanguard-dividend', name: 'Vanguard Dividend Appreciation ETF', symbol: 'VIG', category: 'Dividend' },
+      { id: 'vanguard-growth', name: 'Vanguard Growth ETF', symbol: 'VUG', category: 'Growth' },
+      { id: 'vanguard-value', name: 'Vanguard Value ETF', symbol: 'VTV', category: 'Value' },
+      { id: 'vanguard-small-cap', name: 'Vanguard Small-Cap ETF', symbol: 'VB', category: 'Small Cap' },
+      { id: 'vanguard-short-term', name: 'Vanguard Short-Term Bond ETF', symbol: 'BSV', category: 'Short Term Bond' },
+      { id: 'vanguard-corporate', name: 'Vanguard Intermediate-Term Corporate Bond ETF', symbol: 'VCIT', category: 'Corporate Bond' },
+      { id: 'vanguard-high-yield', name: 'Vanguard High-Yield Corporate Bond ETF', symbol: 'VHY', category: 'High Yield Bond' },
+      { id: 'vanguard-inflation', name: 'Vanguard Short-Term Inflation-Protected Securities ETF', symbol: 'VTIP', category: 'Inflation Protected' }
+    ],
+    'Goldman Sachs Asset Management': [
+      { id: 'gs-equity', name: 'Goldman Sachs Canadian Equity Fund', symbol: 'GS-CAN', category: 'Equity' },
+      { id: 'gs-global', name: 'Goldman Sachs Global Equity Fund', symbol: 'GS-GLO', category: 'Global' },
+      { id: 'gs-tech', name: 'Goldman Sachs Technology Fund', symbol: 'GS-TECH', category: 'Technology' },
+      { id: 'gs-healthcare', name: 'Goldman Sachs Healthcare Fund', symbol: 'GS-HEALTH', category: 'Healthcare' },
+      { id: 'gs-energy', name: 'Goldman Sachs Energy Fund', symbol: 'GS-ENERGY', category: 'Energy' },
+      { id: 'gs-financial', name: 'Goldman Sachs Financial Services Fund', symbol: 'GS-FIN', category: 'Financial' },
+      { id: 'gs-emerging', name: 'Goldman Sachs Emerging Markets Fund', symbol: 'GS-EM', category: 'Emerging Markets' },
+      { id: 'gs-us-equity', name: 'Goldman Sachs U.S. Equity Fund', symbol: 'GS-US', category: 'US Equity' },
+      { id: 'gs-dividend', name: 'Goldman Sachs Dividend Fund', symbol: 'GS-DIV', category: 'Dividend' },
+      { id: 'gs-growth', name: 'Goldman Sachs Growth Fund', symbol: 'GS-GROWTH', category: 'Growth' },
+      { id: 'gs-value', name: 'Goldman Sachs Value Fund', symbol: 'GS-VALUE', category: 'Value' },
+      { id: 'gs-small-cap', name: 'Goldman Sachs Small Cap Fund', symbol: 'GS-SMALL', category: 'Small Cap' },
+      { id: 'gs-balanced', name: 'Goldman Sachs Balanced Fund', symbol: 'GS-BAL', category: 'Balanced' },
+      { id: 'gs-conservative', name: 'Goldman Sachs Conservative Fund', symbol: 'GS-CON', category: 'Conservative' },
+      { id: 'gs-bond', name: 'Goldman Sachs Bond Fund', symbol: 'GS-BOND', category: 'Bond' },
+      { id: 'gs-corporate', name: 'Goldman Sachs Corporate Bond Fund', symbol: 'GS-CORP', category: 'Corporate Bond' },
+      { id: 'gs-high-yield', name: 'Goldman Sachs High Yield Bond Fund', symbol: 'GS-HY', category: 'High Yield Bond' },
+      { id: 'gs-short-term', name: 'Goldman Sachs Short-Term Bond Fund', symbol: 'GS-STB', category: 'Short Term Bond' },
+      { id: 'gs-inflation', name: 'Goldman Sachs Inflation-Protected Bond Fund', symbol: 'GS-INFL', category: 'Inflation Protected' },
+      { id: 'gs-income', name: 'Goldman Sachs Income Fund', symbol: 'GS-INC', category: 'Income' }
+    ],
+    'McKinsey & Company Investment Management': [
+      { id: 'mckinsey-equity', name: 'McKinsey Canadian Equity Fund', symbol: 'MCK-CAN', category: 'Equity' },
+      { id: 'mckinsey-global', name: 'McKinsey Global Equity Fund', symbol: 'MCK-GLO', category: 'Global' },
+      { id: 'mckinsey-tech', name: 'McKinsey Technology Fund', symbol: 'MCK-TECH', category: 'Technology' },
+      { id: 'mckinsey-healthcare', name: 'McKinsey Healthcare Fund', symbol: 'MCK-HEALTH', category: 'Healthcare' },
+      { id: 'mckinsey-energy', name: 'McKinsey Energy Fund', symbol: 'MCK-ENERGY', category: 'Energy' },
+      { id: 'mckinsey-financial', name: 'McKinsey Financial Services Fund', symbol: 'MCK-FIN', category: 'Financial' },
+      { id: 'mckinsey-emerging', name: 'McKinsey Emerging Markets Fund', symbol: 'MCK-EM', category: 'Emerging Markets' },
+      { id: 'mckinsey-us-equity', name: 'McKinsey U.S. Equity Fund', symbol: 'MCK-US', category: 'US Equity' },
+      { id: 'mckinsey-dividend', name: 'McKinsey Dividend Fund', symbol: 'MCK-DIV', category: 'Dividend' },
+      { id: 'mckinsey-growth', name: 'McKinsey Growth Fund', symbol: 'MCK-GROWTH', category: 'Growth' },
+      { id: 'mckinsey-value', name: 'McKinsey Value Fund', symbol: 'MCK-VALUE', category: 'Value' },
+      { id: 'mckinsey-small-cap', name: 'McKinsey Small Cap Fund', symbol: 'MCK-SMALL', category: 'Small Cap' },
+      { id: 'mckinsey-balanced', name: 'McKinsey Balanced Fund', symbol: 'MCK-BAL', category: 'Balanced' },
+      { id: 'mckinsey-conservative', name: 'McKinsey Conservative Fund', symbol: 'MCK-CON', category: 'Conservative' },
+      { id: 'mckinsey-bond', name: 'McKinsey Bond Fund', symbol: 'MCK-BOND', category: 'Bond' },
+      { id: 'mckinsey-corporate', name: 'McKinsey Corporate Bond Fund', symbol: 'MCK-CORP', category: 'Corporate Bond' },
+      { id: 'mckinsey-high-yield', name: 'McKinsey High Yield Bond Fund', symbol: 'MCK-HY', category: 'High Yield Bond' },
+      { id: 'mckinsey-short-term', name: 'McKinsey Short-Term Bond Fund', symbol: 'MCK-STB', category: 'Short Term Bond' },
+      { id: 'mckinsey-inflation', name: 'McKinsey Inflation-Protected Bond Fund', symbol: 'MCK-INFL', category: 'Inflation Protected' },
+      { id: 'mckinsey-income', name: 'McKinsey Income Fund', symbol: 'MCK-INC', category: 'Income' }
+    ],
+    'JPMorgan Asset Management': [
+      { id: 'jpm-equity', name: 'JPMorgan Canadian Equity Fund', symbol: 'JPM-CAN', category: 'Equity' },
+      { id: 'jpm-global', name: 'JPMorgan Global Equity Fund', symbol: 'JPM-GLO', category: 'Global' },
+      { id: 'jpm-tech', name: 'JPMorgan Technology Fund', symbol: 'JPM-TECH', category: 'Technology' },
+      { id: 'jpm-healthcare', name: 'JPMorgan Healthcare Fund', symbol: 'JPM-HEALTH', category: 'Healthcare' },
+      { id: 'jpm-energy', name: 'JPMorgan Energy Fund', symbol: 'JPM-ENERGY', category: 'Energy' },
+      { id: 'jpm-financial', name: 'JPMorgan Financial Services Fund', symbol: 'JPM-FIN', category: 'Financial' },
+      { id: 'jpm-emerging', name: 'JPMorgan Emerging Markets Fund', symbol: 'JPM-EM', category: 'Emerging Markets' },
+      { id: 'jpm-us-equity', name: 'JPMorgan U.S. Equity Fund', symbol: 'JPM-US', category: 'US Equity' },
+      { id: 'jpm-dividend', name: 'JPMorgan Dividend Fund', symbol: 'JPM-DIV', category: 'Dividend' },
+      { id: 'jpm-growth', name: 'JPMorgan Growth Fund', symbol: 'JPM-GROWTH', category: 'Growth' },
+      { id: 'jpm-value', name: 'JPMorgan Value Fund', symbol: 'JPM-VALUE', category: 'Value' },
+      { id: 'jpm-small-cap', name: 'JPMorgan Small Cap Fund', symbol: 'JPM-SMALL', category: 'Small Cap' },
+      { id: 'jpm-balanced', name: 'JPMorgan Balanced Fund', symbol: 'JPM-BAL', category: 'Balanced' },
+      { id: 'jpm-conservative', name: 'JPMorgan Conservative Fund', symbol: 'JPM-CON', category: 'Conservative' },
+      { id: 'jpm-bond', name: 'JPMorgan Bond Fund', symbol: 'JPM-BOND', category: 'Bond' },
+      { id: 'jpm-corporate', name: 'JPMorgan Corporate Bond Fund', symbol: 'JPM-CORP', category: 'Corporate Bond' },
+      { id: 'jpm-high-yield', name: 'JPMorgan High Yield Bond Fund', symbol: 'JPM-HY', category: 'High Yield Bond' },
+      { id: 'jpm-short-term', name: 'JPMorgan Short-Term Bond Fund', symbol: 'JPM-STB', category: 'Short Term Bond' },
+      { id: 'jpm-inflation', name: 'JPMorgan Inflation-Protected Bond Fund', symbol: 'JPM-INFL', category: 'Inflation Protected' },
+      { id: 'jpm-income', name: 'JPMorgan Income Fund', symbol: 'JPM-INC', category: 'Income' }
+    ],
+    'Morgan Stanley Investment Management': [
+      { id: 'ms-equity', name: 'Morgan Stanley Canadian Equity Fund', symbol: 'MS-CAN', category: 'Equity' },
+      { id: 'ms-global', name: 'Morgan Stanley Global Equity Fund', symbol: 'MS-GLO', category: 'Global' },
+      { id: 'ms-tech', name: 'Morgan Stanley Technology Fund', symbol: 'MS-TECH', category: 'Technology' },
+      { id: 'ms-healthcare', name: 'Morgan Stanley Healthcare Fund', symbol: 'MS-HEALTH', category: 'Healthcare' },
+      { id: 'ms-energy', name: 'Morgan Stanley Energy Fund', symbol: 'MS-ENERGY', category: 'Energy' },
+      { id: 'ms-financial', name: 'Morgan Stanley Financial Services Fund', symbol: 'MS-FIN', category: 'Financial' },
+      { id: 'ms-emerging', name: 'Morgan Stanley Emerging Markets Fund', symbol: 'MS-EM', category: 'Emerging Markets' },
+      { id: 'ms-us-equity', name: 'Morgan Stanley U.S. Equity Fund', symbol: 'MS-US', category: 'US Equity' },
+      { id: 'ms-dividend', name: 'Morgan Stanley Dividend Fund', symbol: 'MS-DIV', category: 'Dividend' },
+      { id: 'ms-growth', name: 'Morgan Stanley Growth Fund', symbol: 'MS-GROWTH', category: 'Growth' },
+      { id: 'ms-value', name: 'Morgan Stanley Value Fund', symbol: 'MS-VALUE', category: 'Value' },
+      { id: 'ms-small-cap', name: 'Morgan Stanley Small Cap Fund', symbol: 'MS-SMALL', category: 'Small Cap' },
+      { id: 'ms-balanced', name: 'Morgan Stanley Balanced Fund', symbol: 'MS-BAL', category: 'Balanced' },
+      { id: 'ms-conservative', name: 'Morgan Stanley Conservative Fund', symbol: 'MS-CON', category: 'Conservative' },
+      { id: 'ms-bond', name: 'Morgan Stanley Bond Fund', symbol: 'MS-BOND', category: 'Bond' },
+      { id: 'ms-corporate', name: 'Morgan Stanley Corporate Bond Fund', symbol: 'MS-CORP', category: 'Corporate Bond' },
+      { id: 'ms-high-yield', name: 'Morgan Stanley High Yield Bond Fund', symbol: 'MS-HY', category: 'High Yield Bond' },
+      { id: 'ms-short-term', name: 'Morgan Stanley Short-Term Bond Fund', symbol: 'MS-STB', category: 'Short Term Bond' },
+      { id: 'ms-inflation', name: 'Morgan Stanley Inflation-Protected Bond Fund', symbol: 'MS-INFL', category: 'Inflation Protected' },
+      { id: 'ms-income', name: 'Morgan Stanley Income Fund', symbol: 'MS-INC', category: 'Income' }
+    ]
+  }
+
+  // Get available companies
+  const availableCompanies = Object.keys(fundData)
+
+  // Filter funds based on selected company and search term
+  const getFilteredFunds = useCallback(() => {
+    if (!selectedCompany) return []
+    
+    const companyFunds = fundData[selectedCompany as keyof typeof fundData] || []
+    
+    if (!fundSearchTerm) return companyFunds
+    
+    return companyFunds.filter(fund => 
+      fund.name.toLowerCase().includes(fundSearchTerm.toLowerCase()) ||
+      fund.symbol.toLowerCase().includes(fundSearchTerm.toLowerCase()) ||
+      fund.category.toLowerCase().includes(fundSearchTerm.toLowerCase())
+    )
+  }, [selectedCompany, fundSearchTerm])
+
+  // Reset fund selection when company changes
+  const handleCompanyChange = useCallback((company: string) => {
+    setSelectedCompany(company)
+    setSelectedNewFund('')
+    setFundSearchTerm('')
+  }, [])
 
   // Utility functions
   const getStatusIcon = useCallback((status: string) => {
@@ -123,55 +473,6 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
     }).format(amount)
   }, [])
 
-  // Search functionality
-
-  const performSearch = useCallback(() => {
-    if (!searchQuery.trim()) {
-      setSearchResults([])
-      setShowSearchResults(false)
-      return
-    }
-
-    const query = searchQuery.toLowerCase()
-    const results = mockClients.filter(client => {
-      if (client.id === parseInt(clientId)) return false // Exclude current client
-      
-      return (
-        client.firstName.toLowerCase().includes(query) ||
-        client.surname.toLowerCase().includes(query) ||
-        client.email.toLowerCase().includes(query) ||
-        client.clientId.toLowerCase().includes(query) ||
-        client.city.toLowerCase().includes(query) ||
-        client.province.toLowerCase().includes(query) ||
-        client.location.toLowerCase().includes(query)
-      )
-    })
-    
-    setSearchResults(results)
-    setShowSearchResults(true)
-  }, [searchQuery, clientId])
-
-  // Trigger search when query changes
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      performSearch()
-    }, 300) // Debounce search
-
-    return () => clearTimeout(timeoutId)
-  }, [searchQuery, performSearch])
-
-  const handleClientSelect = useCallback((selectedClient: any) => {
-    router.push(`/clients/${selectedClient.id}`)
-    setSearchQuery('')
-    setShowSearchResults(false)
-  }, [router])
-
-  const handleSearchBlur = useCallback(() => {
-    // Delay hiding results to allow clicking on them
-    setTimeout(() => {
-      setShowSearchResults(false)
-    }, 200)
-  }, [])
 
   // Modal handlers
   const handleBuyFund = useCallback((fund: any, plan: string) => {
@@ -204,22 +505,18 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
     setSellUnits('')
     setSwitchUnits('')
     setSelectedNewFund('')
+    setSelectedCompany('')
+    setFundSearchTerm('')
     setOrderConfirmed(false)
     setOrderDetails(null)
   }, [])
 
   // Helper function to determine if it's a conversion (different company)
   const isConversion = useCallback(() => {
-    if (!selectedNewFund || !selectedFund?.company) return false
-
-    const currentCompany = selectedFund.company
-    const isNewFundDifferentCompany =
-      (currentCompany === 'Fidelity' && selectedNewFund.startsWith('td-')) ||
-      (currentCompany === 'TD' && selectedNewFund.startsWith('fid-')) ||
-      selectedNewFund.startsWith('other-')
-
-    return isNewFundDifferentCompany
-  }, [selectedNewFund, selectedFund])
+    if (!selectedNewFund || !selectedFund?.company || !selectedCompany) return false
+    
+    return selectedFund.company !== selectedCompany
+  }, [selectedNewFund, selectedFund, selectedCompany])
 
   // Calculation functions
   const calculateBuyUnits = useCallback((amount: string) => {
@@ -325,69 +622,12 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
     )
   }
 
-  const SearchFieldWithResults = ({ className = "", showDropdown = true }: { className?: string, showDropdown?: boolean }) => (
-    <div className={`relative ${className}`}>
-      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-      <Input
-        type="text"
-        placeholder="Search clients by name, email, ID, or location..."
-        value={searchQuery}
-        onChange={(e) => {
-          setSearchQuery(e.target.value)
-          setShowSearchResults(true)
-        }}
-        onFocus={() => setShowSearchResults(true)}
-        onBlur={handleSearchBlur}
-        className="pl-10 h-11 text-sm bg-background border-input"
-      />
-
-      {/* Search Results Dropdown */}
-      {showDropdown && showSearchResults && searchResults.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
-          {searchResults.map((result) => (
-            <div
-              key={result.id}
-              onClick={() => handleClientSelect(result)}
-              className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-xs">
-                  {result.firstName[0]}{result.surname[0]}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium text-sm text-gray-900 truncate">
-                    {result.firstName} {result.surname}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    ID: {result.clientId} • {result.status.charAt(0).toUpperCase() + result.status.slice(1)}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* No Results */}
-      {showDropdown && showSearchResults && searchQuery.trim().length > 0 && searchResults.length === 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-          <div className="px-4 py-3 text-sm text-gray-500 text-center">
-            No clients found matching the search criteria
-          </div>
-        </div>
-      )}
-    </div>
-  )
 
   return (
-    <div className="space-y-6">
-      {/* Sticky Search Field */}
-      <div className="sticky top-16 z-30 bg-background/95 backdrop-blur-sm border-b border-border pb-6 -mx-6 px-6 -mt-6 pt-6">
-        <SearchFieldWithResults />
-      </div>
+    <div className="space-y-6 pt-4">
 
       {/* Client Header */}
-      <div className="bg-card border-b border-border shadow-sm">
+      <div className="bg-card border-b border-border shadow-sm mt-4">
         <div className="px-4 sm:px-6 lg:px-8 pb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -3118,8 +3358,9 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                       placeholder="Enter number of units"
                       value={buyUnits}
                       onChange={(e) => {
-                        setBuyUnits(e.target.value)
-                        setBuyAmount(calculateBuyAmount(e.target.value))
+                        const units = Math.max(0, parseFloat(e.target.value) || 0)
+                        setBuyUnits(units.toString())
+                        setBuyAmount(calculateBuyAmount(units.toString()))
                       }}
                       className="mt-1"
                     />
@@ -3217,7 +3458,8 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                       placeholder={`Max: ${selectedFund?.units}`}
                       value={sellUnits}
                       onChange={(e) => {
-                        const units = Math.min(parseFloat(e.target.value) || 0, selectedFund?.units || 0)
+                        const inputValue = parseFloat(e.target.value) || 0
+                        const units = Math.max(0, Math.min(inputValue, selectedFund?.units || 0))
                         setSellUnits(units.toString())
                         setSellAmount(calculateSellAmount(units.toString()))
                       }}
@@ -3314,7 +3556,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                 <div className="text-sm text-muted-foreground mt-2">
                   {isConversion()
                     ? `Switch from ${selectedFund?.product} to a different fund company`
-                    : `Switch from ${selectedFund?.product} to another ${selectedFund?.company} fund`
+                    : `Switch from ${selectedFund?.product} to another ${selectedCompany || selectedFund?.company} fund`
                   }
                 </div>
               </DialogHeader>
@@ -3327,66 +3569,67 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                 </div>
 
                 <div className="space-y-3">
+                  {/* Company Selection */}
                   <div>
-                    <Label className="text-sm font-medium">
-                      {isConversion() ? 'Select Fund to Convert To' : `Select New ${selectedFund?.company} Fund`}
-                    </Label>
-                    <Select value={selectedNewFund} onValueChange={setSelectedNewFund}>
+                    <Label className="text-sm font-medium">Select Fund Company</Label>
+                    <Select value={selectedCompany} onValueChange={handleCompanyChange}>
                       <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Choose a fund to switch to" />
+                        <SelectValue placeholder="Choose a company that offers funds" />
                       </SelectTrigger>
                       <SelectContent className="z-[9999]" position="popper">
-                        {/* Same Company Funds */}
-                        {selectedFund?.company === 'Fidelity' && (
-                          <>
-                            <SelectItem value="fid-northstar">Fidelity NorthStar Fund - Series B ISC</SelectItem>
-                            <SelectItem value="fid-income">Fidelity Monthly Income Fund - Series B ISC</SelectItem>
-                            <SelectItem value="fid-growth">Fidelity Growth Fund - Series B ISC</SelectItem>
-                            <SelectItem value="fid-balanced">Fidelity Balanced Fund - Series A</SelectItem>
-                            <SelectItem value="fid-conservative">Fidelity Conservative Fund - Series A</SelectItem>
-                            <SelectItem value="fid-equity">Fidelity Canadian Equity Fund - Series B ISC</SelectItem>
-                            <SelectItem value="fid-global">Fidelity Global Equity Fund - Series B ISC</SelectItem>
-                            <SelectItem value="fid-dividend">Fidelity Canadian Dividend Fund - Series A</SelectItem>
-                            <div className="border-t my-2"></div>
-                            {/* Different Company - TD */}
-                            <div className="text-xs text-muted-foreground px-2 py-1">TD Funds (Conversion)</div>
-                            <SelectItem value="td-equity">TD Canadian Equity Fund - Series A</SelectItem>
-                            <SelectItem value="td-balanced">TD Balanced Growth Fund - Series F</SelectItem>
-                            <SelectItem value="td-income">TD Monthly Income Fund - Series A</SelectItem>
-                            <SelectItem value="td-index">TD Canadian Index Fund - Series E</SelectItem>
-                          </>
-                        )}
-
-                        {selectedFund?.company === 'TD' && (
-                          <>
-                            <SelectItem value="td-equity">TD Canadian Equity Fund - Series A</SelectItem>
-                            <SelectItem value="td-balanced">TD Balanced Growth Fund - Series F</SelectItem>
-                            <SelectItem value="td-income">TD Monthly Income Fund - Series A</SelectItem>
-                            <SelectItem value="td-index">TD Canadian Index Fund - Series E</SelectItem>
-                            <SelectItem value="td-bond">TD Canadian Bond Fund - Series A</SelectItem>
-                            <SelectItem value="td-global">TD Global Equity Fund - Series F</SelectItem>
-                            <div className="border-t my-2"></div>
-                            {/* Different Company - Fidelity */}
-                            <div className="text-xs text-muted-foreground px-2 py-1">Fidelity Funds (Conversion)</div>
-                            <SelectItem value="fid-northstar">Fidelity NorthStar Fund - Series B ISC</SelectItem>
-                            <SelectItem value="fid-income">Fidelity Monthly Income Fund - Series B ISC</SelectItem>
-                            <SelectItem value="fid-growth">Fidelity Growth Fund - Series B ISC</SelectItem>
-                            <SelectItem value="fid-balanced">Fidelity Balanced Fund - Series A</SelectItem>
-                          </>
-                        )}
-
-                        {/* Other companies */}
-                        {!selectedFund?.company || (selectedFund?.company !== 'Fidelity' && selectedFund?.company !== 'TD') && (
-                          <>
-                            <SelectItem value="other-equity">Canadian Equity Fund</SelectItem>
-                            <SelectItem value="other-balanced">Balanced Growth Fund</SelectItem>
-                            <SelectItem value="other-income">Monthly Income Fund</SelectItem>
-                            <SelectItem value="other-bond">Bond Fund</SelectItem>
-                          </>
-                        )}
+                        {availableCompanies.map((company) => (
+                          <SelectItem key={company} value={company}>
+                            {company}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
+
+                  {/* Fund Search */}
+                  {selectedCompany && (
+                    <div>
+                      <Label className="text-sm font-medium">Search for Specific Fund</Label>
+                      <div className="relative mt-1">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder={`Search ${selectedCompany} funds by name, symbol, or category...`}
+                          value={fundSearchTerm}
+                          onChange={(e) => setFundSearchTerm(e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Fund Selection */}
+                  {selectedCompany && (
+                    <div>
+                      <Label className="text-sm font-medium">
+                        {isConversion() ? 'Select Fund to Convert To' : `Select New ${selectedCompany} Fund`}
+                      </Label>
+                      <Select value={selectedNewFund} onValueChange={setSelectedNewFund}>
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Choose a fund to switch to" />
+                        </SelectTrigger>
+                        <SelectContent className="z-[9999]" position="popper">
+                          {getFilteredFunds().map((fund) => (
+                            <SelectItem key={fund.id} value={fund.id}>
+                              <div className="flex flex-col">
+                                <span className="font-medium">{fund.name}</span>
+                                <span className="text-xs text-muted-foreground">{fund.symbol} • {fund.category}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                          {getFilteredFunds().length === 0 && fundSearchTerm && (
+                            <div className="px-2 py-1 text-sm text-muted-foreground">
+                              No funds found matching "{fundSearchTerm}"
+                            </div>
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
 
                   <div>
                     <Label className="text-sm font-medium">
@@ -3397,7 +3640,8 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                       placeholder={`Max: ${selectedFund?.units}`}
                       value={switchUnits}
                       onChange={(e) => {
-                        const units = Math.min(parseFloat(e.target.value) || 0, selectedFund?.units || 0)
+                        const inputValue = parseFloat(e.target.value) || 0
+                        const units = Math.max(0, Math.min(inputValue, selectedFund?.units || 0))
                         setSwitchUnits(units.toString())
                       }}
                       max={selectedFund?.units}

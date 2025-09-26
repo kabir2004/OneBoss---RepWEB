@@ -4,26 +4,75 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/compon
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import Image from "next/image"
-import { Bell, ChevronRight, Mail, Filter } from "lucide-react"
+import { Bell, ChevronRight, Mail, Filter, PanelLeftClose, PanelLeftOpen, Users2, Home, FileText, CheckSquare, BarChart2, Search, CheckCircle, Clock, PauseCircle, Grid, List } from "lucide-react"
 import Profile01 from "./profile-01"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useSidebar } from "@/components/sidebar-context"
 import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
+import { mockClients } from "@/lib/client-data"
 
 interface BreadcrumbItem {
   label: string
   href?: string
 }
 
+const clientNavItems = [
+  {
+    href: "/clients",
+    label: "All Clients",
+    icon: Users2,
+    description: "Browse and manage all clients"
+  },
+  {
+    href: "/clients/households",
+    label: "Households",
+    icon: Home,
+    description: "Manage client households and families"
+  },
+  {
+    href: "/clients/income-plans",
+    label: "Income Plans",
+    icon: FileText,
+    description: "View and manage income planning"
+  },
+  {
+    href: "/clients/approval",
+    label: "Approvals",
+    icon: CheckSquare,
+    description: "Pending approvals and reviews"
+  },
+  {
+    href: "/clients/reports",
+    label: "Reports",
+    icon: BarChart2,
+    description: "Client reports and analytics"
+  },
+  {
+    href: "/clients/advanced-search",
+    label: "Advanced Search",
+    icon: Search,
+    description: "Advanced client search tools"
+  }
+]
+
 export default function TopNav() {
   const pathname = usePathname()
+  const { isCollapsed, toggleSidebar } = useSidebar()
   const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([
     { label: "OneBoss", href: "/" },
     { label: "Dashboard", href: "/dashboard" },
   ])
+  const [activeTab, setActiveTab] = useState<'all' | 'active' | 'inactive' | 'prospect'>('all')
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
+  const [clients] = useState(mockClients)
+  const [filteredClients, setFilteredClients] = useState(mockClients)
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     const generateBreadcrumbs = () => {
@@ -92,32 +141,58 @@ export default function TopNav() {
     return isClient && acknowledgedDocuments.has(documentName)
   }
 
-  return (
-    <nav className="px-3 sm:px-6 flex items-center justify-between bg-card border-b border-border h-full">
-      <div className="font-medium text-sm hidden sm:flex items-center space-x-1 truncate max-w-[300px]">
-        {breadcrumbs.map((item, index) => (
-          <div key={item.label} className="flex items-center">
-            {index > 0 && <ChevronRight className="h-4 w-4 text-muted-foreground mx-1" />}
-            {item.href ? (
-              <Link
-                href={item.href}
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {item.label}
-              </Link>
-            ) : (
-              <span className="text-card-foreground">{item.label}</span>
-            )}
-          </div>
-        ))}
-      </div>
+  // Client filtering logic
+  const getClientsByStatus = (status: string) => {
+    return filteredClients.filter(client => client.status === status)
+  }
 
-      <div className="flex items-center gap-2 sm:gap-4 ml-auto sm:ml-0">
+  const activeClients = getClientsByStatus('active')
+  const inactiveClients = getClientsByStatus('inactive')
+  const prospectClients = getClientsByStatus('pending')
+  const allClients = filteredClients
+
+  const isClientsPage = pathname.startsWith('/clients') && !pathname.includes('/clients/') || pathname === '/clients'
+
+  return (
+    <div className="bg-white border-b border-border relative z-10">
+      <nav className="px-3 sm:px-6 flex items-center justify-between h-16 bg-white">
+        <div className="font-medium text-sm hidden sm:flex items-center space-x-1 truncate max-w-[300px]">
+          {breadcrumbs.map((item, index) => (
+            <div key={item.label} className="flex items-center">
+              {index > 0 && <ChevronRight className="h-4 w-4 text-muted-foreground mx-1" />}
+              {item.href ? (
+                <Link
+                  href={item.href}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <span className="text-card-foreground">{item.label}</span>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-2 sm:gap-4 ml-auto sm:ml-0">
         <button
           type="button"
           className="p-1.5 sm:p-2 hover:bg-accent rounded-full transition-colors"
         >
           <Bell className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+        </button>
+
+        <button
+          type="button"
+          onClick={toggleSidebar}
+          className="p-1.5 sm:p-2 hover:bg-accent rounded-full transition-colors"
+          title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {isCollapsed ? (
+            <PanelLeftOpen className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+          ) : (
+            <PanelLeftClose className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+          )}
         </button>
 
         <ThemeToggle />
@@ -380,7 +455,137 @@ export default function TopNav() {
             <Profile01 avatar="https://ferf1mheo22r9ira.public.blob.vercel-storage.com/avatar-01-n0x8HFv8EUetf9z6ht0wScJKoTHqf8.png" />
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
-    </nav>
+        </div>
+      </nav>
+      
+      {/* Client Navigation and Status Filters - Only show on clients page */}
+      {pathname.startsWith('/clients') && (
+        <div className="bg-white border-b border-border shadow-sm relative z-10">
+          {/* Client Navigation Tabs */}
+          <div className="px-4 sm:px-6 lg:px-8 bg-white">
+            <div className="flex items-center justify-start py-3">
+              <div className="flex items-center gap-1">
+                {clientNavItems.map((item) => {
+                  const isActive = pathname === item.href
+                  const Icon = item.icon
+
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`
+                        group relative flex items-center gap-2 px-3 py-2 text-sm font-medium rounded transition-all duration-200
+                        ${isActive
+                          ? 'text-white bg-blue-800'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                        }
+                      `}
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span>{item.label}</span>
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Search Field */}
+          <div className="px-4 sm:px-6 lg:px-8 pb-4 bg-white">
+            <div className="relative mb-6">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                type="text"
+                placeholder="Search clients by name, email, ID, or location..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 h-11 text-sm bg-white border-input"
+              />
+            </div>
+          </div>
+
+          {/* Status Filters */}
+          <div className="px-4 sm:px-6 lg:px-8 pb-4 bg-white">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+              {/* Status Checkboxes */}
+              <div className="flex items-center gap-8 flex-wrap">
+                <div className="flex items-center space-x-3">
+                  <Checkbox
+                    id="all-status"
+                    checked={activeTab === 'all'}
+                    onCheckedChange={() => setActiveTab('all')}
+                  />
+                  <label htmlFor="all-status" className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-2">
+                    <span>All</span>
+                    <span className="text-lg font-bold text-muted-foreground">({allClients.length})</span>
+                  </label>
+                </div>
+                
+                <div className="flex items-center space-x-3">
+                  <Checkbox
+                    id="active-status"
+                    checked={activeTab === 'active'}
+                    onCheckedChange={() => setActiveTab('active')}
+                  />
+                  <label htmlFor="active-status" className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span>Active</span>
+                    <span className="text-lg font-bold text-muted-foreground">({activeClients.length})</span>
+                  </label>
+                </div>
+                
+                <div className="flex items-center space-x-3">
+                  <Checkbox
+                    id="inactive-status"
+                    checked={activeTab === 'inactive'}
+                    onCheckedChange={() => setActiveTab('inactive')}
+                  />
+                  <label htmlFor="inactive-status" className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-2">
+                    <PauseCircle className="h-4 w-4 text-muted-foreground" />
+                    <span>Inactive</span>
+                    <span className="text-lg font-bold text-muted-foreground">({inactiveClients.length})</span>
+                  </label>
+                </div>
+                
+                <div className="flex items-center space-x-3">
+                  <Checkbox
+                    id="prospect-status"
+                    checked={activeTab === 'prospect'}
+                    onCheckedChange={() => setActiveTab('prospect')}
+                  />
+                  <label htmlFor="prospect-status" className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-yellow-600" />
+                    <span>Prospects</span>
+                    <span className="text-lg font-bold text-muted-foreground">({prospectClients.length})</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Right side - View Toggle */}
+              <div className="flex items-center gap-3">
+                <div className="flex bg-card border border-border rounded-lg overflow-hidden">
+                  <Button
+                    variant={viewMode === 'list' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('list')}
+                    className="rounded-none border-0 h-8 px-3"
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('grid')}
+                    className="rounded-none border-0 h-8 px-3"
+                  >
+                    <Grid className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }

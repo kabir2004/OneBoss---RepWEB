@@ -1,5 +1,4 @@
 import Layout from "@/components/kokonutui/layout"
-import ClientNavigation from "@/components/kokonutui/client-navigation"
 
 export default function ClientsLayout({
   children,
@@ -8,9 +7,8 @@ export default function ClientsLayout({
 }) {
   return (
     <Layout>
-      <div className="min-h-screen bg-white">
-        <ClientNavigation />
-        <main className="px-4 sm:px-6 lg:px-8 py-8">
+      <div className="min-h-screen bg-white -m-6">
+        <main className="px-0 py-0">
           {children}
         </main>
       </div>

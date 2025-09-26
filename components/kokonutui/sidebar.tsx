@@ -28,10 +28,12 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useClientSelection } from "../client-selection-context"
+import { useSidebar } from "../sidebar-context"
 
 export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
+  const { isCollapsed } = useSidebar()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isClientsExpanded, setIsClientsExpanded] = useState(false)
   const [isTradesExpanded, setIsTradesExpanded] = useState(false)
@@ -171,16 +173,21 @@ export default function Sidebar() {
       return (
         <button
           onClick={onToggle}
-          className="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-accent"
+          className={`flex items-center w-full px-3 py-2 text-sm rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-accent ${
+            isCollapsed ? "justify-center" : "justify-between"
+          }`}
+          title={isCollapsed ? children as string : undefined}
         >
           <div className="flex items-center">
-            <Icon className="h-4 w-4 mr-3 flex-shrink-0" />
-            {children}
+            <Icon className={`h-4 w-4 flex-shrink-0 ${isCollapsed ? "" : "mr-3"}`} />
+            {!isCollapsed && children}
           </div>
-          {isExpanded ? (
-            <ChevronDown className="h-4 w-4" />
-          ) : (
-            <ChevronRight className="h-4 w-4" />
+          {!isCollapsed && (
+            isExpanded ? (
+              <ChevronDown className="h-4 w-4" />
+            ) : (
+              <ChevronRight className="h-4 w-4" />
+            )
           )}
         </button>
       )
@@ -190,10 +197,13 @@ export default function Sidebar() {
       <Link
         href={href}
         onClick={handleNavigation}
-        className="flex items-center px-3 py-2 text-sm rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-accent"
+        className={`flex items-center px-3 py-2 text-sm rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-accent ${
+          isCollapsed ? "justify-center" : ""
+        }`}
+        title={isCollapsed ? children as string : undefined}
       >
-        <Icon className="h-4 w-4 mr-3 flex-shrink-0" />
-        {children}
+        <Icon className={`h-4 w-4 flex-shrink-0 ${isCollapsed ? "" : "mr-3"}`} />
+        {!isCollapsed && children}
       </Link>
     )
   }
@@ -209,29 +219,34 @@ export default function Sidebar() {
       </button>
       <nav
         className={`
-                fixed inset-y-0 left-0 z-[70] w-64 bg-card transform transition-transform duration-200 ease-in-out
-                lg:translate-x-0 lg:static lg:w-64
-                ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
+                fixed inset-y-0 left-0 z-[70] bg-card transform transition-all duration-300 ease-in-out
+                ${isMobileMenuOpen ? "translate-x-0 w-64" : "-translate-x-full w-64"}
+                ${isCollapsed ? "lg:-translate-x-full lg:w-0" : "lg:translate-x-0 lg:static lg:w-64"}
             `}
       >
-        <div className="h-full flex flex-col">
-          <div className="h-16 px-6 flex items-center bg-card">
+        <div className={`h-full flex flex-col ${isCollapsed ? "lg:hidden" : ""}`}>
+          <div className={`h-16 flex items-center bg-card ${isCollapsed ? "px-4 justify-center" : "px-6"}`}>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-primary">
                 <Building2 className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="text-lg font-semibold text-card-foreground">
-                OneBoss
-              </span>
+              {!isCollapsed && (
+                <span className="text-lg font-semibold text-card-foreground">
+                  OneBoss
+                </span>
+              )}
             </div>
           </div>
 
           <div className="flex-1 overflow-y-auto py-4 px-4 scrollbar-hide">
             <div className="space-y-6">
               <div>
-                <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Main Navigation
-                </div>
+                {!isCollapsed && (
+                  <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Main Navigation
+                  </div>
+                )}
+                {isCollapsed && <div className="mb-4"></div>}
                 <div className="space-y-1">
                   <NavItem href="/dashboard" icon={Home}>
                     Dashboard
@@ -268,8 +283,8 @@ export default function Sidebar() {
                   
                   {/* Client Search Form - Clean and Organized */}
                   <div className={`ml-4 space-y-4 pl-4 pr-2 overflow-hidden transition-all duration-300 ease-in-out ${
-                    isClient && isClientsExpanded 
-                      ? 'max-h-[600px] opacity-100' 
+                    isClient && isClientsExpanded && !isCollapsed
+                      ? 'max-h-[600px] opacity-100'
                       : 'max-h-0 opacity-0'
                   }`}>
                     <div className={`space-y-3 pt-2 transition-all duration-300 delay-100 ${
@@ -329,8 +344,8 @@ export default function Sidebar() {
                   
                   {/* Trade Search Form */}
                   <div className={`ml-4 space-y-4 pl-4 pr-2 overflow-hidden transition-all duration-300 ease-in-out ${
-                    isClient && isTradesExpanded 
-                      ? 'max-h-[800px] opacity-100' 
+                    isClient && isTradesExpanded && !isCollapsed
+                      ? 'max-h-[800px] opacity-100'
                       : 'max-h-0 opacity-0'
                   }`}>
                     <div className={`space-y-3 pt-2 transition-all duration-300 delay-100 ${
@@ -509,9 +524,11 @@ export default function Sidebar() {
               </div>
 
               <div>
-                <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Management
-                </div>
+                {!isCollapsed && (
+                  <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Management
+                  </div>
+                )}
                 <div className="space-y-1">
                   <NavItem href="#" icon={Building2}>
                     Ensemble
@@ -529,9 +546,11 @@ export default function Sidebar() {
               </div>
 
               <div>
-                <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  System
-                </div>
+                {!isCollapsed && (
+                  <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    System
+                  </div>
+                )}
                 <div className="space-y-1">
                   <NavItem href="#" icon={Shield}>
                     Notices
