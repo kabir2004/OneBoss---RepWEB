@@ -29,11 +29,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { useClientSelection } from "../client-selection-context"
 import { useSidebar } from "../sidebar-context"
+import { useNelsonHide } from "../nelson-hide-context"
 
 export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const { isCollapsed } = useSidebar()
+  const { isNelsonHidden } = useNelsonHide()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isClientsExpanded, setIsClientsExpanded] = useState(false)
   const [isTradesExpanded, setIsTradesExpanded] = useState(false)
@@ -312,42 +314,45 @@ export default function Sidebar() {
                     </div>
                   </div>
                   
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-accent">
-                      <Link
-                        href="/trades"
-                        onClick={() => {
-                          setIsTradesExpanded(true)
-                          handleNavigation()
-                        }}
-                        className="flex items-center flex-1"
-                      >
-                        <TrendingUp className="h-4 w-4 mr-3 flex-shrink-0" />
-                    Trades
-                      </Link>
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          setIsTradesExpanded(!isTradesExpanded)
-                        }}
-                        className="p-1 rounded hover:bg-accent transition-colors"
-                      >
-                        {isTradesExpanded ? (
-                          <ChevronDown className="h-4 w-4" />
-                        ) : (
-                          <ChevronRight className="h-4 w-4" />
-                        )}
-                      </button>
+                  {!isNelsonHidden && (
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-accent">
+                        <Link
+                          href="/trades"
+                          onClick={() => {
+                            setIsTradesExpanded(true)
+                            handleNavigation()
+                          }}
+                          className="flex items-center flex-1"
+                        >
+                          <TrendingUp className="h-4 w-4 mr-3 flex-shrink-0" />
+                      Trades
+                        </Link>
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            setIsTradesExpanded(!isTradesExpanded)
+                          }}
+                          className="p-1 rounded hover:bg-accent transition-colors"
+                        >
+                          {isTradesExpanded ? (
+                            <ChevronDown className="h-4 w-4" />
+                          ) : (
+                            <ChevronRight className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  )}
                   
                   {/* Trade Search Form */}
-                  <div className={`ml-4 space-y-4 pl-4 pr-2 overflow-hidden transition-all duration-300 ease-in-out ${
-                    isClient && isTradesExpanded && !isCollapsed
-                      ? 'max-h-[800px] opacity-100'
-                      : 'max-h-0 opacity-0'
-                  }`}>
+                  {!isNelsonHidden && (
+                    <div className={`ml-4 space-y-4 pl-4 pr-2 overflow-hidden transition-all duration-300 ease-in-out ${
+                      isClient && isTradesExpanded && !isCollapsed
+                        ? 'max-h-[800px] opacity-100'
+                        : 'max-h-0 opacity-0'
+                    }`}>
                     <div className={`space-y-3 pt-2 transition-all duration-300 delay-100 ${
                       isClient && isTradesExpanded ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
                     }`}>
@@ -514,55 +519,64 @@ export default function Sidebar() {
                       </div>
                     </div>
                   </div>
-                  <NavItem href="#" icon={Wallet}>
-                    Trust Deposits
-                  </NavItem>
-                  <NavItem href="#" icon={Target}>
-                    Prospects
-                  </NavItem>
+                  )}
+                  {!isNelsonHidden && (
+                    <NavItem href="#" icon={Wallet}>
+                      Trust Deposits
+                    </NavItem>
+                  )}
+                  {!isNelsonHidden && (
+                    <NavItem href="#" icon={Target}>
+                      Prospects
+                    </NavItem>
+                  )}
                 </div>
               </div>
 
-              <div>
-                {!isCollapsed && (
-                  <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Management
+              {!isNelsonHidden && (
+                <div>
+                  {!isCollapsed && (
+                    <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Management
+                    </div>
+                  )}
+                  <div className="space-y-1">
+                    <NavItem href="#" icon={Building2}>
+                      Ensemble
+                    </NavItem>
+                    <NavItem href="#" icon={User}>
+                      KYP
+                    </NavItem>
+                    <NavItem href="#" icon={Folder}>
+                      Resources
+                    </NavItem>
+                    <NavItem href="#" icon={DollarSign}>
+                      Earnings
+                    </NavItem>
                   </div>
-                )}
-                <div className="space-y-1">
-                  <NavItem href="#" icon={Building2}>
-                    Ensemble
-                  </NavItem>
-                  <NavItem href="#" icon={User}>
-                    KYP
-                  </NavItem>
-                  <NavItem href="#" icon={Folder}>
-                    Resources
-                  </NavItem>
-                  <NavItem href="#" icon={DollarSign}>
-                    Earnings
-                  </NavItem>
                 </div>
-              </div>
+              )}
 
-              <div>
-                {!isCollapsed && (
-                  <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    System
+              {!isNelsonHidden && (
+                <div>
+                  {!isCollapsed && (
+                    <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      System
+                    </div>
+                  )}
+                  <div className="space-y-1">
+                    <NavItem href="#" icon={Shield}>
+                      Notices
+                    </NavItem>
+                    <NavItem href="#" icon={Settings}>
+                      Settings
+                    </NavItem>
+                    <NavItem href="#" icon={MessagesSquare}>
+                      Support
+                    </NavItem>
                   </div>
-                )}
-                <div className="space-y-1">
-                  <NavItem href="#" icon={Shield}>
-                    Notices
-                  </NavItem>
-                  <NavItem href="#" icon={Settings}>
-                    Settings
-                  </NavItem>
-                  <NavItem href="#" icon={MessagesSquare}>
-                    Support
-                  </NavItem>
                 </div>
-              </div>
+              )}
             </div>
           </div>
 

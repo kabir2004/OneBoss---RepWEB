@@ -59,6 +59,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import CustomCompensation from "./custom-compensation"
 import KYC from "./kyc"
 import ClientTrading from "./client-trading"
@@ -87,6 +88,10 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
   const [showBuyModal, setShowBuyModal] = useState(false)
   const [showSellModal, setShowSellModal] = useState(false)
   const [showSwitchModal, setShowSwitchModal] = useState(false)
+  const [showTrustAccountModal, setShowTrustAccountModal] = useState(false)
+  const [depositAmount, setDepositAmount] = useState('')
+  const [showTrustAccountUSDModal, setShowTrustAccountUSDModal] = useState(false)
+  const [depositUSDAmount, setDepositUSDAmount] = useState('')
   const [selectedFund, setSelectedFund] = useState<any>(null)
   const [selectedPlan, setSelectedPlan] = useState('')
   const [buyAmount, setBuyAmount] = useState('')
@@ -595,6 +600,28 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
     router.push('/clients')
   }
 
+  const handleDeposit = () => {
+    alert('Deposit feature coming soon!')
+    setDepositAmount('')
+    setShowTrustAccountModal(false)
+  }
+
+  const handleCancelDeposit = () => {
+    setDepositAmount('')
+    setShowTrustAccountModal(false)
+  }
+
+  const handleUSDDeposit = () => {
+    alert('Deposit feature coming soon!')
+    setDepositUSDAmount('')
+    setShowTrustAccountUSDModal(false)
+  }
+
+  const handleCancelUSDDeposit = () => {
+    setDepositUSDAmount('')
+    setShowTrustAccountUSDModal(false)
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -1032,12 +1059,12 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                       <TableHead className="font-semibold text-gray-700 py-4">Supplier</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4">Account</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4">Product</TableHead>
-                                      <TableHead className="font-semibold text-gray-700 py-4">Risk</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4">Objective</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4 text-right">Units</TableHead>
-                                      <TableHead className="font-semibold text-gray-700 py-4 text-right">Avg. Cost</TableHead>
-                                      <TableHead className="font-semibold text-gray-700 py-4 text-right">Book Value</TableHead>
+                                      <TableHead className="font-semibold text-gray-700 py-4 text-right">Price</TableHead>
+                                      <TableHead className="font-semibold text-gray-700 py-4 text-right">Net Invested</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4 text-right">Market Value</TableHead>
+                                      <TableHead className="font-semibold text-gray-700 py-4 text-right">Book Value</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4 text-center">Trading</TableHead>
                                     </TableRow>
                                   </TableHeader>
@@ -1058,16 +1085,6 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                           <div className="text-xs text-muted-foreground">Series B ISC</div>
                                         </div>
                                       </TableCell>
-                                      <TableCell className="py-4">
-                                        <div className="flex items-center gap-2">
-                                          <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">M</Badge>
-                                          <div className="flex gap-1">
-                                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                            <FileText className="h-3 w-3 text-gray-400" />
-                                          </div>
-                                        </div>
-                                      </TableCell>
                                       <TableCell className="py-4 text-sm text-muted-foreground">Speculation</TableCell>
                                       <TableCell className="py-4 text-right">
                                         <div className="text-sm font-medium text-card-foreground">1,247.32</div>
@@ -1078,12 +1095,27 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                         <div className="text-xs text-muted-foreground">Per Unit</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
-                                        <div className="text-sm font-medium text-blue-600">$11,734.50</div>
-                                        <div className="text-xs text-muted-foreground">Purchase</div>
+                                        <div className="text-sm font-medium text-card-foreground">$0.00</div>
+                                        <div className="text-xs text-muted-foreground">Net Invested</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
                                         <div className="text-lg font-semibold text-green-600">$11,734.85</div>
                                         <div className="text-xs text-green-600">+$0.35 (0.003%)</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <TooltipProvider>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <div className="cursor-help">
+                                                <div className="text-sm font-medium text-blue-600">$11,734.50</div>
+                                                <div className="text-xs text-muted-foreground">Purchase</div>
+                                              </div>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="top" className="bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow-lg">
+                                              <p className="font-medium">Avg. Buy Price: $9.41</p>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        </TooltipProvider>
                                       </TableCell>
                                       <TableCell className="py-4 text-center">
                                         <div className="flex items-center justify-center gap-1">
@@ -1152,16 +1184,6 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                           <div className="text-xs text-muted-foreground">Series B ISC</div>
                                         </div>
                                       </TableCell>
-                                      <TableCell className="py-4">
-                                        <div className="flex items-center gap-2">
-                                          <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">LM</Badge>
-                                          <div className="flex gap-1">
-                                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                            <FileText className="h-3 w-3 text-gray-400" />
-                                          </div>
-                                        </div>
-                                      </TableCell>
                                       <TableCell className="py-4 text-sm text-muted-foreground">Balanced</TableCell>
                                       <TableCell className="py-4 text-right">
                                         <div className="text-sm font-medium text-card-foreground">2,789.44</div>
@@ -1172,12 +1194,27 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                         <div className="text-xs text-muted-foreground">Per Unit</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
-                                        <div className="text-sm font-medium text-blue-600">$30,265.52</div>
-                                        <div className="text-xs text-muted-foreground">Purchase</div>
+                                        <div className="text-sm font-medium text-card-foreground">$0.00</div>
+                                        <div className="text-xs text-muted-foreground">Net Invested</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
                                         <div className="text-lg font-semibold text-green-600">$30,265.27</div>
                                         <div className="text-xs text-red-500">-$0.25 (-0.001%)</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <TooltipProvider>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <div className="cursor-help">
+                                                <div className="text-sm font-medium text-blue-600">$30,265.52</div>
+                                                <div className="text-xs text-muted-foreground">Purchase</div>
+                                              </div>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="top" className="bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow-lg">
+                                              <p className="font-medium">Avg. Buy Price: $10.85</p>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        </TooltipProvider>
                                       </TableCell>
                                       <TableCell className="py-4 text-center">
                                         <div className="flex items-center justify-center gap-1">
@@ -1230,6 +1267,33 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                         </div>
                                       </TableCell>
                                     </TableRow>
+                                    
+                                    {/* Total Row */}
+                                    <TableRow className="bg-gradient-to-r from-blue-100/50 to-blue-100/30 border-t-2 border-blue-200 font-semibold">
+                                      <TableCell className="py-4 font-semibold text-gray-900" colSpan={6}>
+                                        <div className="flex items-center gap-2">
+                                          <div className="w-6 h-6 bg-blue-200 rounded flex items-center justify-center">
+                                            <span className="text-xs font-bold text-blue-800">T</span>
+                                          </div>
+                                          <span className="text-sm font-semibold">Total</span>
+                                        </div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <div className="text-sm font-semibold text-gray-900">$0.00</div>
+                                        <div className="text-xs text-gray-600">Net Invested</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <div className="text-lg font-bold text-green-700">$42,000.12</div>
+                                        <div className="text-xs text-green-600">Total Market Value</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <div className="text-lg font-semibold text-blue-700">$42,000.02</div>
+                                        <div className="text-xs text-blue-600">Total Book Value</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-center">
+                                        <div className="text-xs text-gray-500">-</div>
+                                      </TableCell>
+                                    </TableRow>
                                   </TableBody>
                                 </Table>
                               </div>
@@ -1238,12 +1302,42 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                             <div className="p-6 border-t border-gray-200/60 bg-gradient-to-r from-blue-50/50 to-blue-50/30">
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="bg-white p-4 rounded-lg border border-gray-200/40">
-                                  <div className="text-sm text-muted-foreground mb-1">Settled Trust Account Balance CAD</div>
-                                  <div className="text-lg font-semibold text-card-foreground">$0.00</div>
+                                  <div 
+                                    className="text-sm text-muted-foreground mb-2 cursor-pointer hover:text-blue-600 transition-colors duration-200"
+                                    onClick={() => setShowTrustAccountModal(true)}
+                                  >
+                                    Trust Account CAD
+                                  </div>
+                                  <div className="text-lg font-semibold text-card-foreground mb-2">$0.00</div>
+                                  <div className="space-y-1">
+                                    <div className="flex justify-between items-center text-xs">
+                                      <span className="text-muted-foreground">Settled:</span>
+                                      <span className="font-medium text-green-600">$0.00</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-xs">
+                                      <span className="text-muted-foreground">Unsettled:</span>
+                                      <span className="font-medium text-orange-600">$0.00</span>
+                                    </div>
+                                  </div>
                                 </div>
                                 <div className="bg-white p-4 rounded-lg border border-gray-200/40">
-                                  <div className="text-sm text-muted-foreground mb-1">Settled Trust Account Balance USD</div>
-                                  <div className="text-lg font-semibold text-card-foreground">$0.00</div>
+                                  <div 
+                                    className="text-sm text-muted-foreground mb-2 cursor-pointer hover:text-blue-600 transition-colors duration-200"
+                                    onClick={() => setShowTrustAccountUSDModal(true)}
+                                  >
+                                    Trust Account USD
+                                  </div>
+                                  <div className="text-lg font-semibold text-card-foreground mb-2">$0.00</div>
+                                  <div className="space-y-1">
+                                    <div className="flex justify-between items-center text-xs">
+                                      <span className="text-muted-foreground">Settled:</span>
+                                      <span className="font-medium text-green-600">$0.00</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-xs">
+                                      <span className="text-muted-foreground">Unsettled:</span>
+                                      <span className="font-medium text-orange-600">$0.00</span>
+                                    </div>
+                                  </div>
                                 </div>
                                 <div className="bg-white p-4 rounded-lg border border-gray-200/40">
                                   <div className="text-sm text-muted-foreground mb-1">Total in CAD</div>
@@ -1330,12 +1424,12 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                       <TableHead className="font-semibold text-gray-700 py-4">Supplier</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4">Account</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4">Product</TableHead>
-                                      <TableHead className="font-semibold text-gray-700 py-4">Risk</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4">Objective</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4 text-right">Units</TableHead>
-                                      <TableHead className="font-semibold text-gray-700 py-4 text-right">Avg. Cost</TableHead>
-                                      <TableHead className="font-semibold text-gray-700 py-4 text-right">Book Value</TableHead>
+                                      <TableHead className="font-semibold text-gray-700 py-4 text-right">Price</TableHead>
+                                      <TableHead className="font-semibold text-gray-700 py-4 text-right">Net Invested</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4 text-right">Market Value</TableHead>
+                                      <TableHead className="font-semibold text-gray-700 py-4 text-right">Book Value</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4 text-center">Trading</TableHead>
                                     </TableRow>
                                   </TableHeader>
@@ -1356,16 +1450,6 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                           <div className="text-xs text-muted-foreground">Series A</div>
                                         </div>
                                       </TableCell>
-                                      <TableCell className="py-4">
-                                        <div className="flex items-center gap-2">
-                                          <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50">M</Badge>
-                                          <div className="flex gap-1">
-                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                            <FileText className="h-3 w-3 text-gray-400" />
-                                          </div>
-                                        </div>
-                                      </TableCell>
                                       <TableCell className="py-4 text-sm text-muted-foreground">Growth</TableCell>
                                       <TableCell className="py-4 text-right">
                                         <div className="text-sm font-medium text-card-foreground">2,156.78</div>
@@ -1376,12 +1460,27 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                         <div className="text-xs text-muted-foreground">Per Unit</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
-                                        <div className="text-sm font-medium text-blue-600">$25,450.00</div>
-                                        <div className="text-xs text-muted-foreground">Purchase</div>
+                                        <div className="text-sm font-medium text-card-foreground">$0.00</div>
+                                        <div className="text-xs text-muted-foreground">Net Invested</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
                                         <div className="text-lg font-semibold text-green-600">$25,450.30</div>
                                         <div className="text-xs text-green-600">+$0.30 (0.001%)</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <TooltipProvider>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <div className="cursor-help">
+                                                <div className="text-sm font-medium text-blue-600">$25,450.00</div>
+                                                <div className="text-xs text-muted-foreground">Purchase</div>
+                                              </div>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="top" className="bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow-lg">
+                                              <p className="font-medium">Avg. Buy Price: $11.80</p>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        </TooltipProvider>
                                       </TableCell>
                                       <TableCell className="py-4 text-center">
                                         <div className="flex items-center justify-center gap-1">
@@ -1450,17 +1549,6 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                           <div className="text-xs text-muted-foreground">Series F</div>
                                         </div>
                                       </TableCell>
-                                      <TableCell className="py-4">
-                                        <div className="flex items-center gap-2">
-                                          <Badge variant="outline" className="text-purple-600 border-purple-200 bg-purple-50">H</Badge>
-                                          <div className="flex gap-1">
-                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                            <FileText className="h-3 w-3 text-gray-400" />
-                                          </div>
-                                        </div>
-                                      </TableCell>
                                       <TableCell className="py-4 text-sm text-muted-foreground">Growth</TableCell>
                                       <TableCell className="py-4 text-right">
                                         <div className="text-sm font-medium text-card-foreground">105.50</div>
@@ -1471,12 +1559,27 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                         <div className="text-xs text-muted-foreground">Per Unit</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
-                                        <div className="text-sm font-medium text-blue-600">$1,280.77</div>
-                                        <div className="text-xs text-muted-foreground">Purchase</div>
+                                        <div className="text-sm font-medium text-card-foreground">$0.00</div>
+                                        <div className="text-xs text-muted-foreground">Net Invested</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
                                         <div className="text-lg font-semibold text-green-600">$1,281.47</div>
                                         <div className="text-xs text-green-600">+$0.70 (0.055%)</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <TooltipProvider>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <div className="cursor-help">
+                                                <div className="text-sm font-medium text-blue-600">$1,280.77</div>
+                                                <div className="text-xs text-muted-foreground">Purchase</div>
+                                              </div>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="top" className="bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow-lg">
+                                              <p className="font-medium">Avg. Buy Price: $12.14</p>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        </TooltipProvider>
                                       </TableCell>
                                       <TableCell className="py-4 text-center">
                                         <div className="flex items-center justify-center gap-1">
@@ -1529,6 +1632,33 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                         </div>
                                       </TableCell>
                                     </TableRow>
+                                    
+                                    {/* Total Row */}
+                                    <TableRow className="bg-gradient-to-r from-green-100/50 to-green-100/30 border-t-2 border-green-200 font-semibold">
+                                      <TableCell className="py-4 font-semibold text-gray-900" colSpan={6}>
+                                        <div className="flex items-center gap-2">
+                                          <div className="w-6 h-6 bg-green-200 rounded flex items-center justify-center">
+                                            <span className="text-xs font-bold text-green-800">T</span>
+                                          </div>
+                                          <span className="text-sm font-semibold">Total</span>
+                                        </div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <div className="text-sm font-semibold text-gray-900">$0.00</div>
+                                        <div className="text-xs text-gray-600">Net Invested</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <div className="text-lg font-bold text-green-700">$26,731.77</div>
+                                        <div className="text-xs text-green-600">Total Market Value</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-right">
+                                        <div className="text-lg font-semibold text-blue-700">$26,730.77</div>
+                                        <div className="text-xs text-blue-600">Total Book Value</div>
+                                      </TableCell>
+                                      <TableCell className="py-4 text-center">
+                                        <div className="text-xs text-gray-500">-</div>
+                                      </TableCell>
+                                    </TableRow>
                                   </TableBody>
                                 </Table>
                               </div>
@@ -1537,12 +1667,42 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                             <div className="p-6 border-t border-gray-200/60 bg-gradient-to-r from-green-50/50 to-green-50/30">
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="bg-white p-4 rounded-lg border border-gray-200/40">
-                                  <div className="text-sm text-muted-foreground mb-1">Settled Trust Account Balance CAD</div>
-                                  <div className="text-lg font-semibold text-card-foreground">$1,250.00</div>
+                                  <div 
+                                    className="text-sm text-muted-foreground mb-2 cursor-pointer hover:text-blue-600 transition-colors duration-200"
+                                    onClick={() => setShowTrustAccountModal(true)}
+                                  >
+                                    Trust Account CAD
+                                  </div>
+                                  <div className="text-lg font-semibold text-card-foreground mb-2">$1,250.00</div>
+                                  <div className="space-y-1">
+                                    <div className="flex justify-between items-center text-xs">
+                                      <span className="text-muted-foreground">Settled:</span>
+                                      <span className="font-medium text-green-600">$0.00</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-xs">
+                                      <span className="text-muted-foreground">Unsettled:</span>
+                                      <span className="font-medium text-orange-600">$0.00</span>
+                                    </div>
+                                  </div>
                                 </div>
                                 <div className="bg-white p-4 rounded-lg border border-gray-200/40">
-                                  <div className="text-sm text-muted-foreground mb-1">Settled Trust Account Balance USD</div>
-                                  <div className="text-lg font-semibold text-card-foreground">$0.00</div>
+                                  <div 
+                                    className="text-sm text-muted-foreground mb-2 cursor-pointer hover:text-blue-600 transition-colors duration-200"
+                                    onClick={() => setShowTrustAccountUSDModal(true)}
+                                  >
+                                    Trust Account USD
+                                  </div>
+                                  <div className="text-lg font-semibold text-card-foreground mb-2">$0.00</div>
+                                  <div className="space-y-1">
+                                    <div className="flex justify-between items-center text-xs">
+                                      <span className="text-muted-foreground">Settled:</span>
+                                      <span className="font-medium text-green-600">$0.00</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-xs">
+                                      <span className="text-muted-foreground">Unsettled:</span>
+                                      <span className="font-medium text-orange-600">$0.00</span>
+                                    </div>
+                                  </div>
                                 </div>
                                 <div className="bg-white p-4 rounded-lg border border-gray-200/40">
                                   <div className="text-sm text-muted-foreground mb-1">Total in CAD</div>
@@ -3333,7 +3493,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                 <div className="bg-gray-50 p-4 rounded-lg space-y-2">
                   <div className="text-sm font-medium text-gray-700">Current Holdings ({selectedPlan}):</div>
                   <div className="text-sm text-gray-600">Units: {selectedFund?.units}</div>
-                  <div className="text-sm text-gray-600">Avg. Cost: ${selectedFund?.avgCost}</div>
+                  <div className="text-sm text-gray-600">Price: ${selectedFund?.avgCost}</div>
                   <div className="text-sm text-gray-600">Market Value: ${selectedFund?.marketValue?.toLocaleString()}</div>
                 </div>
 
@@ -3446,7 +3606,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                 <div className="bg-gray-50 p-4 rounded-lg space-y-2">
                   <div className="text-sm font-medium text-gray-700">Current Holdings ({selectedPlan}):</div>
                   <div className="text-sm text-gray-600">Units Available: {selectedFund?.units}</div>
-                  <div className="text-sm text-gray-600">Avg. Cost: ${selectedFund?.avgCost}</div>
+                  <div className="text-sm text-gray-600">Price: ${selectedFund?.avgCost}</div>
                   <div className="text-sm text-gray-600">Market Value: ${selectedFund?.marketValue?.toLocaleString()}</div>
                 </div>
 
@@ -3716,6 +3876,96 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
               </div>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Trust Account Modal */}
+      <Dialog open={showTrustAccountModal} onOpenChange={setShowTrustAccountModal}>
+        <DialogContent className="max-w-md bg-gray-50">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+              <DollarSign className="h-5 w-5 text-blue-600" />
+              Deposit to Trust Account
+            </DialogTitle>
+            <div className="text-sm text-gray-600 mt-1">
+              Add funds to the client's trust account
+            </div>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="deposit-amount" className="text-sm font-semibold text-gray-900">
+                Amount (CAD)
+              </Label>
+              <Input
+                id="deposit-amount"
+                type="text"
+                placeholder="$0.00"
+                value={depositAmount}
+                onChange={(e) => setDepositAmount(e.target.value)}
+                className="w-full text-lg font-medium"
+              />
+            </div>
+            <div className="flex gap-3 pt-2">
+              <Button
+                onClick={handleDeposit}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2"
+              >
+                Deposit
+              </Button>
+              <Button
+                onClick={handleCancelDeposit}
+                variant="outline"
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Trust Account USD Modal */}
+      <Dialog open={showTrustAccountUSDModal} onOpenChange={setShowTrustAccountUSDModal}>
+        <DialogContent className="max-w-md bg-gray-50">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+              <DollarSign className="h-5 w-5 text-blue-600" />
+              Deposit to Trust Account USD
+            </DialogTitle>
+            <div className="text-sm text-gray-600 mt-1">
+              Add funds to the client's USD trust account
+            </div>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="deposit-usd-amount" className="text-sm font-semibold text-gray-900">
+                Amount (USD)
+              </Label>
+              <Input
+                id="deposit-usd-amount"
+                type="text"
+                placeholder="$0.00"
+                value={depositUSDAmount}
+                onChange={(e) => setDepositUSDAmount(e.target.value)}
+                className="w-full text-lg font-medium"
+              />
+            </div>
+            <div className="flex gap-3 pt-2">
+              <Button
+                onClick={handleUSDDeposit}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2"
+              >
+                Deposit
+              </Button>
+              <Button
+                onClick={handleCancelUSDDeposit}
+                variant="outline"
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 

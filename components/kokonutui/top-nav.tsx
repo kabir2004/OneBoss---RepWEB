@@ -4,7 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/compon
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import Image from "next/image"
-import { Bell, ChevronRight, Mail, Filter, PanelLeftClose, PanelLeftOpen, Users2, Home, FileText, CheckSquare, BarChart2, Search, CheckCircle, Clock, PauseCircle, Grid, List } from "lucide-react"
+import { Bell, ChevronRight, Mail, Filter, PanelLeftClose, PanelLeftOpen, Users2, Home, FileText, CheckSquare, BarChart2, Search, CheckCircle, Clock, PauseCircle, Grid, List, ShoppingCart as ShoppingCartIcon, Eye, EyeOff } from "lucide-react"
 import Profile01 from "./profile-01"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -16,6 +16,8 @@ import { usePathname } from "next/navigation"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { mockClients } from "@/lib/client-data"
+import ShoppingCartModal from "./shopping-cart"
+import { useNelsonHide } from "../nelson-hide-context"
 
 interface BreadcrumbItem {
   label: string
@@ -64,6 +66,7 @@ const clientNavItems = [
 export default function TopNav() {
   const pathname = usePathname()
   const { isCollapsed, toggleSidebar } = useSidebar()
+  const { isNelsonHidden, toggleNelsonHide } = useNelsonHide()
   const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([
     { label: "OneBoss", href: "/" },
     { label: "Dashboard", href: "/dashboard" },
@@ -73,6 +76,7 @@ export default function TopNav() {
   const [clients] = useState(mockClients)
   const [filteredClients, setFilteredClients] = useState(mockClients)
   const [searchQuery, setSearchQuery] = useState('')
+  const [showShoppingCart, setShowShoppingCart] = useState(false)
 
   useEffect(() => {
     const generateBreadcrumbs = () => {
@@ -175,6 +179,32 @@ export default function TopNav() {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4 ml-auto sm:ml-0">
+        <button
+          type="button"
+          className="p-1.5 sm:p-2 hover:bg-accent rounded-full transition-colors relative"
+          onClick={() => setShowShoppingCart(true)}
+        >
+          <ShoppingCartIcon className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+          <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs bg-red-500 text-white">
+            3
+          </Badge>
+        </button>
+
+        <button
+          type="button"
+          className={`p-1.5 sm:p-2 hover:bg-accent rounded-full transition-colors ${
+            isNelsonHidden ? 'bg-orange-100 text-orange-600' : 'text-muted-foreground'
+          }`}
+          onClick={toggleNelsonHide}
+          title={isNelsonHidden ? "Show Nelson's Items" : "Hide Nelson's Items"}
+        >
+          {isNelsonHidden ? (
+            <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
+          ) : (
+            <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
+          )}
+        </button>
+
         <button
           type="button"
           className="p-1.5 sm:p-2 hover:bg-accent rounded-full transition-colors"
@@ -586,6 +616,12 @@ export default function TopNav() {
           </div>
         </div>
       )}
+
+      {/* Shopping Cart Modal */}
+      <ShoppingCartModal 
+        isOpen={showShoppingCart} 
+        onClose={() => setShowShoppingCart(false)} 
+      />
     </div>
   )
 }
