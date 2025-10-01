@@ -102,6 +102,14 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
   const [selectedNewFund, setSelectedNewFund] = useState('')
   const [selectedCompany, setSelectedCompany] = useState('')
   const [fundSearchTerm, setFundSearchTerm] = useState('')
+  
+  // Security modal state
+  const [showSecurityModal, setShowSecurityModal] = useState(false)
+  const [selectedSecurityCompany, setSelectedSecurityCompany] = useState('')
+  const [securitySearchTerm, setSecuritySearchTerm] = useState('')
+  const [selectedSecurityFund, setSelectedSecurityFund] = useState('')
+  const [securityOrderAmount, setSecurityOrderAmount] = useState('')
+  const [showSecuritySuggestions, setShowSecuritySuggestions] = useState(false)
   const [orderConfirmed, setOrderConfirmed] = useState(false)
   const [orderDetails, setOrderDetails] = useState<any>(null)
 
@@ -455,6 +463,86 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
     setSelectedNewFund('')
     setFundSearchTerm('')
   }, [])
+
+  // Security modal helper functions
+  const getFilteredSecurityFunds = useCallback(() => {
+    if (!selectedSecurityCompany) return []
+    
+    const companyFunds = fundData[selectedSecurityCompany as keyof typeof fundData] || []
+    
+    if (!securitySearchTerm) return companyFunds
+    
+    return companyFunds.filter(fund => 
+      fund.name.toLowerCase().includes(securitySearchTerm.toLowerCase()) ||
+      fund.symbol.toLowerCase().includes(securitySearchTerm.toLowerCase()) ||
+      fund.category.toLowerCase().includes(securitySearchTerm.toLowerCase())
+    )
+  }, [selectedSecurityCompany, securitySearchTerm])
+
+  const handleSecurityCompanyChange = useCallback((company: string) => {
+    setSelectedSecurityCompany(company)
+    setSelectedSecurityFund('')
+    setSecuritySearchTerm('')
+    setShowSecuritySuggestions(false)
+  }, [])
+
+  const handleSecuritySearchChange = useCallback((value: string) => {
+    setSecuritySearchTerm(value)
+    setShowSecuritySuggestions(value.length > 0)
+    if (value.length === 0) {
+      setSelectedSecurityFund('')
+    }
+  }, [])
+
+  const handleSecurityFundSelect = useCallback((fund: any) => {
+    setSelectedSecurityFund(fund.id)
+    setSecuritySearchTerm(fund.name)
+    setShowSecuritySuggestions(false)
+  }, [])
+
+  const handleSecurityOrder = useCallback(() => {
+    if (!selectedSecurityFund || !securityOrderAmount) return
+    
+    const selectedFund = getFilteredSecurityFunds().find(fund => fund.id === selectedSecurityFund)
+    if (!selectedFund) return
+    
+    setOrderDetails({
+      type: 'security',
+      company: selectedSecurityCompany,
+      fund: selectedFund,
+      amount: securityOrderAmount,
+      timestamp: new Date().toISOString()
+    })
+    setOrderConfirmed(true)
+  }, [selectedSecurityFund, securityOrderAmount, selectedSecurityCompany, getFilteredSecurityFunds])
+
+  const closeSecurityModal = useCallback(() => {
+    setShowSecurityModal(false)
+    setSelectedSecurityCompany('')
+    setSelectedSecurityFund('')
+    setSecuritySearchTerm('')
+    setSecurityOrderAmount('')
+    setShowSecuritySuggestions(false)
+    setOrderConfirmed(false)
+    setOrderDetails(null)
+  }, [])
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showSecuritySuggestions) {
+        const target = event.target as HTMLElement
+        if (!target.closest('.security-search-container')) {
+          setShowSecuritySuggestions(false)
+        }
+      }
+    }
+
+    if (showSecuritySuggestions) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showSecuritySuggestions])
 
   // Utility functions
   const getStatusIcon = useCallback((status: string) => {
@@ -1024,11 +1112,13 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
 
                                 {/* Right side - Financial Card */}
                                 <div className="flex items-center gap-6">
-                                  {/* Portfolio Value Card */}
-                                  <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-2 text-center h-10 flex flex-col justify-center min-w-[130px]">
-                                    <div className="text-xs text-green-600 font-medium leading-tight">Total Value</div>
-                                    <div className="text-sm font-bold text-green-700 leading-tight">$42,000.12</div>
-                                  </div>
+                                  {/* Portfolio Value Card - Only show when collapsed */}
+                                  {!expandedPlans.resp && (
+                                    <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-2 text-center h-10 flex flex-col justify-center min-w-[130px]">
+                                      <div className="text-xs text-green-600 font-medium leading-tight">Total Value</div>
+                                      <div className="text-sm font-bold text-green-700 leading-tight">$42,000.12</div>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -1039,12 +1129,11 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                               className="bg-white/80 border-blue-300 text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
                               onClick={(e) => {
                                 e.stopPropagation()
-                                // Handle add investment logic here
-                                console.log('Add Investment to RESP plan')
+                                setShowSecurityModal(true)
                               }}
                             >
                               <Plus className="h-4 w-4 mr-1" />
-                              Investment
+                              Security
                             </Button>
                           </div>
                         </div>
@@ -1058,7 +1147,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <TableRow className="bg-gradient-to-r from-blue-50/80 to-blue-50/40 border-b border-gray-200/60">
                                       <TableHead className="font-semibold text-gray-700 py-4">Supplier</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4">Account</TableHead>
-                                      <TableHead className="font-semibold text-gray-700 py-4">Product</TableHead>
+                                      <TableHead className="font-semibold text-gray-700 py-4">Security</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4">Objective</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4 text-right">Units</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4 text-right">Price</TableHead>
@@ -1095,7 +1184,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                         <div className="text-xs text-muted-foreground">Per Unit</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
-                                        <div className="text-sm font-medium text-card-foreground">$0.00</div>
+                                        <div className="text-sm font-medium text-card-foreground">$10,000.00</div>
                                         <div className="text-xs text-muted-foreground">Net Invested</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
@@ -1194,7 +1283,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                         <div className="text-xs text-muted-foreground">Per Unit</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
-                                        <div className="text-sm font-medium text-card-foreground">$0.00</div>
+                                        <div className="text-sm font-medium text-card-foreground">$25,000.00</div>
                                         <div className="text-xs text-muted-foreground">Net Invested</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
@@ -1389,11 +1478,13 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
 
                                 {/* Right side - Financial Card */}
                                 <div className="flex items-center gap-6">
-                                  {/* Portfolio Value Card */}
-                                  <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-2 text-center h-10 flex flex-col justify-center min-w-[130px]">
-                                    <div className="text-xs text-green-600 font-medium leading-tight">Total Value</div>
-                                    <div className="text-sm font-bold text-green-700 leading-tight">$26,700.30</div>
-                                  </div>
+                                  {/* Portfolio Value Card - Only show when collapsed */}
+                                  {!expandedPlans.rrsp && (
+                                    <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-2 text-center h-10 flex flex-col justify-center min-w-[130px]">
+                                      <div className="text-xs text-green-600 font-medium leading-tight">Total Value</div>
+                                      <div className="text-sm font-bold text-green-700 leading-tight">$26,700.30</div>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -1404,12 +1495,11 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                               className="bg-white/80 border-green-300 text-green-600 hover:bg-green-50 hover:text-green-700 transition-colors"
                               onClick={(e) => {
                                 e.stopPropagation()
-                                // Handle add investment logic here
-                                console.log('Add Investment to RRSP plan')
+                                setShowSecurityModal(true)
                               }}
                             >
                               <Plus className="h-4 w-4 mr-1" />
-                              Investment
+                              Security
                             </Button>
                           </div>
                         </div>
@@ -1423,7 +1513,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     <TableRow className="bg-gradient-to-r from-green-50/80 to-green-50/40 border-b border-gray-200/60">
                                       <TableHead className="font-semibold text-gray-700 py-4">Supplier</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4">Account</TableHead>
-                                      <TableHead className="font-semibold text-gray-700 py-4">Product</TableHead>
+                                      <TableHead className="font-semibold text-gray-700 py-4">Security</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4">Objective</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4 text-right">Units</TableHead>
                                       <TableHead className="font-semibold text-gray-700 py-4 text-right">Price</TableHead>
@@ -1460,7 +1550,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                         <div className="text-xs text-muted-foreground">Per Unit</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
-                                        <div className="text-sm font-medium text-card-foreground">$0.00</div>
+                                        <div className="text-sm font-medium text-card-foreground">$20,000.00</div>
                                         <div className="text-xs text-muted-foreground">Net Invested</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
@@ -1559,7 +1649,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                         <div className="text-xs text-muted-foreground">Per Unit</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
-                                        <div className="text-sm font-medium text-card-foreground">$0.00</div>
+                                        <div className="text-sm font-medium text-card-foreground">$1,200.00</div>
                                         <div className="text-xs text-muted-foreground">Net Invested</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
@@ -1925,7 +2015,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                 <TableHead className="font-semibold text-gray-700 py-4 w-12">
                                   <input type="checkbox" className="rounded border-gray-300" />
                                 </TableHead>
-                                <TableHead className="font-semibold text-gray-700 py-4">Product</TableHead>
+                                <TableHead className="font-semibold text-gray-700 py-4">Security</TableHead>
                                 <TableHead className="font-semibold text-gray-700 py-4">Document Type</TableHead>
                                 <TableHead className="font-semibold text-gray-700 py-4">Delivery Type</TableHead>
                                 <TableHead className="font-semibold text-gray-700 py-4">Delivery Date</TableHead>
@@ -2552,9 +2642,12 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                   <h3 className="text-lg font-semibold text-card-foreground">Investments</h3>
                                 </div>
                                 <div className="space-y-3">
-                                  <Button className="w-full justify-start bg-white hover:bg-gray-50 text-gray-700 border border-gray-200">
+                                  <Button 
+                                    className="w-full justify-start bg-white hover:bg-gray-50 text-gray-700 border border-gray-200"
+                                    onClick={() => setShowSecurityModal(true)}
+                                  >
                                     <Plus className="h-4 w-4 mr-2" />
-                                    Add Investment
+                                    Add Security
                                   </Button>
                                   <Button className="w-full justify-start bg-white hover:bg-gray-50 text-gray-700 border border-gray-200">
                                     <ArrowLeftRight className="h-4 w-4 mr-2" />
@@ -3871,6 +3964,163 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                   </div>
                 </div>
                 <Button onClick={closeAllModals} className="w-full bg-blue-600 hover:bg-blue-700">
+                  Done
+                </Button>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Security Modal */}
+      <Dialog open={showSecurityModal} onOpenChange={closeSecurityModal}>
+        <DialogContent className="max-w-lg">
+          {!orderConfirmed ? (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-xl font-semibold text-blue-700">
+                  <Plus className="h-5 w-5" />
+                  Add Security
+                </DialogTitle>
+                <div className="text-sm text-muted-foreground mt-2">
+                  Add a new security to your portfolio
+                </div>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-3">
+                  {/* Company Selection */}
+                  <div>
+                    <Label className="text-sm font-medium">Select Fund Company</Label>
+                    <Select value={selectedSecurityCompany} onValueChange={handleSecurityCompanyChange}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Choose a company that offers funds" />
+                      </SelectTrigger>
+                      <SelectContent className="z-[9999]" position="popper">
+                        {availableCompanies.map((company) => (
+                          <SelectItem key={company} value={company}>
+                            {company}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Fund Search with Autocomplete */}
+                  {selectedSecurityCompany && (
+                    <div>
+                      <Label className="text-sm font-medium">Search for Specific Fund</Label>
+                      <div className="relative mt-1 security-search-container">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder={`Search ${selectedSecurityCompany} funds by name, symbol, or category...`}
+                          value={securitySearchTerm}
+                          onChange={(e) => handleSecuritySearchChange(e.target.value)}
+                          className="pl-10"
+                          autoComplete="off"
+                        />
+                        
+                        {/* Autocomplete Suggestions */}
+                        {showSecuritySuggestions && getFilteredSecurityFunds().length > 0 && (
+                          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                            {getFilteredSecurityFunds().map((fund) => (
+                              <div
+                                key={fund.id}
+                                className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                                onClick={() => handleSecurityFundSelect(fund)}
+                              >
+                                <div className="flex flex-col">
+                                  <span className="font-medium text-gray-900">{fund.name}</span>
+                                  <span className="text-xs text-muted-foreground">{fund.symbol} • {fund.category}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        
+                        {/* No results message */}
+                        {showSecuritySuggestions && getFilteredSecurityFunds().length === 0 && securitySearchTerm && (
+                          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
+                            <div className="px-4 py-3 text-sm text-muted-foreground">
+                              No funds found matching "{securitySearchTerm}"
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <Label className="text-sm font-medium">Investment Amount ($)</Label>
+                    <Input
+                      type="number"
+                      placeholder="Enter amount to invest"
+                      value={securityOrderAmount}
+                      onChange={(e) => setSecurityOrderAmount(e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div className="bg-blue-50 p-3 rounded-lg">
+                    <div className="text-sm text-blue-700">
+                      Order Preview:
+                    </div>
+                    {selectedSecurityFund && (
+                      <div className="text-xs text-blue-600 mt-1">
+                        Fund: {getFilteredSecurityFunds().find(fund => fund.id === selectedSecurityFund)?.name || 'No fund selected'}
+                      </div>
+                    )}
+                    <div className="text-xs text-blue-600">
+                      Amount: ${securityOrderAmount || '0'}
+                    </div>
+                    <div className="text-xs text-blue-600">
+                      This will purchase the selected fund with the specified amount
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <Button variant="outline" onClick={closeSecurityModal} className="flex-1">
+                    Cancel
+                  </Button>
+                  <Button
+                    className="flex-1 bg-green-600 hover:bg-green-700"
+                    onClick={handleSecurityOrder}
+                    disabled={!securityOrderAmount || !selectedSecurityFund}
+                  >
+                    Place Order
+                  </Button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-xl font-semibold text-blue-700">
+                  <CheckCircle className="h-6 w-6 text-green-600" />
+                  Security Order Confirmed
+                </DialogTitle>
+                <div className="text-sm text-muted-foreground mt-2">
+                  Your security order has been placed successfully
+                </div>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <div className="space-y-2">
+                    <div className="text-sm font-medium text-blue-800">Order Details:</div>
+                    <div className="text-sm text-blue-700">Company: {orderDetails?.company}</div>
+                    <div className="text-sm text-blue-700">Fund: {orderDetails?.fund?.name}</div>
+                    <div className="text-sm text-blue-700">Symbol: {orderDetails?.fund?.symbol}</div>
+                    <div className="text-sm text-blue-700">Amount: ${orderDetails?.amount}</div>
+                    <div className="text-sm text-blue-700">Time: {new Date(orderDetails?.timestamp).toLocaleString()}</div>
+                  </div>
+                </div>
+                <div className="bg-yellow-50 p-3 rounded-lg">
+                  <div className="text-sm text-yellow-700">Processing Status: Pending</div>
+                  <div className="text-xs text-yellow-600 mt-1">
+                    Order will be processed at next market close
+                  </div>
+                </div>
+                <Button onClick={closeSecurityModal} className="w-full bg-green-600 hover:bg-green-700">
                   Done
                 </Button>
               </div>

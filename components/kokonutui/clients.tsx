@@ -9,7 +9,8 @@ import {
   Mail,
   Grid,
   List,
-  User
+  User,
+  Users2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -162,12 +163,21 @@ export default function Clients() {
 
 
   return (
-    <div className="space-y-6 pt-2">
+    <div className="space-y-8 pt-20 px-4 sm:px-6 lg:px-8">
+      {/* Page Header */}
+      <div className="py-8 px-12 bg-white rounded-lg shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            <Users2 className="h-5 w-5 text-white" />
+          </div>
+          <h1 className="text-2xl font-bold text-card-foreground">Client Management</h1>
+        </div>
+        <p className="text-muted-foreground mt-2">Manage and organize your client portfolio</p>
+      </div>
 
-      {/* Active Search Filters and Bulk Actions */}
-      <div className="px-4 sm:px-6 lg:px-8">
+        {/* Active Search Filters and Bulk Actions */}
         {(searchParams.toString() || selectedClientIds.length > 0) && (
-          <div className="flex items-center gap-2 flex-wrap mb-6">
+          <div className="flex items-center gap-2 flex-wrap mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
             {searchParams.toString() && (
               <>
                 <Badge variant="secondary" className="bg-primary/10 text-primary">
@@ -191,10 +201,9 @@ export default function Clients() {
             )}
           </div>
         )}
-      </div>
 
-      {/* Clients List */}
-      <div className="px-4 sm:px-6 lg:px-8 pt-0">
+        {/* Clients List */}
+        <div className="pt-0">
         {getDisplayClients().length > 0 ? (
           <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
             {getDisplayClients().map((client) => (

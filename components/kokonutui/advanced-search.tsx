@@ -226,12 +226,12 @@ export default function AdvancedSearch() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 pt-44 px-4 sm:px-6 lg:px-8">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-20 py-16 px-12 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200 shadow-sm">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-blue-100 rounded-xl">
-            <Search className="h-6 w-6 text-blue-600" />
+            <Search className="h-7 w-7 text-blue-600" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-card-foreground">Advanced Client Search</h1>

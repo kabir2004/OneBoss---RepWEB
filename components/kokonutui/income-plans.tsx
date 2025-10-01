@@ -176,11 +176,11 @@ export default function IncomePlans() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 pt-44 px-4 sm:px-6 lg:px-8">
       {/* Page Header */}
-      <div className="flex items-center gap-4">
-        <div className="p-2 bg-orange-100 rounded-lg">
-          <TrendingUp className="h-6 w-6 text-orange-600" />
+      <div className="flex items-center gap-4 mb-20 py-16 px-12 bg-gradient-to-r from-orange-50 to-indigo-50 rounded-xl border border-orange-200 shadow-sm">
+        <div className="p-3 bg-orange-100 rounded-xl">
+          <TrendingUp className="h-7 w-7 text-orange-600" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-card-foreground">Systematic Income Plans</h1>

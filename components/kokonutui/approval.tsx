@@ -225,11 +225,11 @@ export default function Approval() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 pt-44 px-4 sm:px-6 lg:px-8">
       {/* Page Header */}
-      <div className="flex items-center gap-4">
-        <div className="p-2 bg-green-100 rounded-lg">
-          <CheckSquare className="h-6 w-6 text-green-600" />
+      <div className="flex items-center gap-4 mb-20 py-16 px-12 bg-gradient-to-r from-green-50 to-indigo-50 rounded-xl border border-green-200 shadow-sm">
+        <div className="p-3 bg-green-100 rounded-xl">
+          <CheckSquare className="h-7 w-7 text-green-600" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-card-foreground">Approval & eSignature Management</h1>
