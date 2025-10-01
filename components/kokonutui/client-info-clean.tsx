@@ -606,10 +606,29 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
 
   // Helper function to determine if it's a conversion (different company)
   const isConversion = useCallback(() => {
-    if (!selectedNewFund || !selectedFund?.company || !selectedCompany) return false
+    if (!selectedFund?.company || !selectedCompany) return false
     
-    return selectedFund.company !== selectedCompany
-  }, [selectedNewFund, selectedFund, selectedCompany])
+    // Normalize company names for comparison (handle variations like "Fidelity" vs "Fidelity Investments")
+    const normalizeCompanyName = (name: string) => {
+      return name?.trim()
+        .toLowerCase()
+        .replace(/\s+(investments|investment|inc|corporation|corp|ltd|limited|llc)$/i, '')
+    }
+    
+    const currentCompany = normalizeCompanyName(selectedFund.company)
+    const newCompany = normalizeCompanyName(selectedCompany)
+    
+    return currentCompany !== newCompany
+  }, [selectedFund, selectedCompany])
+
+  // Helper function to get the selected fund name
+  const getSelectedFundName = useCallback(() => {
+    if (!selectedNewFund || !selectedCompany) return selectedCompany || ''
+    
+    const companyFunds = fundData[selectedCompany as keyof typeof fundData] || []
+    const fund = companyFunds.find(f => f.id === selectedNewFund)
+    return fund?.name || selectedCompany
+  }, [selectedNewFund, selectedCompany])
 
   // Calculation functions
   const calculateBuyUnits = useCallback((amount: string) => {
@@ -1133,7 +1152,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                               }}
                             >
                               <Plus className="h-4 w-4 mr-1" />
-                              Security
+                              Investment
                             </Button>
                           </div>
                         </div>
@@ -1368,7 +1387,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                         </div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
-                                        <div className="text-sm font-semibold text-gray-900">$0.00</div>
+                                        <div className="text-sm font-semibold text-gray-900">$35,000.00</div>
                                         <div className="text-xs text-gray-600">Net Invested</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
@@ -1499,7 +1518,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                               }}
                             >
                               <Plus className="h-4 w-4 mr-1" />
-                              Security
+                              Investment
                             </Button>
                           </div>
                         </div>
@@ -1734,7 +1753,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                         </div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
-                                        <div className="text-sm font-semibold text-gray-900">$0.00</div>
+                                        <div className="text-sm font-semibold text-gray-900">$21,200.00</div>
                                         <div className="text-xs text-gray-600">Net Invested</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-right">
@@ -3804,11 +3823,11 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2 text-xl font-semibold text-blue-700">
                   <ArrowLeftRight className="h-5 w-5" />
-                  Switch Fund
+                  {isConversion() ? 'Convert Fund' : 'Switch Fund'}
                 </DialogTitle>
                 <div className="text-sm text-muted-foreground mt-2">
                   {isConversion()
-                    ? `Switch from ${selectedFund?.product} to a different fund company`
+                    ? `Convert from ${selectedFund?.product} (${selectedFund?.company}) to a ${selectedCompany} fund`
                     : `Switch from ${selectedFund?.product} to another ${selectedCompany || selectedFund?.company} fund`
                   }
                 </div>
@@ -3817,6 +3836,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                 <div className="bg-gray-50 p-4 rounded-lg space-y-2">
                   <div className="text-sm font-medium text-gray-700">Current Fund ({selectedPlan}):</div>
                   <div className="text-sm text-gray-600">{selectedFund?.product}</div>
+                  <div className="text-xs text-gray-500">Company: {selectedFund?.company}</div>
                   <div className="text-sm text-gray-600">Units Available: {selectedFund?.units}</div>
                   <div className="text-sm text-gray-600">Market Value: ${selectedFund?.marketValue?.toLocaleString()}</div>
                 </div>
@@ -3824,7 +3844,23 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                 <div className="space-y-3">
                   {/* Company Selection */}
                   <div>
-                    <Label className="text-sm font-medium">Select Fund Company</Label>
+                    <Label className="text-sm font-medium">
+                      Select Fund Company
+                      {selectedCompany && (
+                        <div className="mt-1 flex items-center gap-2">
+                          <span className={`text-xs px-2 py-1 rounded-full ${
+                            isConversion() 
+                              ? 'bg-orange-100 text-orange-700 border border-orange-200' 
+                              : 'bg-blue-100 text-blue-700 border border-blue-200'
+                          }`}>
+                            {isConversion() ? 'Conversion' : 'Switch'}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            ({selectedFund?.product}) → ({getSelectedFundName()})
+                          </span>
+                        </div>
+                      )}
+                    </Label>
                     <Select value={selectedCompany} onValueChange={handleCompanyChange}>
                       <SelectTrigger className="mt-1">
                         <SelectValue placeholder="Choose a company that offers funds" />
@@ -3863,7 +3899,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                       </Label>
                       <Select value={selectedNewFund} onValueChange={setSelectedNewFund}>
                         <SelectTrigger className="mt-1">
-                          <SelectValue placeholder="Choose a fund to switch to" />
+                          <SelectValue placeholder={`Choose a fund to ${isConversion() ? 'convert to' : 'switch to'}`} />
                         </SelectTrigger>
                         <SelectContent className="z-[9999]" position="popper">
                           {getFilteredFunds().map((fund) => (
@@ -3906,6 +3942,15 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                     <div className="text-sm text-blue-700">
                       {isConversion() ? 'Conversion Preview:' : 'Switch Preview:'}
                     </div>
+                    {selectedCompany && (
+                      <div className={`text-xs px-2 py-1 rounded mb-2 inline-block ${
+                        isConversion() 
+                          ? 'bg-orange-100 text-orange-700 border border-orange-200' 
+                          : 'bg-blue-100 text-blue-700 border border-blue-200'
+                      }`}>
+                        {isConversion() ? 'CONVERSION' : 'SWITCH'} - ({selectedFund?.product}) → ({getSelectedFundName()})
+                      </div>
+                    )}
                     <div className="text-xs text-blue-600 mt-1">
                       Units to {isConversion() ? 'convert' : 'switch'}: {switchUnits || '0'}
                     </div>
@@ -3913,7 +3958,10 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                       Estimated value: ${((parseFloat(switchUnits) || 0) * (selectedFund?.avgCost || 0)).toFixed(2)}
                     </div>
                     <div className="text-xs text-blue-600 mt-1">
-                      This will sell your current fund and buy the selected new fund
+                      {isConversion() 
+                        ? `This will convert ${selectedFund?.product} to ${getSelectedFundName()}`
+                        : `This will switch ${selectedFund?.product} to ${getSelectedFundName()}`
+                      }
                     </div>
                   </div>
                 </div>
@@ -3927,7 +3975,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                     onClick={() => handlePlaceOrder('switch')}
                     disabled={!switchUnits}
                   >
-                    Execute {isConversion() ? 'Conversion' : 'Switch'}
+                    {isConversion() ? 'Execute Conversion' : 'Execute Switch'}
                   </Button>
                 </div>
               </div>
@@ -3937,16 +3985,16 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2 text-xl font-semibold text-blue-700">
                   <CheckCircle className="h-6 w-6 text-green-600" />
-                  Switch Order Confirmed
+                  {isConversion() ? 'Conversion Order Confirmed' : 'Switch Order Confirmed'}
                 </DialogTitle>
                 <div className="text-sm text-muted-foreground mt-2">
-                  Your fund switch order has been placed successfully
+                  Your fund {isConversion() ? 'conversion' : 'switch'} order has been placed successfully
                 </div>
               </DialogHeader>
               <div className="space-y-4">
                 <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                   <div className="space-y-2">
-                    <div className="text-sm font-medium text-blue-800">Switch Order Details:</div>
+                    <div className="text-sm font-medium text-blue-800">{isConversion() ? 'Conversion Order Details:' : 'Switch Order Details:'}</div>
                     <div className="text-sm text-blue-700">Order ID: {orderDetails?.orderId}</div>
                     <div className="text-sm text-blue-700">From: {orderDetails?.fund?.product}</div>
                     <div className="text-sm text-blue-700">To: {orderDetails?.newFund || 'Fund selection required'}</div>
@@ -3960,7 +4008,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                 <div className="bg-yellow-50 p-3 rounded-lg">
                   <div className="text-sm text-yellow-700">Processing Status: Pending</div>
                   <div className="text-xs text-yellow-600 mt-1">
-                    Switch will be processed at next market close
+                    {isConversion() ? 'Conversion' : 'Switch'} will be processed at next market close
                   </div>
                 </div>
                 <Button onClick={closeAllModals} className="w-full bg-blue-600 hover:bg-blue-700">
@@ -3980,10 +4028,10 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2 text-xl font-semibold text-blue-700">
                   <Plus className="h-5 w-5" />
-                  Add Security
+                  Add Investment
                 </DialogTitle>
                 <div className="text-sm text-muted-foreground mt-2">
-                  Add a new security to your portfolio
+                  Add a new investment to your portfolio
                 </div>
               </DialogHeader>
               <div className="space-y-4">
@@ -4097,10 +4145,10 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2 text-xl font-semibold text-blue-700">
                   <CheckCircle className="h-6 w-6 text-green-600" />
-                  Security Order Confirmed
+                  Investment Order Confirmed
                 </DialogTitle>
                 <div className="text-sm text-muted-foreground mt-2">
-                  Your security order has been placed successfully
+                  Your investment order has been placed successfully
                 </div>
               </DialogHeader>
               <div className="space-y-4">
