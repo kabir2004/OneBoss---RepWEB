@@ -4,7 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/compon
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import Image from "next/image"
-import { Bell, ChevronRight, Mail, Filter, PanelLeftClose, PanelLeftOpen, Users2, Home, FileText, CheckSquare, BarChart2, Search, CheckCircle, Clock, PauseCircle, Grid, List, ShoppingCart as ShoppingCartIcon, Eye, EyeOff } from "lucide-react"
+import { Bell, ChevronRight, Mail, Filter, PanelLeftClose, PanelLeftOpen, Users2, Home, FileText, CheckSquare, BarChart2, Search, CheckCircle, Clock, PauseCircle, Grid, List, ShoppingCart as ShoppingCartIcon, Eye, EyeOff, MapPin, User } from "lucide-react"
 import Profile01 from "./profile-01"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -12,11 +12,13 @@ import { Badge } from "@/components/ui/badge"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useSidebar } from "@/components/sidebar-context"
 import { useState, useEffect } from "react"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { mockClients } from "@/lib/client-data"
 import ShoppingCartModal from "./shopping-cart"
+import { useActiveTab } from "../active-tab-context"
+import { useViewMode } from "../view-mode-context"
 import { useNelsonHide } from "../nelson-hide-context"
 
 interface BreadcrumbItem {
@@ -65,18 +67,21 @@ const clientNavItems = [
 
 export default function TopNav() {
   const pathname = usePathname()
+  const router = useRouter()
   const { isCollapsed, toggleSidebar } = useSidebar()
   const { isNelsonHidden, toggleNelsonHide } = useNelsonHide()
+  const { viewMode, setViewMode } = useViewMode()
+  const { activeTab, setActiveTab } = useActiveTab()
   const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([
     { label: "OneBoss", href: "/" },
     { label: "Dashboard", href: "/dashboard" },
   ])
-  const [activeTab, setActiveTab] = useState<'all' | 'active' | 'inactive' | 'prospect'>('all')
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
   const [clients] = useState(mockClients)
   const [filteredClients, setFilteredClients] = useState(mockClients)
   const [searchQuery, setSearchQuery] = useState('')
   const [showShoppingCart, setShowShoppingCart] = useState(false)
+  const [showSearchSuggestions, setShowSearchSuggestions] = useState(false)
+  const [searchResults, setSearchResults] = useState<any[]>([])
 
   useEffect(() => {
     const generateBreadcrumbs = () => {
@@ -157,9 +162,58 @@ export default function TopNav() {
 
   const isClientsPage = pathname.startsWith('/clients') && !pathname.includes('/clients/') || pathname === '/clients'
 
+  // Enhanced search functionality
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value)
+    setShowSearchSuggestions(value.length > 0)
+    
+    if (value.length > 0) {
+      const filtered = clients.filter(client => {
+        const fullName = `${client.firstName} ${client.surname}`.toLowerCase()
+        const email = client.email?.toLowerCase() || ''
+        const clientId = client.clientId?.toLowerCase() || ''
+        const location = `${client.city}, ${client.province}`.toLowerCase()
+        const searchTerm = value.toLowerCase()
+        
+        return fullName.includes(searchTerm) ||
+               email.includes(searchTerm) ||
+               clientId.includes(searchTerm) ||
+               location.includes(searchTerm) ||
+               client.city?.toLowerCase().includes(searchTerm) ||
+               client.province?.toLowerCase().includes(searchTerm)
+      })
+      setSearchResults(filtered.slice(0, 5)) // Limit to 5 results for suggestions
+    } else {
+      setSearchResults([])
+    }
+  }
+
+  const handleClientSelect = (client: any) => {
+    setSearchQuery('')
+    setShowSearchSuggestions(false)
+    setSearchResults([])
+    router.push(`/clients/${client.id}`)
+  }
+
   return (
     <div className="bg-white border-b border-border relative z-10">
       <nav className="px-3 sm:px-6 flex items-center justify-between h-16 bg-white">
+        <div className="flex items-center gap-3">
+          {/* Sidebar Toggle Button - Moved closer to sidebar edge */}
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            className="p-1.5 sm:p-2 hover:bg-accent rounded-full transition-colors"
+            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {isCollapsed ? (
+              <PanelLeftOpen className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+            ) : (
+              <PanelLeftClose className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+            )}
+          </button>
+          
+          {/* Breadcrumbs */}
         <div className="font-medium text-sm hidden sm:flex items-center space-x-1 truncate max-w-[300px]">
           {breadcrumbs.map((item, index) => (
             <div key={item.label} className="flex items-center">
@@ -176,9 +230,10 @@ export default function TopNav() {
               )}
             </div>
           ))}
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4 ml-auto sm:ml-0">
+        <div className="flex items-center gap-2 sm:gap-4 ml-auto">
         <button
           type="button"
           className="p-1.5 sm:p-2 hover:bg-accent rounded-full transition-colors relative"
@@ -210,19 +265,6 @@ export default function TopNav() {
           className="p-1.5 sm:p-2 hover:bg-accent rounded-full transition-colors"
         >
           <Bell className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
-        </button>
-
-        <button
-          type="button"
-          onClick={toggleSidebar}
-          className="p-1.5 sm:p-2 hover:bg-accent rounded-full transition-colors"
-          title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          {isCollapsed ? (
-            <PanelLeftOpen className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
-          ) : (
-            <PanelLeftClose className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
-          )}
         </button>
 
         <ThemeToggle />
@@ -520,7 +562,7 @@ export default function TopNav() {
             </div>
           </div>
 
-          {/* Search Field */}
+          {/* Enhanced Search Field */}
           <div className="px-4 sm:px-6 lg:px-8 pb-4 bg-white">
             <div className="relative mb-6">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -528,9 +570,63 @@ export default function TopNav() {
                 type="text"
                 placeholder="Search clients by name, email, ID, or location..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-11 text-sm bg-white border-input"
+                onChange={(e) => handleSearchChange(e.target.value)}
+                onFocus={() => setShowSearchSuggestions(searchQuery.length > 0)}
+                onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
+                className="pl-10 h-11 text-sm bg-white border-input focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               />
+              
+              {/* Search Suggestions Dropdown */}
+              {showSearchSuggestions && searchResults.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+                  {searchResults.map((client) => (
+                    <div
+                      key={client.id}
+                      className="p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors"
+                      onClick={() => handleClientSelect(client)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-900">
+                            {client.firstName} {client.surname}
+                          </div>
+                          <div className="text-sm text-gray-600 flex items-center gap-4">
+                            <span className="flex items-center gap-1">
+                              <Mail className="h-3 w-3" />
+                              {client.email}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <User className="h-3 w-3" />
+                              {client.clientId}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <MapPin className="h-3 w-3" />
+                              {client.city}, {client.province}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="ml-3">
+                          <Badge 
+                            variant={client.status === 'active' ? 'default' : client.status === 'inactive' ? 'secondary' : 'outline'}
+                            className="text-xs"
+                          >
+                            {client.status}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {/* No Results Message */}
+              {showSearchSuggestions && searchQuery.length > 0 && searchResults.length === 0 && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-3">
+                  <div className="text-sm text-gray-600 text-center">
+                    No clients found matching "{searchQuery}"
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -539,18 +635,6 @@ export default function TopNav() {
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
               {/* Status Checkboxes */}
               <div className="flex items-center gap-8 flex-wrap">
-                <div className="flex items-center space-x-3">
-                  <Checkbox
-                    id="all-status"
-                    checked={activeTab === 'all'}
-                    onCheckedChange={() => setActiveTab('all')}
-                  />
-                  <label htmlFor="all-status" className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-2">
-                    <span>All</span>
-                    <span className="text-lg font-bold text-muted-foreground">({allClients.length})</span>
-                  </label>
-                </div>
-                
                 <div className="flex items-center space-x-3">
                   <Checkbox
                     id="active-status"

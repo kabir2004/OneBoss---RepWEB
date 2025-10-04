@@ -17,6 +17,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { mockClients } from "@/lib/client-data"
+import { useActiveTab } from "../active-tab-context"
+import { useViewMode } from "../view-mode-context"
 import { useClientSelection } from "../client-selection-context"
 
 export default function Clients() {
@@ -24,9 +26,9 @@ export default function Clients() {
   const router = useRouter()
   const [clients] = useState(mockClients)
   const { selectedClientIds, handleClientSelection, handleSelectAll, handleSelectNone } = useClientSelection()
+  const { viewMode } = useViewMode()
+  const { activeTab } = useActiveTab()
   const [filteredClients, setFilteredClients] = useState(mockClients)
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
-  const [activeTab, setActiveTab] = useState<'all' | 'active' | 'inactive' | 'prospect'>('all')
 
 
 
@@ -217,7 +219,7 @@ export default function Clients() {
                 <User className="h-8 w-8 text-muted-foreground" />
               </div>
               <h3 className="text-lg font-semibold text-card-foreground mb-2">
-                {searchParams.toString() ? "No clients found" : `No ${activeTab === 'all' ? '' : activeTab} clients to display`}
+                {searchParams.toString() ? "No clients found" : `No ${activeTab} clients to display`}
               </h3>
               <p className="text-muted-foreground mb-4">
                 {searchParams.toString() 

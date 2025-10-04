@@ -289,16 +289,17 @@ export default function ShoppingCartModal({ isOpen, onClose }: ShoppingCartProps
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
-        <DialogHeader>
+      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2 text-xl font-semibold">
             <ShoppingCart className="h-6 w-6 text-blue-600" />
             Shopping Cart
           </DialogTitle>
         </DialogHeader>
         
-        <div className="overflow-y-auto flex-1">
-          <div className="space-y-4">
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
+          <div className="space-y-4 p-1 pr-2">
             {/* Advisor Level - Aggregates all client carts */}
             {mockCartData.map((advisor) => (
               <div key={advisor.id} className="border border-gray-200 rounded-lg">
@@ -493,8 +494,8 @@ export default function ShoppingCartModal({ isOpen, onClose }: ShoppingCartProps
           </div>
         </div>
 
-        {/* Footer with totals */}
-        <div className="border-t border-gray-200 p-4 bg-gray-50">
+        {/* Fixed Footer with totals and checkout */}
+        <div className="flex-shrink-0 border-t border-gray-200 p-4 bg-gray-50 shadow-lg">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-600">
               Total items across all advisors
@@ -503,23 +504,23 @@ export default function ShoppingCartModal({ isOpen, onClose }: ShoppingCartProps
               {formatCurrency(mockCartData.reduce((total, advisor) => total + calculateAdvisorTotal(advisor), 0))}
             </div>
           </div>
-          <div className="flex gap-2 mt-3">
+          <div className="flex gap-3 mt-4">
             <Button 
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 text-base shadow-lg hover:shadow-xl transition-all duration-200"
               onClick={() => {
                 // Mock checkout functionality
                 alert('Checkout feature coming soon!')
               }}
             >
-              <DollarSign className="h-4 w-4 mr-2" />
-              Checkout All
+              <DollarSign className="h-5 w-5 mr-2" />
+              Checkout All Trades
             </Button>
             <Button 
               variant="outline" 
-              className="flex-1"
+              className="flex-1 border-gray-300 hover:bg-gray-50 font-medium py-3 text-base"
               onClick={onClose}
             >
-              Close
+              Close Cart
             </Button>
           </div>
         </div>
