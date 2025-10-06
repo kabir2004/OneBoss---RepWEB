@@ -101,6 +101,8 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
   const [switchUnits, setSwitchUnits] = useState('')
   const [selectedNewFund, setSelectedNewFund] = useState('')
   const [selectedCompany, setSelectedCompany] = useState('')
+  const [companySearchTerm, setCompanySearchTerm] = useState('')
+  const [showCompanySuggestions, setShowCompanySuggestions] = useState(false)
   const [fundSearchTerm, setFundSearchTerm] = useState('')
   const [showFundSuggestions, setShowFundSuggestions] = useState(false)
   
@@ -459,6 +461,33 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
   }, [selectedCompany, fundSearchTerm])
 
   // Switch Fund dialog helper functions
+  const handleCompanySearchChange = useCallback((value: string) => {
+    setCompanySearchTerm(value)
+    setShowCompanySuggestions(value.length > 0)
+    if (value.length === 0) {
+      setSelectedCompany('')
+      setSelectedNewFund('')
+      setFundSearchTerm('')
+    }
+  }, [])
+
+  const handleCompanySelect = useCallback((company: string) => {
+    setSelectedCompany(company)
+    setCompanySearchTerm(company)
+    setShowCompanySuggestions(false)
+    setSelectedNewFund('')
+    setFundSearchTerm('')
+  }, [])
+
+  const getFilteredCompanies = useCallback(() => {
+    const companies = Object.keys(fundData)
+    if (!companySearchTerm) return companies
+    
+    return companies.filter(company => 
+      company.toLowerCase().includes(companySearchTerm.toLowerCase())
+    )
+  }, [companySearchTerm])
+
   const handleFundSearchChange = useCallback((value: string) => {
     setFundSearchTerm(value)
     setShowFundSuggestions(value.length > 0)
@@ -476,6 +505,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
   // Reset fund selection when company changes
   const handleCompanyChange = useCallback((company: string) => {
     setSelectedCompany(company)
+    setCompanySearchTerm(company)
     setSelectedNewFund('')
     setFundSearchTerm('')
   }, [])
@@ -966,7 +996,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">Client ID</p>
-                      <p className="text-sm font-semibold text-card-foreground">{client.clientId}</p>
+                      <p className="text-sm font-semibold text-card-foreground">{client.clientId} - {client.firstName} {client.surname}</p>
                     </div>
                   </div>
                   
@@ -3650,6 +3680,26 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                   Purchase additional units of {selectedFund?.product}
                 </div>
               </DialogHeader>
+              
+              {/* Trust Account Balance */}
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <DollarSign className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-700">Trust Account CAD</span>
+                </div>
+                <div className="text-lg font-semibold text-blue-800 mb-2">$1,250.00</div>
+                <div className="space-y-1">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-blue-600">Settled:</span>
+                    <span className="font-medium text-green-600">$1,250.00</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-blue-600">Unsettled:</span>
+                    <span className="font-medium text-orange-600">$0.00</span>
+                  </div>
+                </div>
+              </div>
+              
               <div className="space-y-4">
                 <div className="bg-gray-50 p-4 rounded-lg space-y-2">
                   <div className="text-sm font-medium text-gray-700">Current Holdings ({selectedPlan}):</div>
@@ -3694,6 +3744,11 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                       Units to purchase: {buyUnits || calculateBuyUnits(buyAmount) || '0'}
                     </div>
                     <div className="text-xs text-blue-600">Based on avg. cost ${selectedFund?.avgCost}</div>
+                    {(parseFloat(buyAmount || calculateBuyAmount(buyUnits) || '0') > 1250) && (
+                      <div className="text-xs text-red-600 mt-2 font-medium">
+                        ⚠️ Purchase amount exceeds settled balance ($1,250.00)
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -3910,24 +3965,51 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                         </div>
                       )}
                     </Label>
-                    <Select value={selectedCompany} onValueChange={handleCompanyChange}>
-                      <SelectTrigger className="mt-1">
-                        <SelectValue placeholder={selectedFund?.company ? `Choose a ${selectedFund.company} fund` : "Choose a company that offers funds"} />
-                      </SelectTrigger>
-                      <SelectContent className="z-[9999]" position="popper">
-                        {availableCompanies.map((company) => (
-                          <SelectItem key={company} value={company}>
-                            {company}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <div className="relative mt-1 company-search-container">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search fund companies (e.g., Fidelity, TD)..."
+                        value={companySearchTerm}
+                        onChange={(e) => handleCompanySearchChange(e.target.value)}
+                        className="pl-10"
+                        autoComplete="off"
+                      />
+                      
+                      {/* Company Suggestions */}
+                      {showCompanySuggestions && getFilteredCompanies().length > 0 && (
+                        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                          {getFilteredCompanies().map((company) => (
+                            <div
+                              key={company}
+                              className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                              onClick={() => handleCompanySelect(company)}
+                            >
+                              <div className="flex flex-col">
+                                <span className="font-medium text-gray-900">{company}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  {fundData[company as keyof typeof fundData]?.length || 0} funds available
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {/* No results message */}
+                      {showCompanySuggestions && getFilteredCompanies().length === 0 && companySearchTerm && (
+                        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
+                          <div className="px-4 py-3 text-sm text-muted-foreground">
+                            No companies found matching "{companySearchTerm}"
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
-                  {/* Fund Search with Autocomplete */}
+                  {/* Fund Selection */}
                   {selectedCompany && (
                     <div>
-                      <Label className="text-sm font-medium">Search for Specific Fund</Label>
+                      <Label className="text-sm font-medium">Select Fund to Convert to</Label>
                       <div className="relative mt-1 fund-search-container">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
@@ -3938,7 +4020,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                           autoComplete="off"
                         />
                         
-                        {/* Autocomplete Suggestions */}
+                        {/* Fund Suggestions */}
                         {showFundSuggestions && getFilteredFunds().length > 0 && (
                           <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                             {getFilteredFunds().map((fund) => (
@@ -3965,35 +4047,6 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                           </div>
                         )}
                       </div>
-                    </div>
-                  )}
-
-                  {/* Fund Selection */}
-                  {selectedCompany && (
-                    <div>
-                      <Label className="text-sm font-medium">
-                        {isConversion() ? 'Select Fund to Convert To' : `Select New ${selectedCompany} Fund`}
-                      </Label>
-                      <Select value={selectedNewFund} onValueChange={setSelectedNewFund}>
-                        <SelectTrigger className="mt-1">
-                          <SelectValue placeholder={selectedNewFund ? getFilteredFunds().find(fund => fund.id === selectedNewFund)?.name : `Choose a fund to ${isConversion() ? 'convert to' : 'switch to'}`} />
-                        </SelectTrigger>
-                        <SelectContent className="z-[9999]" position="popper">
-                          {getFilteredFunds().map((fund) => (
-                            <SelectItem key={fund.id} value={fund.id}>
-                              <div className="flex flex-col">
-                                <span className="font-medium">{fund.name}</span>
-                                <span className="text-xs text-muted-foreground">{fund.symbol} • {fund.category}</span>
-                              </div>
-                            </SelectItem>
-                          ))}
-                          {getFilteredFunds().length === 0 && fundSearchTerm && (
-                            <div className="px-2 py-1 text-sm text-muted-foreground">
-                              No funds found matching "{fundSearchTerm}"
-                            </div>
-                          )}
-                        </SelectContent>
-                      </Select>
                     </div>
                   )}
 
@@ -4111,6 +4164,26 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                   Add a new investment to your portfolio
                 </div>
               </DialogHeader>
+              
+              {/* Trust Account Balance */}
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <DollarSign className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-700">Trust Account CAD</span>
+                </div>
+                <div className="text-lg font-semibold text-blue-800 mb-2">$1,250.00</div>
+                <div className="space-y-1">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-blue-600">Settled:</span>
+                    <span className="font-medium text-green-600">$1,250.00</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-blue-600">Unsettled:</span>
+                    <span className="font-medium text-orange-600">$0.00</span>
+                  </div>
+                </div>
+              </div>
+              
               <div className="space-y-4">
                 <div className="space-y-3">
                   {/* Company Selection */}
@@ -4200,6 +4273,11 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                     <div className="text-xs text-blue-600">
                       This will purchase the selected fund with the specified amount
                     </div>
+                    {(parseFloat(securityOrderAmount || '0') > 1250) && (
+                      <div className="text-xs text-red-600 mt-2 font-medium">
+                        ⚠️ Purchase amount exceeds settled balance ($1,250.00)
+                      </div>
+                    )}
                   </div>
                 </div>
 

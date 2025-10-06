@@ -71,7 +71,7 @@ export default function TopNav() {
   const { isCollapsed, toggleSidebar } = useSidebar()
   const { isNelsonHidden, toggleNelsonHide } = useNelsonHide()
   const { viewMode, setViewMode } = useViewMode()
-  const { activeTab, setActiveTab } = useActiveTab()
+  const { activeTab, setActiveTab, selectedStatuses, toggleStatus } = useActiveTab()
   const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([
     { label: "OneBoss", href: "/" },
     { label: "Dashboard", href: "/dashboard" },
@@ -638,8 +638,8 @@ export default function TopNav() {
                 <div className="flex items-center space-x-3">
                   <Checkbox
                     id="active-status"
-                    checked={activeTab === 'active'}
-                    onCheckedChange={() => setActiveTab('active')}
+                    checked={selectedStatuses.includes('active')}
+                    onCheckedChange={() => toggleStatus('active')}
                   />
                   <label htmlFor="active-status" className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-green-600" />
@@ -651,8 +651,8 @@ export default function TopNav() {
                 <div className="flex items-center space-x-3">
                   <Checkbox
                     id="inactive-status"
-                    checked={activeTab === 'inactive'}
-                    onCheckedChange={() => setActiveTab('inactive')}
+                    checked={selectedStatuses.includes('inactive')}
+                    onCheckedChange={() => toggleStatus('inactive')}
                   />
                   <label htmlFor="inactive-status" className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-2">
                     <PauseCircle className="h-4 w-4 text-muted-foreground" />
@@ -664,8 +664,8 @@ export default function TopNav() {
                 <div className="flex items-center space-x-3">
                   <Checkbox
                     id="prospect-status"
-                    checked={activeTab === 'prospect'}
-                    onCheckedChange={() => setActiveTab('prospect')}
+                    checked={selectedStatuses.includes('prospect')}
+                    onCheckedChange={() => toggleStatus('prospect')}
                   />
                   <label htmlFor="prospect-status" className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-2">
                     <Clock className="h-4 w-4 text-yellow-600" />

@@ -27,7 +27,7 @@ export default function Clients() {
   const [clients] = useState(mockClients)
   const { selectedClientIds, handleClientSelection, handleSelectAll, handleSelectNone } = useClientSelection()
   const { viewMode } = useViewMode()
-  const { activeTab } = useActiveTab()
+  const { activeTab, selectedStatuses } = useActiveTab()
   const [filteredClients, setFilteredClients] = useState(mockClients)
 
 
@@ -85,17 +85,17 @@ export default function Clients() {
   const allClients = filteredClients
 
   const getDisplayClients = useCallback(() => {
-    switch (activeTab) {
-      case 'active':
-        return activeClients
-      case 'inactive':
-        return inactiveClients
-      case 'prospect':
-        return prospectClients
-      default:
-        return allClients
-    }
-  }, [activeTab, activeClients, inactiveClients, prospectClients, allClients])
+    // Filter clients based on selected statuses
+    return filteredClients.filter(client => {
+      const statusMap = {
+        'active': 'active',
+        'inactive': 'inactive', 
+        'prospect': 'pending'
+      }
+      
+      return selectedStatuses.some(status => client.status === statusMap[status])
+    })
+  }, [filteredClients, selectedStatuses])
 
   // Utility functions
   const getStatusIcon = useCallback((status: string) => {
@@ -219,18 +219,12 @@ export default function Clients() {
                 <User className="h-8 w-8 text-muted-foreground" />
               </div>
               <h3 className="text-lg font-semibold text-card-foreground mb-2">
-                {searchParams.toString() ? "No clients found" : `No ${activeTab} clients to display`}
+                {searchParams.toString() ? "No clients found" : "No clients found for selected statuses"}
               </h3>
               <p className="text-muted-foreground mb-4">
                 {searchParams.toString() 
                   ? "Try adjusting your search criteria or clear the filters to see all clients."
-                  : activeTab === 'prospect' 
-                    ? "No prospect clients found. These are clients with pending status."
-                    : activeTab === 'inactive'
-                    ? "No inactive clients found. These are clients with inactive status."
-                    : activeTab === 'active'
-                    ? "No active clients found. These are clients with active status."
-                  : "Start by adding a new client or use the search function to find existing clients."
+                  : `No clients found matching the selected statuses: ${selectedStatuses.join(', ')}. Try selecting different status filters or use the search function to find existing clients.`
                 }
               </p>
               {searchParams.toString() && (
