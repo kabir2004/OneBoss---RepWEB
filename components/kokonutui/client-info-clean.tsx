@@ -1386,6 +1386,25 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                       </TableCell>
                                     </TableRow>
                                     
+                                    {/* Add Product Row */}
+                                    <TableRow className="bg-blue-50/30 border-b border-blue-200/40">
+                                      <TableCell className="py-2" colSpan={9}></TableCell>
+                                      <TableCell className="py-2 text-center">
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="bg-white/80 border-blue-300 text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-colors w-full"
+                                          onClick={(e) => {
+                                            e.stopPropagation()
+                                            setShowSecurityModal(true)
+                                          }}
+                                        >
+                                          <Plus className="h-4 w-4 mr-2" />
+                                          Add Product
+                                        </Button>
+                                      </TableCell>
+                                    </TableRow>
+                                    
                                     {/* Empty Row for Visual Separation */}
                                     <TableRow className="bg-white border-b border-gray-200/60">
                                       <TableCell className="py-3" colSpan={10}>
@@ -1416,18 +1435,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                         <div className="text-xs text-blue-600">Total Book Value</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-center">
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          className="bg-white/80 border-blue-300 text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                                          onClick={(e) => {
-                                            e.stopPropagation()
-                                            setShowSecurityModal(true)
-                                          }}
-                                        >
-                                          <Plus className="h-4 w-4 mr-1" />
-                                          Product
-                                        </Button>
+                                        {/* + Product button moved to plans section */}
                                       </TableCell>
                                     </TableRow>
                                   </TableBody>
@@ -1757,6 +1765,25 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                       </TableCell>
                                     </TableRow>
                                     
+                                    {/* Add Product Row */}
+                                    <TableRow className="bg-green-50/30 border-b border-green-200/40">
+                                      <TableCell className="py-2" colSpan={9}></TableCell>
+                                      <TableCell className="py-2 text-center">
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="bg-white/80 border-green-300 text-green-600 hover:bg-green-50 hover:text-green-700 transition-colors w-full"
+                                          onClick={(e) => {
+                                            e.stopPropagation()
+                                            setShowSecurityModal(true)
+                                          }}
+                                        >
+                                          <Plus className="h-4 w-4 mr-2" />
+                                          Add Product
+                                        </Button>
+                                      </TableCell>
+                                    </TableRow>
+                                    
                                     {/* Empty Row for Visual Separation */}
                                     <TableRow className="bg-white border-b border-gray-200/60">
                                       <TableCell className="py-3" colSpan={10}>
@@ -1787,18 +1814,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                         <div className="text-xs text-blue-600">Total Book Value</div>
                                       </TableCell>
                                       <TableCell className="py-4 text-center">
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          className="bg-white/80 border-green-300 text-green-600 hover:bg-green-50 hover:text-green-700 transition-colors"
-                                          onClick={(e) => {
-                                            e.stopPropagation()
-                                            setShowSecurityModal(true)
-                                          }}
-                                        >
-                                          <Plus className="h-4 w-4 mr-1" />
-                                          Product
-                                        </Button>
+                                        {/* + Product button moved to plans section */}
                                       </TableCell>
                                     </TableRow>
                                   </TableBody>
