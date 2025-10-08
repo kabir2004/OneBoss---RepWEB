@@ -72,6 +72,8 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
   const [showNFUMessagesModal, setShowNFUMessagesModal] = useState(false)
   const [activePlanTab, setActivePlanTab] = useState('details')
   const [activeAllocationTab, setActiveAllocationTab] = useState('chart')
+  const [showAddPlanModal, setShowAddPlanModal] = useState(false)
+  const [selectedPlanType, setSelectedPlanType] = useState("")
 
   // Utility functions
   const getStatusIcon = useCallback((status: string) => {
@@ -1771,8 +1773,19 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                 <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-gray-200/60 p-6 shadow-sm">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-gray-900">Client Plans</h3>
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
-                      Add New Plan
+                    <Button 
+                      size="sm"
+                      variant="default"
+                      className="bg-blue-600 hover:bg-blue-700 text-white border-0"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        console.log("Add Plan button clicked!")
+                        setShowAddPlanModal(true)
+                      }}
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add Plan
                     </Button>
                   </div>
                   <div className="flex items-center space-x-2 mb-4">
@@ -3525,6 +3538,69 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
             <div className="flex justify-start pt-4 border-t border-gray-200">
               <Button variant="outline" className="hover:bg-blue-50 hover:border-blue-200" onClick={() => setShowNFUMessagesModal(false)}>
                 Close
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Plan Modal */}
+      <Dialog open={showAddPlanModal} onOpenChange={(open) => {
+        console.log("Modal state changing to:", open)
+        setShowAddPlanModal(open)
+      }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-gray-900">
+              Select Plan Type
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="plan-type" className="text-sm font-medium text-gray-700">
+                Plan Type
+              </Label>
+              <Select value={selectedPlanType} onValueChange={setSelectedPlanType}>
+                <SelectTrigger 
+                  id="plan-type"
+                  className="w-full border-blue-200 focus:border-blue-500 focus:ring-blue-500"
+                >
+                  <SelectValue placeholder="Select a plan type..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="RRSP">RRSP</SelectItem>
+                  <SelectItem value="RRIF">RRIF</SelectItem>
+                  <SelectItem value="OPEN">OPEN</SelectItem>
+                  <SelectItem value="TFSA">TFSA</SelectItem>
+                  <SelectItem value="LRIF">LRIF</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowAddPlanModal(false)
+                  setSelectedPlanType("")
+                }}
+                className="hover:bg-gray-50"
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  // TODO: Navigate to duplicate check (will be implemented in next task)
+                  console.log("Selected plan type:", selectedPlanType)
+                  // For now, just close the modal
+                  setShowAddPlanModal(false)
+                  setSelectedPlanType("")
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+                disabled={!selectedPlanType}
+              >
+                Next
               </Button>
             </div>
           </div>

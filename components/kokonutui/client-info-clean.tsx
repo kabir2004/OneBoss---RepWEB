@@ -58,6 +58,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import CustomCompensation from "./custom-compensation"
@@ -102,6 +103,24 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
   const [selectedNewFund, setSelectedNewFund] = useState('')
   const [selectedCompany, setSelectedCompany] = useState('')
   const [companySearchTerm, setCompanySearchTerm] = useState('')
+  const [showAddPlanModal, setShowAddPlanModal] = useState(false)
+  const [selectedPlanType, setSelectedPlanType] = useState("")
+  const [showDuplicateWarning, setShowDuplicateWarning] = useState(false)
+  const [showPlanSetupModal, setShowPlanSetupModal] = useState(false)
+  const [planSetupStep, setPlanSetupStep] = useState(1)
+  
+  // Plan setup form fields
+  const [ownerName, setOwnerName] = useState("")
+  const [beneficiaryName, setBeneficiaryName] = useState("")
+  const [intermediaryCode, setIntermediaryCode] = useState("")
+  const [intermediaryAccountCode, setIntermediaryAccountCode] = useState("")
+  const [planNotes, setPlanNotes] = useState("")
+  const [planObjectives, setPlanObjectives] = useState("")
+  const [riskTolerance, setRiskTolerance] = useState("")
+  const [timeHorizon, setTimeHorizon] = useState("")
+  const [formErrors, setFormErrors] = useState<{[key: string]: string}>({})
+  const [newlyCreatedPlans, setNewlyCreatedPlans] = useState<any[]>([])
+  const [newPlanId, setNewPlanId] = useState<string | null>(null)
   const [showCompanySuggestions, setShowCompanySuggestions] = useState(false)
   const [fundSearchTerm, setFundSearchTerm] = useState('')
   const [showFundSuggestions, setShowFundSuggestions] = useState(false)
@@ -562,6 +581,153 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
     setOrderConfirmed(true)
   }, [selectedSecurityFund, securityOrderAmount, selectedSecurityCompany, getFilteredSecurityFunds])
 
+  // Check for duplicate plan types
+  const checkForDuplicatePlan = useCallback((planType: string) => {
+    // Mock data: Assume client has these existing plans
+    // In production, this would come from client.plans or similar
+    const existingPlans = ['RRSP', 'TFSA']
+    return existingPlans.includes(planType)
+  }, [])
+
+  const handlePlanTypeNext = useCallback(() => {
+    if (!selectedPlanType) return
+    
+    // Check if plan type already exists
+    if (checkForDuplicatePlan(selectedPlanType)) {
+      setShowDuplicateWarning(true)
+    } else {
+      // No duplicate, proceed to plan setup
+      setShowAddPlanModal(false)
+      setShowPlanSetupModal(true)
+      setPlanSetupStep(1)
+    }
+  }, [selectedPlanType, checkForDuplicatePlan])
+
+  const handleDuplicateYes = useCallback(() => {
+    // User chose to proceed with duplicate, go to plan setup
+    setShowDuplicateWarning(false)
+    setShowAddPlanModal(false)
+    setShowPlanSetupModal(true)
+    setPlanSetupStep(1)
+  }, [])
+
+  const handleDuplicateNo = useCallback(() => {
+    // Return to plan type selection
+    setShowDuplicateWarning(false)
+  }, [])
+
+  // Validation for each step
+  const validateStep = useCallback((step: number) => {
+    const errors: {[key: string]: string} = {}
+    
+    if (step === 1) {
+      if (!ownerName.trim()) errors.ownerName = "Owner/Annuitant Name is required"
+      if (!beneficiaryName.trim()) errors.beneficiaryName = "Beneficiary Name is required"
+    } else if (step === 2) {
+      if (!intermediaryCode.trim()) errors.intermediaryCode = "Intermediary Code is required"
+      if (intermediaryCode.length > 10) errors.intermediaryCode = "Intermediary Code must be 10 characters or less"
+      if (!intermediaryAccountCode.trim()) errors.intermediaryAccountCode = "Intermediary Account Code is required"
+      if (intermediaryAccountCode.length > 10) errors.intermediaryAccountCode = "Intermediary Account Code must be 10 characters or less"
+    } else if (step === 3) {
+      if (!planObjectives.trim()) errors.planObjectives = "Objectives is required"
+      if (!riskTolerance) errors.riskTolerance = "Risk Tolerance is required"
+      if (!timeHorizon) {
+        errors.timeHorizon = "Time Horizon is required"
+      } else {
+        const horizon = parseInt(timeHorizon)
+        if (isNaN(horizon) || horizon < 1 || horizon > 50) {
+          errors.timeHorizon = "Time Horizon must be between 1 and 50 years"
+        }
+      }
+    }
+    
+    setFormErrors(errors)
+    return Object.keys(errors).length === 0
+  }, [ownerName, beneficiaryName, intermediaryCode, intermediaryAccountCode, planObjectives, riskTolerance, timeHorizon])
+
+  const handlePlanSetupNext = useCallback(() => {
+    if (validateStep(planSetupStep)) {
+      setPlanSetupStep(planSetupStep + 1)
+      setFormErrors({})
+    }
+  }, [planSetupStep, validateStep])
+
+  const handlePlanSetupPrevious = useCallback(() => {
+    setPlanSetupStep(planSetupStep - 1)
+    setFormErrors({})
+  }, [planSetupStep])
+
+  const handlePlanSetupSubmit = useCallback(() => {
+    if (validateStep(3)) {
+      // Generate unique plan ID
+      const planId = `PLN-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`.toUpperCase()
+      
+      // Create plan object with all data
+      const newPlan = {
+        id: planId,
+        planType: selectedPlanType,
+        accountNumber: `${Math.floor(1000000000 + Math.random() * 9000000000)}`,
+        ownerName,
+        beneficiaryName,
+        intermediaryCode,
+        intermediaryAccountCode,
+        notes: planNotes,
+        objectives: planObjectives,
+        riskTolerance,
+        timeHorizon: parseInt(timeHorizon),
+        balance: 0,
+        createdAt: new Date().toISOString(),
+        status: 'active'
+      }
+      
+      // Save plan to state
+      setNewlyCreatedPlans(prev => [...prev, newPlan])
+      setNewPlanId(planId)
+      
+      // Log successful creation
+      console.log("✅ Plan successfully created:", newPlan)
+      console.log(`📋 Plan ID: ${planId}`)
+      console.log(`💰 Account Number: ${newPlan.accountNumber}`)
+      console.log(`🎯 Navigating to "+ Add Product" with plan ${planId} pre-selected...`)
+      
+      // Close setup modal
+      setShowPlanSetupModal(false)
+      
+      // Reset form fields
+      setSelectedPlanType("")
+      setOwnerName("")
+      setBeneficiaryName("")
+      setIntermediaryCode("")
+      setIntermediaryAccountCode("")
+      setPlanNotes("")
+      setPlanObjectives("")
+      setRiskTolerance("")
+      setTimeHorizon("")
+      setPlanSetupStep(1)
+      setFormErrors({})
+      
+      // Navigate to "+ Add Product" (Security Modal) with new plan pre-selected
+      setSelectedPlan(planId)
+      setShowSecurityModal(true)
+    }
+  }, [validateStep, selectedPlanType, ownerName, beneficiaryName, intermediaryCode, intermediaryAccountCode, planNotes, planObjectives, riskTolerance, timeHorizon])
+
+  const handlePlanSetupCancel = useCallback(() => {
+    // Reset form and close modal
+    setShowPlanSetupModal(false)
+    setSelectedPlanType("")
+    setOwnerName("")
+    setBeneficiaryName("")
+    setIntermediaryCode("")
+    setIntermediaryAccountCode("")
+    setPlanNotes("")
+    setPlanObjectives("")
+    setRiskTolerance("")
+    setTimeHorizon("")
+    setPlanSetupStep(1)
+    setFormErrors({})
+  }, [])
+
   const closeSecurityModal = useCallback(() => {
     setShowSecurityModal(false)
     setSelectedSecurityCompany('')
@@ -569,6 +735,8 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
     setSecuritySearchTerm('')
     setSecurityOrderAmount('')
     setShowSecuritySuggestions(false)
+    // Clear new plan notification after modal is closed
+    setNewPlanId(null)
     setOrderConfirmed(false)
     setOrderDetails(null)
   }, [])
@@ -1102,6 +1270,12 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                       variant="outline" 
                       size="sm" 
                       className="hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-all duration-200"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        console.log("Add Plan button clicked!")
+                        setShowAddPlanModal(true)
+                      }}
                     >
                       <Plus className="h-4 w-4 mr-2" />
                       Add Plan
@@ -4165,6 +4339,47 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                 </div>
               </DialogHeader>
               
+              {/* New Plan Notification */}
+              {newPlanId && newlyCreatedPlans.find(p => p.id === newPlanId) && (
+                <div className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-blue-500 rounded-lg p-4 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <h3 className="font-semibold text-gray-900">New Plan Created Successfully!</h3>
+                  </div>
+                  <div className="pl-7 space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Plan Type:</span>
+                      <span className="font-semibold text-blue-700">
+                        {newlyCreatedPlans.find(p => p.id === newPlanId)?.planType}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Plan ID:</span>
+                      <span className="font-mono text-sm font-medium text-gray-900">
+                        {newPlanId}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Account Number:</span>
+                      <span className="font-mono text-sm font-medium text-gray-900">
+                        {newlyCreatedPlans.find(p => p.id === newPlanId)?.accountNumber}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Owner:</span>
+                      <span className="font-medium text-gray-900">
+                        {newlyCreatedPlans.find(p => p.id === newPlanId)?.ownerName}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="pl-7 pt-2 border-t border-blue-200">
+                    <p className="text-xs text-blue-700 font-medium">
+                      ✨ Add your first investment to this plan below
+                    </p>
+                  </div>
+                </div>
+              )}
+              
               {/* Trust Account Balance */}
               <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                 <div className="flex items-center gap-2 mb-2">
@@ -4417,6 +4632,323 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
               >
                 Cancel
               </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Plan Modal */}
+      <Dialog open={showAddPlanModal} onOpenChange={(open) => {
+        console.log("Modal state changing to:", open)
+        setShowAddPlanModal(open)
+      }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-gray-900">
+              Select Plan Type
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="plan-type" className="text-sm font-medium text-gray-700">
+                Plan Type
+              </Label>
+              <Select value={selectedPlanType} onValueChange={setSelectedPlanType}>
+                <SelectTrigger 
+                  id="plan-type"
+                  className="w-full border-blue-200 focus:border-blue-500 focus:ring-blue-500"
+                >
+                  <SelectValue placeholder="Select a plan type..." />
+                </SelectTrigger>
+                <SelectContent className="z-[9999]">
+                  <SelectItem value="RRSP">RRSP</SelectItem>
+                  <SelectItem value="RRIF">RRIF</SelectItem>
+                  <SelectItem value="OPEN">OPEN</SelectItem>
+                  <SelectItem value="TFSA">TFSA</SelectItem>
+                  <SelectItem value="LRIF">LRIF</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowAddPlanModal(false)
+                  setSelectedPlanType("")
+                }}
+                className="hover:bg-gray-50"
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handlePlanTypeNext}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+                disabled={!selectedPlanType}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Duplicate Plan Warning Modal */}
+      <Dialog open={showDuplicateWarning} onOpenChange={setShowDuplicateWarning}>
+        <DialogContent className="max-w-md border-2 border-blue-500">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-gray-900 text-center">
+              Duplicate Plan Warning
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-6">
+            <div className="text-center space-y-4">
+              <div className="flex justify-center">
+                <AlertTriangle className="h-16 w-16 text-amber-500" />
+              </div>
+              <p className="text-base text-gray-700 px-4">
+                You already have a <span className="font-semibold">{selectedPlanType}</span> plan. 
+                Adding another is possible but not recommended.
+              </p>
+              <p className="text-base text-gray-700 font-medium">
+                Proceed?
+              </p>
+            </div>
+
+            <div className="flex justify-center gap-4 mt-8">
+              <Button 
+                variant="outline"
+                onClick={handleDuplicateNo}
+                className="min-w-[120px] border-gray-300 hover:bg-gray-50"
+              >
+                No
+              </Button>
+              <Button 
+                onClick={handleDuplicateYes}
+                className="min-w-[120px] bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Yes
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Plan Setup Multi-Step Form Modal */}
+      <Dialog open={showPlanSetupModal} onOpenChange={setShowPlanSetupModal}>
+        <DialogContent className="max-w-2xl border-2 border-blue-500">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-gray-900">
+              Plan Setup - {selectedPlanType} (Step {planSetupStep} of 3)
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-4">
+            {/* Step 1: Owner/Annuitant Name and Beneficiary Name */}
+            {planSetupStep === 1 && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="owner-name" className="text-sm font-medium text-gray-700">
+                    Owner/Annuitant Name <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="owner-name"
+                    value={ownerName}
+                    onChange={(e) => setOwnerName(e.target.value)}
+                    placeholder="Enter owner/annuitant name"
+                    className={formErrors.ownerName ? "border-red-500" : ""}
+                  />
+                  {formErrors.ownerName && (
+                    <p className="text-sm text-red-500">{formErrors.ownerName}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="beneficiary-name" className="text-sm font-medium text-gray-700">
+                    Beneficiary Name <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="beneficiary-name"
+                    value={beneficiaryName}
+                    onChange={(e) => setBeneficiaryName(e.target.value)}
+                    placeholder="Enter beneficiary name"
+                    className={formErrors.beneficiaryName ? "border-red-500" : ""}
+                  />
+                  {formErrors.beneficiaryName && (
+                    <p className="text-sm text-red-500">{formErrors.beneficiaryName}</p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Step 2: Intermediary Code and Account Code */}
+            {planSetupStep === 2 && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="intermediary-code" className="text-sm font-medium text-gray-700">
+                    Intermediary Code <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="intermediary-code"
+                    value={intermediaryCode}
+                    onChange={(e) => {
+                      if (e.target.value.length <= 10) {
+                        setIntermediaryCode(e.target.value)
+                      }
+                    }}
+                    placeholder="Enter intermediary code (max 10 characters)"
+                    maxLength={10}
+                    className={formErrors.intermediaryCode ? "border-red-500" : ""}
+                  />
+                  <p className="text-xs text-gray-500">{intermediaryCode.length}/10 characters</p>
+                  {formErrors.intermediaryCode && (
+                    <p className="text-sm text-red-500">{formErrors.intermediaryCode}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="intermediary-account-code" className="text-sm font-medium text-gray-700">
+                    Intermediary Account Code <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="intermediary-account-code"
+                    value={intermediaryAccountCode}
+                    onChange={(e) => {
+                      if (e.target.value.length <= 10) {
+                        setIntermediaryAccountCode(e.target.value)
+                      }
+                    }}
+                    placeholder="Enter intermediary account code (max 10 characters)"
+                    maxLength={10}
+                    className={formErrors.intermediaryAccountCode ? "border-red-500" : ""}
+                  />
+                  <p className="text-xs text-gray-500">{intermediaryAccountCode.length}/10 characters</p>
+                  {formErrors.intermediaryAccountCode && (
+                    <p className="text-sm text-red-500">{formErrors.intermediaryAccountCode}</p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: Notes, Objectives, Risk Tolerance, Time Horizon */}
+            {planSetupStep === 3 && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="plan-notes" className="text-sm font-medium text-gray-700">
+                    Notes (Optional)
+                  </Label>
+                  <Textarea
+                    id="plan-notes"
+                    value={planNotes}
+                    onChange={(e) => setPlanNotes(e.target.value)}
+                    placeholder="Enter any additional notes..."
+                    rows={3}
+                    className="resize-none"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="plan-objectives" className="text-sm font-medium text-gray-700">
+                    Objectives <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="plan-objectives"
+                    value={planObjectives}
+                    onChange={(e) => setPlanObjectives(e.target.value)}
+                    placeholder="Enter plan objectives"
+                    className={formErrors.planObjectives ? "border-red-500" : ""}
+                  />
+                  {formErrors.planObjectives && (
+                    <p className="text-sm text-red-500">{formErrors.planObjectives}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="risk-tolerance" className="text-sm font-medium text-gray-700">
+                    Risk Tolerance <span className="text-red-500">*</span>
+                  </Label>
+                  <Select value={riskTolerance} onValueChange={setRiskTolerance}>
+                    <SelectTrigger 
+                      id="risk-tolerance"
+                      className={formErrors.riskTolerance ? "border-red-500" : ""}
+                    >
+                      <SelectValue placeholder="Select risk tolerance..." />
+                    </SelectTrigger>
+                    <SelectContent className="z-[9999]">
+                      <SelectItem value="Low">Low</SelectItem>
+                      <SelectItem value="Med">Med</SelectItem>
+                      <SelectItem value="High">High</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {formErrors.riskTolerance && (
+                    <p className="text-sm text-red-500">{formErrors.riskTolerance}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="time-horizon" className="text-sm font-medium text-gray-700">
+                    Time Horizon (Years) <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="time-horizon"
+                    type="number"
+                    min="1"
+                    max="50"
+                    value={timeHorizon}
+                    onChange={(e) => setTimeHorizon(e.target.value)}
+                    placeholder="Enter time horizon (1-50 years)"
+                    className={formErrors.timeHorizon ? "border-red-500" : ""}
+                  />
+                  {formErrors.timeHorizon && (
+                    <p className="text-sm text-red-500">{formErrors.timeHorizon}</p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Navigation Buttons */}
+            <div className="flex justify-between mt-8 pt-4 border-t">
+              <div>
+                {planSetupStep > 1 && (
+                  <Button 
+                    variant="outline"
+                    onClick={handlePlanSetupPrevious}
+                    className="min-w-[100px]"
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    Previous
+                  </Button>
+                )}
+              </div>
+              
+              <div className="flex gap-3">
+                <Button 
+                  variant="outline"
+                  onClick={handlePlanSetupCancel}
+                  className="min-w-[100px]"
+                >
+                  Cancel
+                </Button>
+                
+                {planSetupStep < 3 ? (
+                  <Button 
+                    onClick={handlePlanSetupNext}
+                    className="bg-blue-600 hover:bg-blue-700 text-white min-w-[100px]"
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                ) : (
+                  <Button 
+                    onClick={handlePlanSetupSubmit}
+                    className="bg-green-600 hover:bg-green-700 text-white min-w-[100px]"
+                  >
+                    Submit
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </DialogContent>
