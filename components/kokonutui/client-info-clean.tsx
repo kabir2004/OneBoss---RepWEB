@@ -68,6 +68,7 @@ import ClientReports from "./client-reports"
 import ClientCharts from "./client-charts"
 import ClientApprovals from "./client-approvals"
 import { mockClients } from "@/lib/client-data"
+import TrustDepositsDialog from "@/components/TrustDepositsDialog"
 
 interface ClientInfoProps {
   clientId: string
@@ -93,6 +94,9 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
   const [depositAmount, setDepositAmount] = useState('')
   const [showTrustAccountUSDModal, setShowTrustAccountUSDModal] = useState(false)
   const [depositUSDAmount, setDepositUSDAmount] = useState('')
+  const [showTrustDialog, setShowTrustDialog] = useState(false)
+  const [selectedPlanId, setSelectedPlanId] = useState<string>("")
+  const [userRole] = useState<"client" | "advisor" | "admin">("admin") // Set to 'admin' to demo all features
   const [selectedFund, setSelectedFund] = useState<any>(null)
   const [selectedPlan, setSelectedPlan] = useState('')
   const [buyAmount, setBuyAmount] = useState('')
@@ -1344,8 +1348,28 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                       RESP Education Savings Plan
                                     </h4>
                                     <div className="flex items-center gap-4 mt-1">
-                                      <span className="text-sm text-muted-foreground">
-                                        Account: <span className="font-mono text-blue-700">3238677748</span>
+                                      <span className="text-sm text-muted-foreground flex items-center gap-1">
+                                        <span>Account:</span>
+                                        <TooltipProvider>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <Button
+                                                variant="link"
+                                                className="h-auto p-0 text-sm text-blue-600 hover:text-blue-800 underline font-mono"
+                                                onClick={(e) => {
+                                                  e.stopPropagation()
+                                                  setSelectedPlanId("3238677748")
+                                                  setShowTrustDialog(true)
+                                                }}
+                                              >
+                                                3238677748
+                                              </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                              <p>Click for trust accounts</p>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        </TooltipProvider>
                                       </span>
                                       <span className="text-sm text-blue-600">Family Plan</span>
                                       <span className="text-sm text-muted-foreground">{client.currentRepresentative || 'Smith, John'}</span>
@@ -1399,9 +1423,9 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                           </div>
                                           <span className="text-sm font-medium">FID-253</span>
                                         </div>
-                                      </TableCell>
-                                      <TableCell className="py-4 text-sm text-muted-foreground">3448232822</TableCell>
-                                      <TableCell className="py-4">
+                                    </TableCell>
+                                    <TableCell className="py-4 text-sm text-muted-foreground">3448232822</TableCell>
+                                    <TableCell className="py-4">
                                         <div className="max-w-xs">
                                           <div className="text-sm font-medium text-card-foreground">FIDELITY NORTHSTAR FUND</div>
                                           <div className="text-xs text-muted-foreground">Series B ISC</div>
@@ -1498,9 +1522,9 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                           </div>
                                           <span className="text-sm font-medium">FID-269</span>
                                         </div>
-                                      </TableCell>
-                                      <TableCell className="py-4 text-sm text-muted-foreground">6503857600</TableCell>
-                                      <TableCell className="py-4">
+                                    </TableCell>
+                                    <TableCell className="py-4 text-sm text-muted-foreground">6503857600</TableCell>
+                                    <TableCell className="py-4">
                                         <div className="max-w-xs">
                                           <div className="text-sm font-medium text-card-foreground">FIDELITY MONTHLY INCOME FUND</div>
                                           <div className="text-xs text-muted-foreground">Series B ISC</div>
@@ -1724,7 +1748,27 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                     </h4>
                                     <div className="flex items-center gap-4 mt-1">
                                       <span className="text-sm text-muted-foreground">
-                                        Account: <span className="font-mono text-green-700">7545538518</span>
+                                        Account:{" "}
+                                        <TooltipProvider>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <Button
+                                                variant="link"
+                                                className="h-auto p-0 text-sm text-green-700 hover:text-green-900 underline font-mono"
+                                                onClick={(e) => {
+                                                  e.stopPropagation()
+                                                  setSelectedPlanId("7545538518")
+                                                  setShowTrustDialog(true)
+                                                }}
+                                              >
+                                                7545538518
+                                              </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                              <p>Click for trust accounts</p>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        </TooltipProvider>
                                       </span>
                                       <span className="text-sm text-green-600">Individual Plan</span>
                                       <span className="text-sm text-muted-foreground">{client.currentRepresentative || 'Smith, John'}</span>
@@ -4953,6 +4997,15 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Trust Accounts Dialog */}
+      <TrustDepositsDialog
+        planId={selectedPlanId}
+        planDetails="RESP Education Savings Plan - Account: 3238677748 - Family Plan - Smith, John"
+        userRole={userRole}
+        isOpen={showTrustDialog}
+        onClose={() => setShowTrustDialog(false)}
+      />
 
     </div>
   )

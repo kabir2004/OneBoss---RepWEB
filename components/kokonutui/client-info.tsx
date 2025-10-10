@@ -46,6 +46,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import CustomCompensation from "./custom-compensation"
 import KYC from "./kyc"
 import ClientTrading from "./client-trading"
@@ -53,6 +54,7 @@ import ClientReports from "./client-reports"
 import ClientCharts from "./client-charts"
 import ClientApprovals from "./client-approvals"
 import { mockClients } from "@/lib/client-data"
+import TrustDetailsDialog from "@/components/TrustDetailsDialog"
 
 
 interface ClientInfoProps {
@@ -74,6 +76,29 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
   const [activeAllocationTab, setActiveAllocationTab] = useState('chart')
   const [showAddPlanModal, setShowAddPlanModal] = useState(false)
   const [selectedPlanType, setSelectedPlanType] = useState("")
+  const [showDepositModal, setShowDepositModal] = useState(false)
+  const [showTrustDialog, setShowTrustDialog] = useState(false)
+  const [selectedPlanId, setSelectedPlanId] = useState<string>("")
+  const [userRole] = useState<"client" | "advisor" | "admin">("admin") // Set to 'admin' to demo all features
+
+  // Mock trust account split data (tracked in backend database)
+  const [trustAccountSplits, setTrustAccountSplits] = useState({
+    accounts: [
+      { bank: "BMO CDN", amount: 1250.00, currency: "CAD" },
+      { bank: "TD", amount: 25450.30, currency: "CAD" },
+      { bank: "BMO USD", amount: 0.00, currency: "USD" }
+    ],
+    totalCAD: 26700.30,
+    totalUSD: 0.00
+  })
+
+  // Deposit form state
+  const [depositForm, setDepositForm] = useState({
+    amount: "",
+    method: "",
+    notes: ""
+  })
+  const [depositError, setDepositError] = useState("")
 
   // Utility functions
   const getStatusIcon = useCallback((status: string) => {
@@ -112,6 +137,67 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
     return calculatePlanTotal(client?.investments || []) + (client?.settledTrustCAD || 0) + (client?.settledTrustUSD || 0)
   }, [calculatePlanTotal])
 
+  // Handle deposit submission
+  const handleDepositSubmit = () => {
+    setDepositError("")
+
+    // Validation
+    const amount = parseFloat(depositForm.amount)
+    if (!depositForm.amount || isNaN(amount) || amount < 1 || amount > 100000) {
+      setDepositError("Please enter a valid amount between $1.00 and $100,000.00")
+      return
+    }
+    if (!depositForm.method) {
+      setDepositError("Please select a deposit method")
+      return
+    }
+
+    // Randomly select a dealer account to route the deposit to (simulating backend logic)
+    const cadAccounts = trustAccountSplits.accounts.filter(acc => acc.currency === "CAD")
+    const randomAccount = cadAccounts[Math.floor(Math.random() * cadAccounts.length)]
+    
+    // Update the selected account balance
+    const updatedAccounts = trustAccountSplits.accounts.map(acc => {
+      if (acc.bank === randomAccount.bank) {
+        return { ...acc, amount: acc.amount + amount }
+      }
+      return acc
+    })
+
+    // Update totals
+    const newTotalCAD = trustAccountSplits.totalCAD + amount
+
+    setTrustAccountSplits({
+      ...trustAccountSplits,
+      accounts: updatedAccounts,
+      totalCAD: newTotalCAD
+    })
+
+    // Log transaction (simulating backend database insert)
+    console.log('=== Deposit Transaction Processed ===')
+    console.log('Transaction Details:', {
+      amount: amount,
+      method: depositForm.method,
+      notes: depositForm.notes || 'No notes provided',
+      timestamp: new Date().toISOString(),
+      clientId: clientId
+    })
+    console.log('Routed to Account:', randomAccount.bank)
+    console.log('Previous Balance:', randomAccount.amount)
+    console.log('New Balance:', randomAccount.amount + amount)
+    console.log('Updated Account Splits:', {
+      'BMO CDN': updatedAccounts.find(a => a.bank === 'BMO CDN')?.amount || 0,
+      'TD': updatedAccounts.find(a => a.bank === 'TD')?.amount || 0,
+      'BMO USD': updatedAccounts.find(a => a.bank === 'BMO USD')?.amount || 0
+    })
+    console.log('New Total CAD:', newTotalCAD)
+    console.log('====================================')
+
+    // Reset form and close modal
+    setDepositForm({ amount: "", method: "", notes: "" })
+    setShowDepositModal(false)
+  }
+
   // Load client data
   useEffect(() => {
     const foundClient = mockClients.find(c => c.id.toString() === clientId)
@@ -120,6 +206,21 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
     }
     setLoading(false)
   }, [clientId])
+
+  // Log trust account splits on mount (simulates backend database tracking)
+  useEffect(() => {
+    console.log('=== Trust Account Split Tracking (Backend Database) ===')
+    console.log('Client ID:', clientId)
+    console.log('Account Splits:', {
+      'BMO CDN': trustAccountSplits.accounts.find(a => a.bank === 'BMO CDN')?.amount || 0,
+      'TD': trustAccountSplits.accounts.find(a => a.bank === 'TD')?.amount || 0,
+      'BMO USD': trustAccountSplits.accounts.find(a => a.bank === 'BMO USD')?.amount || 0
+    })
+    console.log('Total CAD:', trustAccountSplits.totalCAD)
+    console.log('Total USD:', trustAccountSplits.totalUSD)
+    console.log('Note: Individual account allocations are tracked in the database but hidden from client view')
+    console.log('======================================================')
+  }, [clientId, trustAccountSplits])
 
   const handleBack = () => {
     router.push('/clients')
@@ -460,8 +561,29 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                 <h4 className="font-semibold text-gray-900 text-lg">
                                   RESP Education Savings Plan
                                 </h4>
-                                <p className="text-sm text-gray-600 mt-1">
-                                  Account: 3238677748 • Family Plan • {client.currentRepresentative}
+                                <p className="text-sm text-gray-600 mt-1 flex items-center gap-1">
+                                  <span>Account:</span>
+                                  <TooltipProvider>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <Button
+                                          variant="link"
+                                          className="h-auto p-0 text-sm text-blue-600 hover:text-blue-800 underline font-normal"
+                                          onClick={(e) => {
+                                            e.stopPropagation()
+                                            setSelectedPlanId("3238677748")
+                                            setShowTrustDialog(true)
+                                          }}
+                                        >
+                                          3238677748
+                                        </Button>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p>Click for trust details</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
+                                  <span>• Family Plan • {client.currentRepresentative}</span>
                                 </p>
                               </div>
                             </div>
@@ -510,7 +632,27 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                         <span className="text-sm font-medium">FID-253</span>
                                       </div>
                                     </TableCell>
-                                    <TableCell className="py-4 text-sm text-gray-600">3448232822</TableCell>
+                                    <TableCell className="py-4">
+                                      <TooltipProvider>
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <Button
+                                              variant="link"
+                                              className="h-auto p-0 text-sm text-blue-600 hover:text-blue-800 underline font-normal"
+                                              onClick={() => {
+                                                setSelectedPlanId("3448232822")
+                                                setShowTrustDialog(true)
+                                              }}
+                                            >
+                                              3448232822
+                                            </Button>
+                                          </TooltipTrigger>
+                                          <TooltipContent>
+                                            <p>Click for trust details</p>
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      </TooltipProvider>
+                                    </TableCell>
                                     <TableCell className="py-4">
                                       <div className="max-w-xs">
                                         <div className="text-sm font-medium text-gray-900">FIDELITY NORTHSTAR FUND</div>
@@ -554,7 +696,27 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                         <span className="text-sm font-medium">FID-269</span>
                                       </div>
                                     </TableCell>
-                                    <TableCell className="py-4 text-sm text-gray-600">6503857600</TableCell>
+                                    <TableCell className="py-4">
+                                      <TooltipProvider>
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <Button
+                                              variant="link"
+                                              className="h-auto p-0 text-sm text-blue-600 hover:text-blue-800 underline font-normal"
+                                              onClick={() => {
+                                                setSelectedPlanId("6503857600")
+                                                setShowTrustDialog(true)
+                                              }}
+                                            >
+                                              6503857600
+                                            </Button>
+                                          </TooltipTrigger>
+                                          <TooltipContent>
+                                            <p>Click for trust details</p>
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      </TooltipProvider>
+                                    </TableCell>
                                     <TableCell className="py-4">
                                       <div className="max-w-xs">
                                         <div className="text-sm font-medium text-gray-900">FIDELITY MONTHLY INCOME FUND</div>
@@ -1152,6 +1314,172 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                   </div>
                 </TabsContent>
               </Tabs>
+            </div>
+
+            {/* Trust Deposits Section */}
+            {/* 
+              TRUST ACCOUNT & DEPOSIT WORKFLOW DOCUMENTATION (CLIENT-LEVEL AGGREGATION)
+              ===========================================================================
+              Based on OneBoss system analysis, this section implements client-level aggregation:
+              
+              Step 1: Display Single Aggregated Trust Account Balance
+                - Backend tracks individual dealer account splits (e.g., BMO CDN: $1,250.00, TD: $25,450.30)
+                - Database maintains detailed allocation records for each dealer trust account
+                - Client interface shows only ONE consolidated "Trust Account" balance ($26,700.30)
+                - Individual bank account details (BMO, TD, etc.) are completely hidden from client view
+                - Split details logged to console on mount to simulate backend database tracking
+                - Admin panel (AdminTrustAccounts) allows dealers to configure multiple trust accounts
+              
+              Step 2: Initiate Deposit or Investment
+                - User can initiate deposits via "Make Deposit" button
+                - Modal interface allows deposit amount entry
+                - Backend routes deposit to appropriate dealer trust account based on admin configuration
+                - System validates available balances before processing
+                - Account routing logic is handled server-side (hidden from client)
+              
+              Step 3: Update Balances After Transaction
+                - Backend updates individual account splits in database
+                - Aggregated total recalculated across all dealer accounts
+                - Client sees only updated consolidated balance
+                - Unsettled amounts track pending transactions
+                - RRSP plan investments can be funded from aggregated trust balance
+              
+              Backend Account Structure (tracked in database, hidden from client UI):
+                - trustAccountSplits.accounts = [
+                    { bank: "BMO CDN", amount: 1250.00, currency: "CAD" },
+                    { bank: "TD", amount: 25450.30, currency: "CAD" },
+                    { bank: "BMO USD", amount: 0.00, currency: "USD" }
+                  ]
+                - Client sees: "Trust Account: $26,700.30" (total only)
+                - Splits logged to console for development/debugging
+              
+              Benefits:
+                - Simplified client experience (one balance instead of multiple)
+                - Maintains backend flexibility for dealer account management
+                - Preserves audit trail of individual account allocations
+                - Enables optimal fund routing based on dealer preferences
+              
+              Note: Full deposit processing, multi-account routing, and settlement workflows 
+              require integration with backend systems and are marked for future implementation.
+            */}
+            <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-gray-200/60 shadow-sm mt-6">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                      <DollarSign className="h-4 w-4 text-emerald-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900">Trust Deposits</h3>
+                  </div>
+                  <Button 
+                    onClick={() => setShowDepositModal(true)}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Make Deposit
+                  </Button>
+                </div>
+
+                {/* Single Aggregated Trust Account Card */}
+                <div className="mb-6">
+                  <div className="bg-[#28A745] rounded-lg border border-emerald-300 shadow-sm" style={{ padding: '15px' }}>
+                    <div className="text-center">
+                      <h4 className="font-medium text-white mb-3" style={{ fontSize: '14px' }}>Trust Account</h4>
+                      <div className="mb-2">
+                        <span className="text-3xl font-bold text-white">${trustAccountSplits.totalCAD.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                      </div>
+                      <div className="text-white/90 mb-2" style={{ fontSize: '12px' }}>
+                        <div>Settled: ${trustAccountSplits.totalCAD.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                        <div>Unsettled: $0.00</div>
+                      </div>
+                      <div className="pt-2 border-t border-white/20">
+                        <p className="text-white/70" style={{ fontSize: '11px' }}>
+                          Managed across multiple accounts
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Info note about background tracking */}
+                  <div className="mt-3 p-3 bg-blue-50/50 border border-blue-200/60 rounded-lg">
+                    <p className="text-xs text-blue-800">
+                      <strong>Note:</strong> Your trust account balance is aggregated from multiple dealer accounts for your convenience. 
+                      Individual account allocations are tracked securely in our system.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Linked RRSP Plan Example */}
+                <div className="bg-gradient-to-r from-emerald-50/80 to-emerald-50/40 rounded-lg border border-emerald-200/60 p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h4 className="text-base font-semibold text-gray-900">Linked RRSP Plan</h4>
+                      <p className="text-sm text-gray-600 mt-1 flex items-center gap-1">
+                        <span>Account:</span>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="link"
+                                className="h-auto p-0 text-sm text-blue-600 hover:text-blue-800 underline font-normal"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setSelectedPlanId("754553518")
+                                  setShowTrustDialog(true)
+                                }}
+                              >
+                                754553518
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Click for trust details</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <span>• Individual Plan • Risk: Medium • Objective: Growth</span>
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Sample Investment */}
+                  <div className="bg-white rounded-lg border border-gray-200 p-4 mt-3">
+                    <div className="overflow-hidden rounded-lg">
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="bg-gradient-to-r from-emerald-50/80 to-emerald-50/40 border-b border-gray-200/60">
+                            <TableHead className="font-semibold text-gray-700 py-3 text-sm">Investment</TableHead>
+                            <TableHead className="font-semibold text-gray-700 py-3 text-sm text-right">Units</TableHead>
+                            <TableHead className="font-semibold text-gray-700 py-3 text-sm text-right">Price/Unit</TableHead>
+                            <TableHead className="font-semibold text-gray-700 py-3 text-sm text-right">Market Value</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          <TableRow className="hover:bg-emerald-50/30 transition-colors duration-200">
+                            <TableCell className="py-3">
+                              <div>
+                                <div className="text-sm font-medium text-gray-900">TD Canadian Equity Fund</div>
+                                <div className="text-xs text-muted-foreground">Series A</div>
+                              </div>
+                            </TableCell>
+                            <TableCell className="py-3 text-right text-sm text-gray-900">2,156.78</TableCell>
+                            <TableCell className="py-3 text-right text-sm text-gray-900">$11.80</TableCell>
+                            <TableCell className="py-3 text-right">
+                              <span className="text-sm font-semibold text-emerald-600">$25,450.00</span>
+                            </TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 p-3 bg-blue-50/50 border border-blue-200/60 rounded-lg">
+                    <p className="text-xs text-blue-800">
+                      <strong>Note:</strong> Trust account deposits can be used to fund investments in linked plans. 
+                      Use the "Make Deposit" button above to add funds to trust accounts.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
             </div>
           </TabsContent>
@@ -3606,6 +3934,135 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Make Deposit Modal */}
+      <Dialog open={showDepositModal} onOpenChange={(open) => {
+        setShowDepositModal(open)
+        if (!open) {
+          setDepositForm({ amount: "", method: "", notes: "" })
+          setDepositError("")
+        }
+      }}>
+        <DialogContent className="max-w-md border-[#007BFF] border-2" style={{ padding: '15px' }}>
+          <DialogHeader>
+            <DialogTitle className="text-center" style={{ fontSize: '14px', fontWeight: '600' }}>
+              Make Deposit to Trust Account
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-4 space-y-4">
+            {/* Error Message */}
+            {depositError && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <p className="text-sm text-red-600 text-center">{depositError}</p>
+              </div>
+            )}
+
+            {/* Amount Field */}
+            <div>
+              <Label htmlFor="deposit-amount" style={{ fontSize: '14px' }} className="font-medium text-gray-700">
+                Amount <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="deposit-amount"
+                type="number"
+                step="0.01"
+                min="1"
+                max="100000"
+                placeholder="0.00"
+                value={depositForm.amount}
+                onChange={(e) => setDepositForm({ ...depositForm, amount: e.target.value })}
+                className="mt-1"
+                style={{ fontSize: '14px' }}
+                required
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Min: $1.00 • Max: $100,000.00
+              </p>
+            </div>
+
+            {/* Method Field */}
+            <div>
+              <Label htmlFor="deposit-method" style={{ fontSize: '14px' }} className="font-medium text-gray-700">
+                Method <span className="text-red-500">*</span>
+              </Label>
+              <Select 
+                value={depositForm.method} 
+                onValueChange={(value) => setDepositForm({ ...depositForm, method: value })}
+              >
+                <SelectTrigger id="deposit-method" className="mt-1" style={{ fontSize: '14px' }}>
+                  <SelectValue placeholder="Select deposit method" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Branch" style={{ fontSize: '14px' }}>Branch</SelectItem>
+                  <SelectItem value="Online" style={{ fontSize: '14px' }}>Online</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Notes Field */}
+            <div>
+              <Label htmlFor="deposit-notes" style={{ fontSize: '14px' }} className="font-medium text-gray-700">
+                Notes <span className="text-gray-400">(Optional)</span>
+              </Label>
+              <textarea
+                id="deposit-notes"
+                rows={3}
+                placeholder="Add any additional notes about this deposit..."
+                value={depositForm.notes}
+                onChange={(e) => setDepositForm({ ...depositForm, notes: e.target.value })}
+                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                style={{ fontSize: '14px' }}
+              />
+            </div>
+
+            {/* Current Balance Display */}
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center">
+              <p className="text-xs text-gray-600 mb-1">Current Balance</p>
+              <p className="text-lg font-semibold text-gray-900">
+                ${trustAccountSplits.totalCAD.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </p>
+              {depositForm.amount && !isNaN(parseFloat(depositForm.amount)) && parseFloat(depositForm.amount) > 0 && (
+                <p className="text-xs text-emerald-600 mt-1">
+                  New Balance: ${(trustAccountSplits.totalCAD + parseFloat(depositForm.amount)).toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Modal Actions */}
+          <div className="flex justify-center gap-3 pt-4 border-t border-gray-200">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowDepositModal(false)
+                setDepositForm({ amount: "", method: "", notes: "" })
+                setDepositError("")
+              }}
+              style={{ fontSize: '14px' }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleDepositSubmit}
+              className="text-white"
+              style={{ fontSize: '14px', backgroundColor: '#28A745' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#218838'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#28A745'}
+            >
+              Submit Deposit
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Trust Details Dialog */}
+      <TrustDetailsDialog
+        planId={selectedPlanId}
+        userRole={userRole}
+        isOpen={showTrustDialog}
+        onClose={() => setShowTrustDialog(false)}
+      />
     </div>
   )
 }
