@@ -410,10 +410,10 @@ export default function TrustDepositsDialog({
       </DialogContent>
     </Dialog>
 
-    {/* Deposit Dialog */}
+    {/* Deposit Dialog with higher z-index */}
     {showDepositDialog && (
-      <Dialog open={showDepositDialog} onOpenChange={setShowDepositDialog}>
-        <DialogContent className="max-w-lg">
+      <Dialog open={showDepositDialog} onOpenChange={setShowDepositDialog} modal>
+        <DialogContent className="max-w-lg z-[9999]">
           <DialogHeader>
             <DialogTitle>Make a Deposit - {selectedBank}</DialogTitle>
           </DialogHeader>
@@ -435,7 +435,7 @@ export default function TrustDepositsDialog({
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[10000]">
                   <SelectItem value="CAD">CAD</SelectItem>
                   <SelectItem value="USD">USD</SelectItem>
                 </SelectContent>
