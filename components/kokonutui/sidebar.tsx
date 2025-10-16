@@ -171,6 +171,7 @@ export default function Sidebar() {
     isExpanded?: boolean
     onToggle?: () => void
   }) {
+    const isActive = pathname === href || (href !== '/' && pathname.startsWith(href))
     if (isExpandable) {
       return (
         <button
@@ -199,7 +200,11 @@ export default function Sidebar() {
       <Link
         href={href}
         onClick={handleNavigation}
-        className={`flex items-center px-3 py-2 text-sm rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-accent ${
+        className={`flex items-center px-3 py-2 text-sm rounded-md transition-colors ${
+          isActive 
+            ? "bg-blue-50 text-blue-700 hover:bg-blue-100" 
+            : "text-muted-foreground hover:text-foreground hover:bg-accent"
+        } ${
           isCollapsed ? "justify-center" : ""
         }`}
         title={isCollapsed ? children as string : undefined}
@@ -241,20 +246,18 @@ export default function Sidebar() {
           </div>
 
           <div className="flex-1 overflow-y-auto py-4 px-4 scrollbar-hide">
-            <div className="space-y-6">
+            <div className="space-y-2">
               <div>
-                {!isCollapsed && (
-                  <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Main Navigation
-                  </div>
-                )}
-                {isCollapsed && <div className="mb-4"></div>}
                 <div className="space-y-1">
                   <NavItem href="/dashboard" icon={Home}>
                     Dashboard
                   </NavItem>
                   <div className="space-y-1">
-                    <div className="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-accent">
+                    <div className={`flex items-center justify-between w-full px-3 py-2 text-sm rounded-md transition-colors ${
+                      pathname.startsWith('/clients') 
+                        ? "bg-blue-50 text-blue-700 hover:bg-blue-100" 
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                    }`}>
                       <Link
                         href="/clients"
                         onClick={() => {
@@ -520,11 +523,9 @@ export default function Sidebar() {
                     </div>
                   </div>
                   )}
-                  {!isNelsonHidden && (
-                    <NavItem href="#" icon={Wallet}>
-                      Trust Deposits
-                    </NavItem>
-                  )}
+                  <NavItem href="/trust-deposits" icon={Wallet}>
+                    Trust Deposits
+                  </NavItem>
                   {!isNelsonHidden && (
                     <NavItem href="#" icon={Target}>
                       Prospects
@@ -535,11 +536,6 @@ export default function Sidebar() {
 
               {!isNelsonHidden && (
                 <div>
-                  {!isCollapsed && (
-                    <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Management
-                    </div>
-                  )}
                   <div className="space-y-1">
                     <NavItem href="#" icon={Building2}>
                       Ensemble
@@ -559,11 +555,6 @@ export default function Sidebar() {
 
               {!isNelsonHidden && (
                 <div>
-                  {!isCollapsed && (
-                    <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      System
-                    </div>
-                  )}
                   <div className="space-y-1">
                     <NavItem href="#" icon={Shield}>
                       Notices

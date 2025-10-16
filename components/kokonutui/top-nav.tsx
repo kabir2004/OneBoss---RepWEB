@@ -112,6 +112,8 @@ export default function TopNav() {
         }
       } else if (pathSegments[0] === 'trades') {
         breadcrumbItems.push({ label: "Trades", href: "/trades" })
+      } else if (pathSegments[0] === 'trust-deposits') {
+        breadcrumbItems.push({ label: "Trust Deposits", href: "/trust-deposits" })
       }
       
       setBreadcrumbs(breadcrumbItems)

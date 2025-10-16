@@ -699,7 +699,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
       
       // Reset form fields
       setSelectedPlanType("")
-      setOwnerName("")
+      setOwnerName(client ? `${client.firstName} ${client.surname}` : "")
       setBeneficiaryName("")
       setIntermediaryCode("")
       setIntermediaryAccountCode("")
@@ -720,7 +720,7 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
     // Reset form and close modal
     setShowPlanSetupModal(false)
     setSelectedPlanType("")
-    setOwnerName("")
+    setOwnerName(client ? `${client.firstName} ${client.surname}` : "")
     setBeneficiaryName("")
     setIntermediaryCode("")
     setIntermediaryAccountCode("")
@@ -927,6 +927,13 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
     }
     setLoading(false)
   }, [clientId])
+
+  // Set owner name when client data is loaded
+  useEffect(() => {
+    if (client) {
+      setOwnerName(`${client.firstName} ${client.surname}`)
+    }
+  }, [client])
 
   const handleBack = () => {
     router.push('/clients')
@@ -1716,6 +1723,15 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                   <div className="text-lg font-semibold text-green-600">$42,000.12</div>
                                 </div>
                               </div>
+                              <div className="mt-4 flex justify-center">
+                                <Button 
+                                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 text-sm font-medium transition-colors duration-200"
+                                  onClick={() => setShowTrustAccountModal(true)}
+                                >
+                                  <Plus className="h-4 w-4 mr-2" />
+                                  Deposit
+                                </Button>
+                              </div>
                             </div>
                           </>
                         )}
@@ -2114,6 +2130,15 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
                                   <div className="text-sm text-muted-foreground mb-1">Total in CAD</div>
                                   <div className="text-lg font-semibold text-green-600">$26,700.30</div>
                                 </div>
+                              </div>
+                              <div className="mt-4 flex justify-center">
+                                <Button 
+                                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 text-sm font-medium transition-colors duration-200"
+                                  onClick={() => setShowTrustAccountModal(true)}
+                                >
+                                  <Plus className="h-4 w-4 mr-2" />
+                                  Deposit
+                                </Button>
                               </div>
                             </div>
                           </>
@@ -4376,10 +4401,10 @@ export default function ClientInfo({ clientId }: ClientInfoProps) {
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2 text-xl font-semibold text-blue-700">
                   <Plus className="h-5 w-5" />
-                  Add Investment
+                  Add Product
                 </DialogTitle>
                 <div className="text-sm text-muted-foreground mt-2">
-                  Add a new investment to your portfolio
+                  Add a new investment product to your portfolio
                 </div>
               </DialogHeader>
               
